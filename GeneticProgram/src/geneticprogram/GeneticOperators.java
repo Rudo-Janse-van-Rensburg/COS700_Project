@@ -42,9 +42,9 @@ public class GeneticOperators {
             int [] position         = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
             switch(node_type){
                 case Meta.condition:
-                    char[][] ptr_condition = prog.getConditions()[position[0]][position[1]];
-                    points = Util.getInstance().getPoints(ptr_condition, Meta.condition);
-                    position         = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+                    char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
+                    points                  = Util.getInstance().getPoints(ptr_condition, Meta.condition);
+                    position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
                     _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
                     break;
                 case Meta.main:
@@ -55,6 +55,95 @@ public class GeneticOperators {
             }
         }else 
             throw new Exception("Cannot mutate null program.");
+    }
+    
+    /**
+     * @param a             - parent A.
+     * @param b             - parent B.
+     * @throws Exception 
+     */
+    public static void crossover(Program a,Program b) throws Exception{
+        if(a != null && b != null){
+            char node_type          = Meta.node_types[Boolean.compare(Util.getInstance().getRandomBoolean(), false)]; 
+            int[] pos_A,pos_B;
+            char[][] tree_A,tree_B;
+            switch(node_type){
+                case Meta.condition:
+                    ArrayList<int[]> points = Util.getInstance().getPoints(a.getMain(),Meta.main);
+                    int [] pos              = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                    tree_A                  = a.getConditions()[pos[0]][pos[1]];
+                    points                  = Util.getInstance().getPoints(tree_A, Meta.condition);
+                    pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                    
+                    points                  = Util.getInstance().getPoints(b.getMain(),Meta.main);
+                    pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                    tree_B                  = b.getConditions()[pos[0]][pos[1]];
+                    points                  = Util.getInstance().getPoints(tree_B, Meta.condition);
+                    pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                    break;
+                case Meta.main:
+                    tree_A                  = a.getMain(); 
+                    points                  = Util.getInstance().getPoints(tree_A,Meta.main);
+                    pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1)); 
+                    
+                    tree_B                  = b.getMain(); 
+                    points                  = Util.getInstance().getPoints(tree_B,Meta.main);
+                    pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                    break;
+                default:
+                    throw new Exception("Cannot crossover invalid crossover points.");
+            }
+            
+            
+            
+            
+            
+        }else 
+            throw new Exception("Cannot crossover null programs.");
+        
+    }
+    
+    
+    /** 
+     * @param prog          - program to edit.
+     * @throws Exception 
+     */
+    public static void edit(Program prog) throws Exception{
+        if(prog != null){
+            char node_type          = Meta.node_types[Boolean.compare(Util.getInstance().getRandomBoolean(), false)];
+            char[][] tree           = null;
+            ArrayList<int[]> points;
+            int [] position;
+            switch(node_type){
+                case Meta.condition:
+                    points                      = Util.getInstance().getPoints(prog.getMain(), Meta.main);
+                    position                    = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+                    tree                        = prog.getConditions()[position[0]][position[1]];
+                    points                      = Util.getInstance().getPoints(tree, Meta.condition); 
+                    break;
+                case Meta.main:
+                    points                      = Util.getInstance().getPoints(prog.getMain(), Meta.main);
+                    tree                        = prog.getMain();
+                    break;
+                default:
+                    throw new Exception("Cannot edit an invalid point.");
+            }
+            position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+            int l                   = position[0],              //level
+                p                   = position[1],              //position
+                pow                 = (int)Math.pow(2, l),      //power
+                start               = p * 2;                    //start 
+            for (int i = l+1; i < tree.length; i++) {
+                for (int j = start; j < start+pow; j++) {
+                    char temp       = tree[i][j];
+                    tree[i][j]      = tree[i][j+pow];
+                    tree[i][j+pow]  = temp;
+                }
+                start *= 2;
+                pow   *=2;  
+            }
+       } else 
+            throw new Exception("Cannot edit null program.");
     }
     
     /**
@@ -115,8 +204,7 @@ public class GeneticOperators {
      * @param max_depth     - the maximum depth of the branch.
      * @param start_level   - the start level of the condition branch. 
      * @param start_pos     - the start position of the level.
-     * @param full          - whether full or grow method should be used.
-     * @return
+     * @param full          - whether full or grow method should be used. 
      * @throws Exception 
      */
     private static void _createCondition(char[][] condtion, int max_depth, int start_level, int start_pos,boolean full) throws Exception{
