@@ -1,6 +1,8 @@
 package geneticprogram; 
 
 import static geneticprogram.CONDITION_TERMINALS.ATTRIBUTE;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 public class GeneticOperators {  
@@ -10,7 +12,11 @@ public class GeneticOperators {
      * @throws Exception 
      */
     public static void grow(Program prog) throws Exception{
-        createMain(prog,Parameters.getInstance().getMain_max_depth(),0,0,false);
+        if(prog != null){
+            _createMain(prog,Parameters.getInstance().getMain_max_depth(),0,0,false);
+        }else
+            throw new Exception("Cannot grow null program.");
+        
     }
     
     /**
@@ -18,7 +24,37 @@ public class GeneticOperators {
      * @throws Exception 
      */
     public static void full(Program prog) throws Exception{
-        createMain(prog,Parameters.getInstance().getMain_max_depth(),0,0,true);
+        if(prog != null){
+            _createMain(prog,Parameters.getInstance().getMain_max_depth(),0,0,true);
+        }else 
+            throw new Exception("Cannot full null program.");
+        
+    }
+    
+    /**
+     * @param prog          - program to mutate.
+     * @throws Exception 
+     */
+    public static void mutate(Program prog) throws Exception{
+        if(prog != null){
+            char node_type          = Meta.node_types[Boolean.compare(Util.getInstance().getRandomBoolean(), false)];
+            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(), Meta.main);
+            int [] position         = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+            switch(node_type){
+                case Meta.condition:
+                    char[][] ptr_condition = prog.getConditions()[position[0]][position[1]];
+                    points = Util.getInstance().getPoints(ptr_condition, Meta.condition);
+                    position         = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+                    _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
+                    break;
+                case Meta.main:
+                    _createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], false);
+                    break;
+                default:
+                    throw new Exception("Cannot mutate an invalid point.");
+            }
+        }else 
+            throw new Exception("Cannot mutate null program.");
     }
     
     /**
@@ -29,7 +65,7 @@ public class GeneticOperators {
      * @param full          - whether this should be full or grow method.
      * @throws Exception     
      */
-    private static void createMain(Program prog,int max_depth,int start_level, int start_pos,boolean full) throws Exception{
+    private static void _createMain(Program prog,int max_depth,int start_level, int start_pos,boolean full) throws Exception{
         if(max_depth > 2 && max_depth <= Parameters.getInstance().getMain_max_depth()){ 
             char [][][][] condition_tree    = prog.getConditions();
             char [][]     main_tree         = prog.getMain();
@@ -61,7 +97,7 @@ public class GeneticOperators {
                             break;
                         default:
                             main_tree[level][position]      = to_add;
-                            createCondition(condition_tree[level][position],Parameters.getInstance().getCondition_max_depth(),0,0,true);
+                            _createCondition(condition_tree[level][position],Parameters.getInstance().getCondition_max_depth(),0,0,true);
                             for (int i = 0; i < 2; i++) {
                                 level_stack.push(level+1); 
                                 position_stack.push((2*position)+i);
@@ -83,7 +119,7 @@ public class GeneticOperators {
      * @return
      * @throws Exception 
      */
-    private static void createCondition(char[][] condtion, int max_depth, int start_level, int start_pos,boolean full) throws Exception{
+    private static void _createCondition(char[][] condtion, int max_depth, int start_level, int start_pos,boolean full) throws Exception{
         if(max_depth > 2 && max_depth <= Parameters.getInstance().getCondition_max_depth()){
             Stack<Integer> level_stack      = new Stack<Integer>();
             Stack<Integer> position_stack   = new Stack<Integer>();

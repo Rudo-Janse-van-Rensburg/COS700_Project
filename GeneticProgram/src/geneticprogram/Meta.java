@@ -1,6 +1,9 @@
 package geneticprogram;
  
 public class Meta { 
+    public static final char condition                          = 'c';
+    public static final char main                               = 'm';
+    public static final char[] node_types                       = new char[]{condition,main};
     public static final CONDITION_FUNCTIONS condition_functions = new CONDITION_FUNCTIONS();
     public static final CONDITION_TERMINALS condition_terminals = new CONDITION_TERMINALS();
     public static final MAIN_FUNCTIONS main_functions           = new MAIN_FUNCTIONS();

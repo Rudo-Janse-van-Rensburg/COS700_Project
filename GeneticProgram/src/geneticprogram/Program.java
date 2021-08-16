@@ -7,13 +7,13 @@ public class Program {
     private char[][][][]    conditions; //[level in main branch rooted from][level in sub-branch][sub-branch level][position in level in sub-branch]
 
     public Program(int main_depth) {
-        allocate_arrays(main_depth);
+        _allocateArrays(main_depth);
     }
     
     public Program(char[][] m, char[][][][] c) throws Exception{
         if(m != null && c != null){
             int depth   = m.length;
-            allocate_arrays(depth);  
+            _allocateArrays(depth);  
             int main_level  = 0,
                 level_size  = 1;
             for (; main_level < (depth - 1); main_level++) {
@@ -32,14 +32,14 @@ public class Program {
             for (int position_level = 0; position_level < level_size; position_level++)
                     this.main[main_level][position_level]   = m[main_level][position_level];
         }else
-            throw new Exception("Program could not be instaited correctly.");
+            throw new Exception("Program could not be instantiated correctly.");
     }
     
     public Program(Program copy) throws Exception{
         this(copy.main,copy.conditions);
     }
       
-    private void allocate_arrays(int main_depth){
+    private void _allocateArrays(int main_depth){
         this.main       = new char[main_depth][];
         this.conditions = new char[main_depth][][][];
         int power       = 1;
