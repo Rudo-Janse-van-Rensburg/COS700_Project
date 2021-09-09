@@ -2,6 +2,7 @@ package geneticprogram;
 
 import static geneticprogram.CONDITION_TERMINALS.ATTRIBUTE;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -74,7 +75,6 @@ public class GeneticOperators {
                     tree_A                  = a.getConditions()[pos[0]][pos[1]];
                     points                  = Util.getInstance().getPoints(tree_A, Meta.condition);
                     pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
-                    
                     points                  = Util.getInstance().getPoints(b.getMain(),Meta.main);
                     pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
                     tree_B                  = b.getConditions()[pos[0]][pos[1]];
@@ -85,7 +85,6 @@ public class GeneticOperators {
                     tree_A                  = a.getMain(); 
                     points                  = Util.getInstance().getPoints(tree_A,Meta.main);
                     pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1)); 
-                    
                     tree_B                  = b.getMain(); 
                     points                  = Util.getInstance().getPoints(tree_B,Meta.main);
                     pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
@@ -93,11 +92,47 @@ public class GeneticOperators {
                 default:
                     throw new Exception("Cannot crossover invalid crossover points.");
             }
-            
-            
-            
-            
-            
+            char[][] copy_A = null,copy_B = null;
+            for(int level = 0; level < tree_A.length;level++){
+                copy_A = new char[tree_A.length][];
+                copy_B = new char[tree_A.length][];
+                for (int pos = 0; pos < tree_A.length; pos++) {
+                    copy_A[pos] = Arrays.copyOf(tree_A[pos], tree_A[pos].length);
+                    copy_B[pos] = Arrays.copyOf(tree_B[pos], tree_B[pos].length); 
+                }
+            }
+            int pow_A = 1, pow_B = 1;
+            for (int level = 0; level < tree_A.length; level++) {
+                for (int pos = 0; pos < tree_A[level].length; pos++) {
+                    if(
+                        level >= pos_A[0]                               //  The right level of A                                
+                        && 
+                        pos_B[0] + (level - pos_A[0]) < tree_B.length   //  B has a level          
+                        && 
+                        pos >= (pow_A*pos_A[1])                         //  The correct branch of A        
+                        &&
+                        (pow_A*pos_B[1]) + (pos - (pow_A*(pos_A[1]))) <  tree_B[pos_B[0] + (level - pos_A[0])].length
+                    )
+                    {
+                        tree_A[level][pos]  = copy_B[pos_B[0] + (level - pos_A[0])][(pow_A*pos_B[1]) + (pos - (pow_A*(pos_A[1])))];
+                    }
+                    if(
+                        level >= pos_B[0]                               //  The right level of B                                
+                        && 
+                        pos_A[0] + (level - pos_B[0]) < tree_A.length   //  A has a level          
+                        && 
+                        pos >= (pow_B*pos_B[1])                         //  The correct branch of B        
+                        &&
+                        (pow_B*pos_A[1]) + (pos - (pow_B*(pos_B[1]))) <  tree_A[pos_A[0] + (level - pos_B[0])].length
+                    )
+                    {
+                        tree_B[level][pos]  = copy_A[pos_B[0] + (level - pos_B[0])][(pow_B*pos_A[1]) + (pos - (pow_B*(pos_B[1])))];
+                    }
+                }
+                pow_A = level >= pos_A[0] ? pow_A * 2 : pow_A; 
+                pow_B = level >= pos_B[0] ? pow_B * 2 : pow_B; 
+            }
+             
         }else 
             throw new Exception("Cannot crossover null programs.");
         
