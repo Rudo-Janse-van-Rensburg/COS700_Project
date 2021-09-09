@@ -59,6 +59,29 @@ public class GeneticOperators {
     }
     
     /**
+     * @param a
+     * @throws Exception 
+     */
+    public static void hoist(Program prog) throws Exception{
+        if(prog != null){
+            char[][] tree_prog      = prog.getMain();
+            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),Meta.main);
+            int [] pos              = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+            char[][] main = prog.getMain();
+            char[][][][] cond = prog.getConditions();
+            int pow = 1;
+            for (int level = pos[0]; level < main.length; level++) {
+                for (int position = pow*pos[1]; position < (pow*pos[1] + pow); position++) {
+                    main[level-pos[0]][position-pow*pos[1]] = main[level][position];
+                    cond[level-pos[0]][position-pow*pos[1]] = cond[level][position];
+                }
+                pow *= 2;
+            }
+        }else 
+            throw new Exception("Cannot hoist null program.");
+    }
+    
+    /**
      * @param a             - parent A.
      * @param b             - parent B.
      * @throws Exception 
