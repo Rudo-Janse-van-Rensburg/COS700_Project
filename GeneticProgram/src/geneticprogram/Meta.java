@@ -9,6 +9,10 @@ public class Meta {
     public static final MAIN_FUNCTIONS main_functions           = new MAIN_FUNCTIONS();
     public static final MAIN_TERMINALS main_terminals           = new MAIN_TERMINALS();
     public static final int[] CLASSES                           = new int[]{0,1,2,};
+    
+    
+    
+    
 }
 
 /**

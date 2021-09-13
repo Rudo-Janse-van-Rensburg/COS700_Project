@@ -3,7 +3,7 @@ package geneticprogram;
 import java.lang.reflect.Array;
 
 public class Program {
-    private char[][]        main;       //[level in main brach][position in level]
+    private char[][]        main;                //[level in main brach][position in level]
     private char[][][][]    conditions; //[level in main branch rooted from][level in sub-branch][sub-branch level][position in level in sub-branch]
 
     public Program(int main_depth) {
