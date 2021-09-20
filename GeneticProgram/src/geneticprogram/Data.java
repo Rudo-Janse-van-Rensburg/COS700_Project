@@ -7,7 +7,7 @@ public class Data {
     private Data(){
         
     }
-    
+     
     public static Data initialiseData(){
         if(data == null)
             Data.data = new Data();  

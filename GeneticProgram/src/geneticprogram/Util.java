@@ -29,7 +29,11 @@ public class Util {
         random = new Random(seed);
     }
     
-    public ArrayList<int[]> getPoints(char[][] tree,char type) throws Exception{
+    public ArrayList<int[]> getPoints(char[][] tree) throws Exception{
+        return new ArrayList<int[]>();
+    }
+    
+    public ArrayList<int[]> WRONGgetPoints(char[][] tree,char type) throws Exception{
         if(tree != null){
             ArrayList<int[]> points = null; 
             Stack<Integer> level, position;

@@ -1,6 +1,5 @@
 package geneticprogram; 
 
-import static geneticprogram.CONDITION_TERMINALS.ATTRIBUTE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,22 +37,19 @@ public class GeneticOperators {
      */
     public static void mutate(Program prog) throws Exception{
         if(prog != null){
-            char node_type          = Meta.node_types[Boolean.compare(Util.getInstance().getRandomBoolean(), false)];
-            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(), Meta.main);
-            int [] position         = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
-            switch(node_type){
-                case Meta.condition:
-                    char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
-                    points                  = Util.getInstance().getPoints(ptr_condition, Meta.condition);
-                    position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
-                    _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
-                    break;
-                case Meta.main:
-                    _createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], false);
-                    break;
-                default:
-                    throw new Exception("Cannot mutate an invalid point.");
-            }
+            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain());
+            boolean mutate_main     = Util.getInstance().getRandomBoolean();
+            int [] position         = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+            if(mutate_main){
+                /*MUTATE MAIN TREE*/
+                _createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], false);
+            }else{
+                /*MUTATE CONDITION SUB-TREE*/
+                char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
+                points                  = Util.getInstance().getPoints(ptr_condition);
+                position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+                _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
+            } 
         }else 
             throw new Exception("Cannot mutate null program.");
     }
@@ -65,7 +61,7 @@ public class GeneticOperators {
     public static void hoist(Program prog) throws Exception{
         if(prog != null){
             char[][] tree_prog      = prog.getMain();
-            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),Meta.main);
+            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain());
             int [] pos              = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
             char[][] main = prog.getMain();
             char[][][][] cond = prog.getConditions();
@@ -75,7 +71,7 @@ public class GeneticOperators {
                     main[level-pos[0]][position-pow*pos[1]] = main[level][position];
                     cond[level-pos[0]][position-pow*pos[1]] = cond[level][position];
                 }
-                pow *= 2;
+                pow = pow << 1; //time 2 
             }
         }else 
             throw new Exception("Cannot hoist null program.");
@@ -88,33 +84,34 @@ public class GeneticOperators {
      */
     public static void crossover(Program a,Program b) throws Exception{
         if(a != null && b != null){
-            char node_type          = Meta.node_types[Boolean.compare(Util.getInstance().getRandomBoolean(), false)]; 
+            boolean crossover_main          = Util.getInstance().getRandomBoolean();
             int[] pos_A,pos_B;
             char[][] tree_A,tree_B;
-            switch(node_type){
-                case Meta.condition:
-                    ArrayList<int[]> points = Util.getInstance().getPoints(a.getMain(),Meta.main);
-                    int [] pos              = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
-                    tree_A                  = a.getConditions()[pos[0]][pos[1]];
-                    points                  = Util.getInstance().getPoints(tree_A, Meta.condition);
-                    pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
-                    points                  = Util.getInstance().getPoints(b.getMain(),Meta.main);
-                    pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
-                    tree_B                  = b.getConditions()[pos[0]][pos[1]];
-                    points                  = Util.getInstance().getPoints(tree_B, Meta.condition);
-                    pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
-                    break;
-                case Meta.main:
-                    tree_A                  = a.getMain(); 
-                    points                  = Util.getInstance().getPoints(tree_A,Meta.main);
-                    pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1)); 
-                    tree_B                  = b.getMain(); 
-                    points                  = Util.getInstance().getPoints(tree_B,Meta.main);
-                    pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
-                    break;
-                default:
-                    throw new Exception("Cannot crossover invalid crossover points.");
-            }
+            ArrayList<int[]> points;
+            if(crossover_main){
+                /*CROSSOVER MAIN TREE*/
+                tree_A                  = a.getMain(); 
+                points                  = Util.getInstance().getPoints(tree_A);
+                pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1)); 
+                tree_B                  = b.getMain(); 
+                points                  = Util.getInstance().getPoints(tree_B);
+                pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+            }else{
+                /*CROSSOVER CONDITION SUB-TREES*/
+                int[] pos;
+                //pick a condition sub-branch in tree A
+                points                  = Util.getInstance().getPoints(a.getMain());
+                pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                tree_A                  = a.getConditions()[pos[0]][pos[1]];
+                points                  = Util.getInstance().getPoints(tree_A);
+                pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                //pick a condition sub-branch in tree B
+                points                  = Util.getInstance().getPoints(b.getMain());
+                pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                tree_B                  = b.getConditions()[pos[0]][pos[1]];
+                points                  = Util.getInstance().getPoints(tree_B);
+                pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+            } 
             char[][] copy_A = null,copy_B = null;
             for(int level = 0; level < tree_A.length;level++){
                 copy_A = new char[tree_A.length][];
@@ -152,8 +149,8 @@ public class GeneticOperators {
                         tree_B[level][pos]  = copy_A[pos_B[0] + (level - pos_B[0])][(pow_B*pos_A[1]) + (pos - (pow_B*(pos_B[1])))];
                     }
                 }
-                pow_A = level >= pos_A[0] ? pow_A * 2 : pow_A; 
-                pow_B = level >= pos_B[0] ? pow_B * 2 : pow_B; 
+                pow_A = level >= pos_A[0] ? pow_A << 1 : pow_A; 
+                pow_B = level >= pos_B[0] ? pow_B << 1 : pow_B; 
             }
              
         }else 
@@ -168,37 +165,32 @@ public class GeneticOperators {
      */
     public static void edit(Program prog) throws Exception{
         if(prog != null){
-            char node_type          = Meta.node_types[Boolean.compare(Util.getInstance().getRandomBoolean(), false)];
+            boolean edit_main       = Util.getInstance().getRandomBoolean();
             char[][] tree           = null;
             ArrayList<int[]> points;
             int [] position;
-            switch(node_type){
-                case Meta.condition:
-                    points                      = Util.getInstance().getPoints(prog.getMain(), Meta.main);
-                    position                    = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
-                    tree                        = prog.getConditions()[position[0]][position[1]];
-                    points                      = Util.getInstance().getPoints(tree, Meta.condition); 
-                    break;
-                case Meta.main:
-                    points                      = Util.getInstance().getPoints(prog.getMain(), Meta.main);
-                    tree                        = prog.getMain();
-                    break;
-                default:
-                    throw new Exception("Cannot edit an invalid point.");
-            }
+            if(edit_main){
+                points                      = Util.getInstance().getPoints(prog.getMain());
+                tree                        = prog.getMain();
+            }else{
+                points                      = Util.getInstance().getPoints(prog.getMain());
+                position                    = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+                tree                        = prog.getConditions()[position[0]][position[1]];
+                points                      = Util.getInstance().getPoints(tree); 
+            } 
             position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
             int l                   = position[0],              //level
                 p                   = position[1],              //position
                 pow                 = (int)Math.pow(2, l),      //power
-                start               = p * 2;                    //start 
+                start               = p << 1;                   //start 
             for (int i = l+1; i < tree.length; i++) {
                 for (int j = start; j < start+pow; j++) {
                     char temp       = tree[i][j];
                     tree[i][j]      = tree[i][j+pow];
                     tree[i][j+pow]  = temp;
                 }
-                start *= 2;
-                pow   *=2;  
+                start = start << 1;
+                pow   = start << 1;  
             }
        } else 
             throw new Exception("Cannot edit null program.");
@@ -229,29 +221,29 @@ public class GeneticOperators {
                 if(level <= max_depth){
                     if(level < max_depth){
                         if(full){
-                            to_add  = Meta.main_functions.getMainFunctions()[Util.getInstance().getRandomInt(0, Meta.main_functions.getMainFunctions().length)];
+                            to_add  = Meta.MAINS[Util.getInstance().getRandomInt(0, Meta.MAINS.length)];
                         }else{ 
-                            int pos = Util.getInstance().getRandomInt(0,Meta.main_functions.getMainFunctions().length + Meta.main_terminals.getMainTerminals().length-1);
-                            to_add  = pos < Meta.main_functions.getMainFunctions().length ? Meta.main_functions.getMainFunctions()[pos] : Meta.main_terminals.getMainTerminals()[pos - Meta.main_functions.getMainFunctions().length];
+                            int pos = Util.getInstance().getRandomInt(0, Meta.MAINS.length +  Data.initialiseData().getNumberClasses()-1);
+                            to_add  = pos < Meta.MAINS.length ? Meta.MAINS[pos] : (char)pos;
                         }
                     }else{
-                        to_add = Meta.main_terminals.getMainTerminals()[Util.getInstance().getRandomInt(0, Meta.main_terminals.getMainTerminals().length)];
+                        to_add = (char) (Meta.MAINS.length + Util.getInstance().getRandomInt(0, Data.initialiseData().getNumberClasses()-1));
                     }
                     switch(to_add){
-                        case MAIN_TERMINALS.CLASS:
-                            main_tree[level][position]      = Factory.createClass(Util.getInstance().getRandomInt(0, Meta.CLASSES.length-1));
-                            condition_tree[level][position] = null;
-                            break;
-                        default:
+                        case Meta.IF:
                             main_tree[level][position]      = to_add;
                             _createCondition(condition_tree[level][position],Parameters.getInstance().getCondition_max_depth(),0,0,true);
                             for (int i = 0; i < 2; i++) {
                                 level_stack.push(level+1); 
-                                position_stack.push((2*position)+i);
+                                position_stack.push((position << 1)+i);
                             }
                             break;
+                        default:
+                            main_tree[level][position]      = to_add;
+                            condition_tree[level][position] = null;
+                            break;
                     }
-                }
+                } 
             }while(!level_stack.empty() && !position_stack.empty()); 
         }else
             throw new Exception("Depth of main program to create is invalid.");
@@ -280,26 +272,23 @@ public class GeneticOperators {
                 if(level <= max_depth){
                     if(level < max_depth){
                         if(full){
-                            to_add  = Meta.condition_functions.getConditionFunctions()[Util.getInstance().getRandomInt(0, Meta.condition_functions.getConditionFunctions().length-1)];
+                            to_add  = Meta.CONDITIONS[Util.getInstance().getRandomInt(0, Meta.CONDITIONS.length-1)];
                         }else{
-                            int pos = Util.getInstance().getRandomInt(0, Meta.condition_functions.getConditionFunctions().length + Meta.condition_terminals.getConditionTerminals().length - 1);
-                            to_add  = pos < Meta.condition_functions.getConditionFunctions().length ? Meta.condition_functions.getConditionFunctions()[pos]:Meta.condition_terminals.getConditionTerminals()[pos - Meta.condition_functions.getConditionFunctions().length];  
+                            int pos = Util.getInstance().getRandomInt(0, Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes() - 1);
+                            to_add  = (char)(pos < Meta.CONDITIONS.length ? Meta.CONDITIONS[pos]: pos);  
                         }
                     }else{
-                        to_add  = Meta.condition_terminals.getConditionTerminals()[Util.getInstance().getRandomInt(0, Meta.condition_terminals.getConditionTerminals().length-1)];
+                        to_add  = (char)(Meta.CONDITIONS.length + Util.getInstance().getRandomInt(0, Data.initialiseData().getNumberAttributes() - 1));
                     }
-                    switch(to_add){
-                        case CONDITION_TERMINALS.ATTRIBUTE:
-                            condtion[level][position]   = to_add;
-                            break;
-                        default:
-                            condtion[level][position]   = to_add;
-                            for (int i = 0; i < 2; i++) {
-                                level_stack.push(level+1);
-                                position_stack.push((2*position)+i);
-                            }
-                            break;
-                    }
+                    if((int) (to_add)  < Meta.CONDITIONS.length){
+                        condtion[level][position]   = to_add;
+                        for (int i = 0; i < 2; i++) {
+                            level_stack.push(level+1);
+                            position_stack.push((position << 1)+i);
+                        }
+                    }else{
+                        condtion[level][position]   = to_add;
+                    } 
                 } 
             }while(!level_stack.empty() && !position_stack.empty());
         }else 

@@ -1,71 +1,57 @@
 package geneticprogram;
+
+public class Meta {  
+    
+                                
+    public static final char    /*IF*/
+                                IF                  = (char) 0;
+    
+                                /*FUNCTION IN THE MAIN BRANCH*/
+    public static final char[]  MAINS               = new char[]{
+                                                        IF
+                                                    };
+    
+    public static final char    /*RELATION*/ 
+                                GREATER_THAN        = (char) 0,
+                                LESS_THAN           = (char) 1,
+                                GREATER_OR_EQUAL    = (char) 2,
+                                LESS_OR_EQUAL       = (char) 3,
+                                EQUAL               = (char) 4,
+                                NOT_EQUAL           = (char) 5,
+                                /*ARITHMETIC*/
+                                ADDITION            = (char) 6,
+                                SUBTRACTION         = (char) 7,
+                                DIVISION            = (char) 8,
+                                MULTIPLICATION      = (char) 9,
+                                /*BITWISE*/         
+                                BITWISE_AND         = (char) 10,
+                                BITWISE_OR          = (char) 11,
+                                BITWISE_XOR         = (char) 12, 
+                                /*LOGICAL*/
+                                LOGICAL_AND         = (char) 13,
+                                LOGICAL_OR          = (char) 14;
+    
+                                /*FUNCTIONS IN THE CONDITION BRANCH*/
+    public static final char[]  CONDITIONS          = new char[]{
+                                                        GREATER_THAN,
+                                                        LESS_THAN,
+                                                        GREATER_OR_EQUAL,
+                                                        LESS_OR_EQUAL,
+                                                        EQUAL,
+                                                        NOT_EQUAL,
+                                                        ADDITION,
+                                                        SUBTRACTION,
+                                                        DIVISION,
+                                                        MULTIPLICATION,
+                                                        BITWISE_AND,
+                                                        BITWISE_OR,
+                                                        BITWISE_XOR,
+                                                        LOGICAL_AND,
+                                                        LOGICAL_OR
+                                                    }; 
+    
+    
+    
+    
+}
  
-public class Meta { 
-    public static final char condition                          = 'c';
-    public static final char main                               = 'm';
-    public static final char[] node_types                       = new char[]{condition,main};
-    public static final CONDITION_FUNCTIONS condition_functions = new CONDITION_FUNCTIONS();
-    public static final CONDITION_TERMINALS condition_terminals = new CONDITION_TERMINALS();
-    public static final MAIN_FUNCTIONS main_functions           = new MAIN_FUNCTIONS();
-    public static final MAIN_TERMINALS main_terminals           = new MAIN_TERMINALS();
-    public static final int[] CLASSES                           = new int[]{0,1,2,};
-    
-    
-    
-    
-}
-
-/**
- * Functions in the main program tree.
- */
-class MAIN_FUNCTIONS{
-    public final static char IF = 'I';
-    
-    public static char[] getMainFunctions(){
-        return new char[]{
-            IF
-        };
-    }
-}
-
-/**
- * Functions in the condition program sub-tree.
- */
-class CONDITION_FUNCTIONS{
-    public final static char 
-            RELATION    = 'R',
-            ARITHMETIC  = 'A',
-            LOGICAL     = 'L';
-    
-    public static char[] getConditionFunctions(){
-        return new char[]{
-            RELATION,
-            ARITHMETIC,
-            LOGICAL
-        };
-    }
-} 
-
-/**
- * Terminals of the main program tree.
- */
-class MAIN_TERMINALS{
-    public final static char CLASS   = 'c';
-    public static char[] getMainTerminals(){
-        return new char[]{
-            CLASS
-        };
-    }
-}
-
-/**
- * Terminals of the condition program tree.
- */
-class CONDITION_TERMINALS{
-    public final static char ATTRIBUTE   = 'a';
-    public static char[] getConditionTerminals(){
-        return new char[]{
-            ATTRIBUTE
-        };
-    }
-}
