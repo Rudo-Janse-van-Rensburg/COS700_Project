@@ -1,6 +1,5 @@
 package geneticprogram; 
 
-import java.util.Queue;
 import java.util.Stack;
 
 public class Interpreter {  
@@ -16,17 +15,21 @@ public class Interpreter {
         return singleton;
     }
     
+    /**
+     * @param p 
+     * @return  
+     * @throws Exception 
+     */
     public int Interpret(Program p) throws Exception{
         char result = 0;
         if(p != null){
-            Stack<Integer> row  = new Stack<Integer>();
-            Stack<Integer> pos  = new Stack<Integer>();
+            Stack<Integer> row  = new Stack<>();
+            Stack<Integer> pos  = new Stack<>();
             row.push(0);
             pos.push(0);
             return _interpretMain(p,row,pos);
         }else 
             throw new Exception("Cannot interpret a null program.");
-
     }
         
     /***
@@ -80,7 +83,7 @@ public class Interpreter {
         if(cond != null){ 
             if(row < cond.length && pos < cond[row].length){
                 switch(cond[row][pos]){
-                     case Meta.GREATER_THAN:  
+                    case Meta.GREATER_THAN:  
                         return _interpretCondition(cond, row+1, 2*pos ) > _interpretCondition(cond, row+1, 2*pos+1 )? 1 : 0;
                     case Meta.LESS_THAN:
                         return _interpretCondition(cond, row+1, 2*pos ) < _interpretCondition(cond, row+1, 2*pos+1 )? 1 : 0;

@@ -30,7 +30,7 @@ public class Meta {
                                 /*LOGICAL*/
                                 LOGICAL_AND         = (char) 13,
                                 LOGICAL_OR          = (char) 14;
-    
+                                
                                 /*FUNCTIONS IN THE CONDITION BRANCH*/
     public static final char[]  CONDITIONS          = new char[]{
                                                         GREATER_THAN,

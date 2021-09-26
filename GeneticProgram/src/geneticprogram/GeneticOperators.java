@@ -8,10 +8,11 @@ import java.util.Stack;
 public class GeneticOperators {  
     
     /**
-     * @param prog          - program to create using the grow method.
+     * @param prog      - program to full
+     * @param depth     - depth to grow to
      * @throws Exception 
      */
-    public static void grow(Program prog) throws Exception{
+    public static void grow(Program prog,int depth) throws Exception{
         if(prog != null){
             _createMain(prog,Parameters.getInstance().getMain_max_depth(),0,0,false);
         }else
@@ -20,15 +21,15 @@ public class GeneticOperators {
     }
     
     /**
-     * @param prog          - program to create using the full method.
+     * @param prog      - program to full
+     * @param depth     - depth to grow to
      * @throws Exception 
      */
-    public static void full(Program prog) throws Exception{
+    public static void full(Program prog, int depth) throws Exception{
         if(prog != null){
-            _createMain(prog,Parameters.getInstance().getMain_max_depth(),0,0,true);
+            _createMain(prog,depth,0,0,true);
         }else 
             throw new Exception("Cannot full null program.");
-        
     }
     
     /**
@@ -157,7 +158,6 @@ public class GeneticOperators {
             throw new Exception("Cannot crossover null programs.");
         
     }
-    
     
     /** 
      * @param prog          - program to edit.
