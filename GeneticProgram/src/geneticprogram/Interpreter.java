@@ -1,5 +1,6 @@
 package geneticprogram; 
 
+import java.util.Queue;
 import java.util.Stack;
 
 public class Interpreter {  
@@ -22,7 +23,7 @@ public class Interpreter {
             Stack<Integer> pos  = new Stack<Integer>();
             row.push(0);
             pos.push(0);
-            return interpretMain(p,row,pos);
+            return _interpretMain(p,row,pos);
         }else 
             throw new Exception("Cannot interpret a null program.");
 
@@ -45,28 +46,26 @@ public class Interpreter {
                     /*Still not at the leaf of a main sub-branch*/
                     p = pos.pop();
                     switch(prog.getMain()[r][p]){
-                        case MAIN_FUNCTIONS.IF:
-                            /*Main Function*/
-                            Stack<Integer>  c_row   = new Stack<>();
-                            Stack<Integer>  c_pos   = new Stack<>();
-                            c_row.push(0);
-                            c_pos.push(0);
+                        case Meta.IF:
+                            /*Main Function*/ 
                             if(_interpretCondition(
                                         prog.getConditions()[r][p],
-                                        c_row,
-                                        c_pos
-                                    ) != 0
+                                        0,
+                                        0
+                                    ) != 0 
                             ){
+                                /*Condition Evaluated True*/
                                 row.push(r + 1);
                                 pos.push(2*p);
                             }else{
+                                /*Condition Evaluated False*/
                                 row.push(r + 1);
                                 pos.push(2*p + 1);
                             }
                             break;
                         default:
                             /*A class*/
-                            return prog.getMain()[r][p];
+                            return prog.getMain()[r][p] - Meta.MAINS.length;
                     }
                 }else
                     throw new Exception("Main program did not terminate within the maximum depth.");
@@ -77,22 +76,41 @@ public class Interpreter {
         
     }
     
-    private int _interpretCondition(char[][] cond,Stack<Integer> row,Stack<Integer> pos) throws Exception{
-        if(cond != null){
-            if(row != null && pos != null && !row.empty() && !pos.empty()){
-                int r,p;
-                do{
-                    r = row.peek();
-                    if(r <= Parameters.getInstance().getCondition_max_depth()){
-                        p = pos.peek();
-                        switch(cond[r][p]){
-                            case 
-                        }
-                    }else 
-                        throw new Exception("Program condition did not terminate within the maximum depth.");
-                }while(!row.empty() && !pos.empty());
-            }else
-                throw new Exception("Cannot interpret empty condition.");
+    private int _interpretCondition(char[][] cond,int row,int pos) throws Exception{
+        if(cond != null){ 
+            if(row < cond.length && pos < cond[row].length){
+                switch(cond[row][pos]){
+                     case Meta.GREATER_THAN:  
+                        return _interpretCondition(cond, row+1, 2*pos ) > _interpretCondition(cond, row+1, 2*pos+1 )? 1 : 0;
+                    case Meta.LESS_THAN:
+                        return _interpretCondition(cond, row+1, 2*pos ) < _interpretCondition(cond, row+1, 2*pos+1 )? 1 : 0;
+                    case Meta.GREATER_OR_EQUAL:
+                        return _interpretCondition(cond, row+1, 2*pos ) >= _interpretCondition(cond, row+1, 2*pos+1 )? 1 : 0;
+                    case Meta.EQUAL:
+                        return _interpretCondition(cond, row+1, 2*pos ) == _interpretCondition(cond, row+1, 2*pos+1 )? 1 : 0;
+                    case Meta.ADDITION:
+                        return _interpretCondition(cond, row+1, 2*pos ) + _interpretCondition(cond, row+1, 2*pos+1 );
+                    case Meta.SUBTRACTION:
+                        return _interpretCondition(cond, row+1, 2*pos ) - _interpretCondition(cond, row+1, 2*pos+1 );
+                    case Meta.DIVISION:
+                        return _interpretCondition(cond, row+1, 2*pos ) / _interpretCondition(cond, row+1, 2*pos+1 );
+                    case Meta.MULTIPLICATION:
+                        return _interpretCondition(cond, row+1, 2*pos ) * _interpretCondition(cond, row+1, 2*pos+1 );
+                    case Meta.BITWISE_AND:
+                        return _interpretCondition(cond, row+1, 2*pos ) & _interpretCondition(cond, row+1, 2*pos+1 );
+                    case Meta.BITWISE_OR:
+                        return _interpretCondition(cond, row+1, 2*pos ) | _interpretCondition(cond, row+1, 2*pos+1 );
+                    case Meta.BITWISE_XOR:
+                        return _interpretCondition(cond, row+1, 2*pos ) ^ _interpretCondition(cond, row+1, 2*pos+1 );
+                    case Meta.LOGICAL_AND:
+                        return (_interpretCondition(cond, row+1, 2*pos ) != 0) && (_interpretCondition(cond, row+1, 2*pos+1 ) != 0) ? 1 : 0;
+                    case Meta.LOGICAL_OR:
+                        return (_interpretCondition(cond, row+1, 2*pos ) != 0) || (_interpretCondition(cond, row+1, 2*pos+1 ) != 0) ? 1 : 0;
+                    default:
+                        return cond[row][pos] - Meta.CONDITIONS.length;
+                }
+            }else 
+                throw new Exception("Cannot interpret invalid condition.");
         }else
             throw new Exception("Cannot interpet null condition.");
     }

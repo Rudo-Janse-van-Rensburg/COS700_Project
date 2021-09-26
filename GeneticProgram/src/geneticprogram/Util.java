@@ -29,67 +29,125 @@ public class Util {
         random = new Random(seed);
     }
     
-    public ArrayList<int[]> getPoints(char[][] tree) throws Exception{
-        return new ArrayList<int[]>();
-    }
-    
-    public ArrayList<int[]> WRONGgetPoints(char[][] tree,char type) throws Exception{
+    /**
+     * 
+     * @param tree
+     * @param main
+     * @return
+     * @throws Exception 
+     */
+    public ArrayList<int[]> getPoints(char[][] tree,boolean main) throws Exception{
         if(tree != null){
-            ArrayList<int[]> points = null; 
-            Stack<Integer> level, position;
-            int l,p;
-            switch(type){
-                case Meta.condition:
-                    points      = new ArrayList<int[]>();
-                    level       = new Stack<Integer>();
-                    position    = new Stack<Integer>();
-                    level.push(0);
-                    position.push(0);
-                    do{
-                        l = level.pop();
-                        p = level.pop();
-                        points.add(new int[]{l,p});
-                        switch(tree[l][p]){
-                            case CONDITION_TERMINALS.ATTRIBUTE: 
-                                break;
-                            default:
-                                for (int i = 0; i < 2; i++) {
-                                    level.push(l+1);
-                                    position.push(2*p+i);
-                                }
-                                break;
-                        }
-                    }while(!level.empty() && !position.empty());
-                    break;
-                case Meta.main:
-                    points = new ArrayList<int[]>();
-                    level       = new Stack<Integer>();
-                    position    = new Stack<Integer>();
-                    level.push(0);
-                    position.push(0);
-                    do{
-                        l = level.pop();
-                        p = level.pop();
-                        points.add(new int[]{l,p});
-                        switch(tree[l][p]){
-                            case MAIN_TERMINALS.CLASS: 
-                                break;
-                            default:
-                                for (int i = 0; i < 2; i++) {
-                                    level.push(l+1);
-                                    position.push(2*p+i);
-                                }
-                                break;
-                        }
-                    }while(!level.empty() && !position.empty());
-                    break;
-                default:
-                    throw new Exception("Cannot get points of invalid type of node."); 
-
-            }
+            ArrayList<int[]> points     = new ArrayList<>();
+            Stack<Integer> levels       = new Stack();
+            Stack<Integer> positions    = new Stack();
+            levels.add(0);
+            positions.add(0);
+            do{
+               int level    = levels.pop();
+               int position = positions.pop(); 
+               switch(tree[level][position]){
+                   case Meta.IF:
+                       /*IF or GREATER THAN*/
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break; 
+                   case Meta.LESS_THAN:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.GREATER_OR_EQUAL:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.EQUAL:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.ADDITION:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.SUBTRACTION:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.DIVISION:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.MULTIPLICATION:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.BITWISE_AND:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.BITWISE_OR:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.BITWISE_XOR:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.LOGICAL_AND:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.LOGICAL_OR:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   default:
+                       points.add(new int[]{level,position}); 
+                       break;
+                       
+               }
+            }while(levels != null && !levels.empty() && positions != null && positions.empty());
             return points;
         }else
-            throw new Exception("Cannot get points of an empty tree.");
+            throw new Exception("Can not get points of an empty tree.");
         
     } 
     

@@ -37,7 +37,7 @@ public class GeneticOperators {
      */
     public static void mutate(Program prog) throws Exception{
         if(prog != null){
-            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain());
+            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),true);
             boolean mutate_main     = Util.getInstance().getRandomBoolean();
             int [] position         = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
             if(mutate_main){
@@ -46,7 +46,7 @@ public class GeneticOperators {
             }else{
                 /*MUTATE CONDITION SUB-TREE*/
                 char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
-                points                  = Util.getInstance().getPoints(ptr_condition);
+                points                  = Util.getInstance().getPoints(ptr_condition,false);
                 position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
                 _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
             } 
@@ -61,7 +61,7 @@ public class GeneticOperators {
     public static void hoist(Program prog) throws Exception{
         if(prog != null){
             char[][] tree_prog      = prog.getMain();
-            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain());
+            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),true);
             int [] pos              = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
             char[][] main = prog.getMain();
             char[][][][] cond = prog.getConditions();
@@ -91,25 +91,25 @@ public class GeneticOperators {
             if(crossover_main){
                 /*CROSSOVER MAIN TREE*/
                 tree_A                  = a.getMain(); 
-                points                  = Util.getInstance().getPoints(tree_A);
+                points                  = Util.getInstance().getPoints(tree_A,true);
                 pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1)); 
                 tree_B                  = b.getMain(); 
-                points                  = Util.getInstance().getPoints(tree_B);
+                points                  = Util.getInstance().getPoints(tree_B,true);
                 pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
             }else{
                 /*CROSSOVER CONDITION SUB-TREES*/
                 int[] pos;
                 //pick a condition sub-branch in tree A
-                points                  = Util.getInstance().getPoints(a.getMain());
+                points                  = Util.getInstance().getPoints(a.getMain(),true);
                 pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
                 tree_A                  = a.getConditions()[pos[0]][pos[1]];
-                points                  = Util.getInstance().getPoints(tree_A);
+                points                  = Util.getInstance().getPoints(tree_A,false);
                 pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
                 //pick a condition sub-branch in tree B
-                points                  = Util.getInstance().getPoints(b.getMain());
+                points                  = Util.getInstance().getPoints(b.getMain(),true);
                 pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
                 tree_B                  = b.getConditions()[pos[0]][pos[1]];
-                points                  = Util.getInstance().getPoints(tree_B);
+                points                  = Util.getInstance().getPoints(tree_B,false);
                 pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
             } 
             char[][] copy_A = null,copy_B = null;
@@ -170,13 +170,13 @@ public class GeneticOperators {
             ArrayList<int[]> points;
             int [] position;
             if(edit_main){
-                points                      = Util.getInstance().getPoints(prog.getMain());
+                points                      = Util.getInstance().getPoints(prog.getMain(),true);
                 tree                        = prog.getMain();
             }else{
-                points                      = Util.getInstance().getPoints(prog.getMain());
+                points                      = Util.getInstance().getPoints(prog.getMain(),true);
                 position                    = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
                 tree                        = prog.getConditions()[position[0]][position[1]];
-                points                      = Util.getInstance().getPoints(tree); 
+                points                      = Util.getInstance().getPoints(tree,false); 
             } 
             position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
             int l                   = position[0],              //level
