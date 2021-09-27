@@ -50,10 +50,7 @@ public class Evolution {
                     ++curr_depth;
                 }
             }
-            
-            
         }
-        
     }
     
     /**
@@ -107,7 +104,7 @@ public class Evolution {
            
             curr.clear();
             for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
-                curr.add(next.get(i));
+                curr.add(next.getIndividual(i),next.getFitness(i));
             }
             next.clear();
         }else 

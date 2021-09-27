@@ -1,4 +1,5 @@
 package geneticprogram; 
+import java.util.ArrayList;
 
 public class Selection {
     public static final byte tournament                     = 0,
@@ -42,21 +43,45 @@ public class Selection {
             throw new Exception("Cannot perform selection from a null or empty generation.");
     }
     
-    private static Program _tournament(Generation generation){
-        return null;
+    private static Program _tournament(Generation generation) throws Exception{
+        ArrayList<Integer> competitors = new ArrayList<>();
+        do{
+            Integer pos = Util.getInstance().getRandomInt(0, generation.getCapacity()-1);
+            if(!competitors.contains(pos)) 
+                competitors.add(pos);
+        }while(competitors.size() < Parameters.getInstance().getTournament_size());
+        double fitness  = 0;
+        Program prog    = null;
+        for(int competitor: competitors) 
+            if(generation.getFitness(competitor) > fitness)
+                prog = generation.getIndividual(competitor);
+        return prog;
     }
     
-    private static Program _inverseTournament(Generation generation){
-        return null;
+    private static Program _inverseTournament(Generation generation) throws Exception{
+        ArrayList<Integer> competitors = new ArrayList<>();
+        do{
+            Integer pos = Util.getInstance().getRandomInt(0, generation.getCapacity()-1);
+            if(!competitors.contains(pos)) 
+                competitors.add(pos);
+        }while(competitors.size() < Parameters.getInstance().getTournament_size());
+        double fitness  = Integer.MAX_VALUE;
+        Program prog    = null;
+        for(int competitor: competitors)
+            if(generation.getFitness(competitor) < fitness)
+                prog = generation.getIndividual(competitor);
+        return prog;
     }
     
     private static Program _fitnessProportionate(Generation generation){
+        
         return null;
     }
     
     private static Program _inverseFitnessProportionate(Generation generation){
         return null;
     }
+ 
     
 
 }

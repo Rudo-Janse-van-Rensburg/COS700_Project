@@ -27,7 +27,7 @@ public class Fitness {
      * @return
      * @throws Exception 
      */
-    public Fitness getInstance(byte measure) throws Exception{
+    public static Fitness getInstance(byte measure) throws Exception{
         if(measure>= 0 && measure <= 43){
             if(singleton == null){
                 singleton = new Fitness(measure);
