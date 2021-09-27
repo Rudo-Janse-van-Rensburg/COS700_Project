@@ -16,8 +16,7 @@ public class GeneticOperators {
         if(prog != null){
             _createMain(prog,Parameters.getInstance().getMain_max_depth(),0,0,false);
         }else
-            throw new Exception("Cannot grow null program.");
-        
+            throw new Exception("Cannot grow null program."); 
     }
     
     /**
@@ -39,8 +38,8 @@ public class GeneticOperators {
     public static void mutate(Program prog) throws Exception{
         if(prog != null){
             ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),true);
-            boolean mutate_main     = Util.getInstance().getRandomBoolean();
-            int [] position         = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+            boolean mutate_main     = Randomness.getInstance().getRandomBoolean(); 
+            int [] position         = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
             if(mutate_main){
                 /*MUTATE MAIN TREE*/
                 _createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], false);
@@ -48,7 +47,7 @@ public class GeneticOperators {
                 /*MUTATE CONDITION SUB-TREE*/
                 char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
                 points                  = Util.getInstance().getPoints(ptr_condition,false);
-                position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+                position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
                 _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
             } 
         }else 
@@ -63,10 +62,10 @@ public class GeneticOperators {
         if(prog != null){
             char[][] tree_prog      = prog.getMain();
             ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),true);
-            int [] pos              = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
-            char[][] main = prog.getMain();
-            char[][][][] cond = prog.getConditions();
-            int pow = 1;
+            int [] pos              = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+            char[][] main           = prog.getMain();
+            char[][][][] cond       = prog.getConditions();
+            int pow                 = 1;
             for (int level = pos[0]; level < main.length; level++) {
                 for (int position = pow*pos[1]; position < (pow*pos[1] + pow); position++) {
                     main[level-pos[0]][position-pow*pos[1]] = main[level][position];
@@ -85,33 +84,33 @@ public class GeneticOperators {
      */
     public static void crossover(Program a,Program b) throws Exception{
         if(a != null && b != null){
-            boolean crossover_main          = Util.getInstance().getRandomBoolean();
-            int[] pos_A,pos_B;
-            char[][] tree_A,tree_B;
+            boolean     crossover_main  = Randomness.getInstance().getRandomBoolean();
+            int[]       pos_A,pos_B;
+            char[][]    tree_A,tree_B;
             ArrayList<int[]> points;
             if(crossover_main){
                 /*CROSSOVER MAIN TREE*/
                 tree_A                  = a.getMain(); 
                 points                  = Util.getInstance().getPoints(tree_A,true);
-                pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1)); 
+                pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
                 tree_B                  = b.getMain(); 
                 points                  = Util.getInstance().getPoints(tree_B,true);
-                pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
             }else{
                 /*CROSSOVER CONDITION SUB-TREES*/
                 int[] pos;
                 //pick a condition sub-branch in tree A
                 points                  = Util.getInstance().getPoints(a.getMain(),true);
-                pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                pos                     = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
                 tree_A                  = a.getConditions()[pos[0]][pos[1]];
                 points                  = Util.getInstance().getPoints(tree_A,false);
-                pos_A                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
                 //pick a condition sub-branch in tree B
                 points                  = Util.getInstance().getPoints(b.getMain(),true);
-                pos                     = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                pos                     = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
                 tree_B                  = b.getConditions()[pos[0]][pos[1]];
                 points                  = Util.getInstance().getPoints(tree_B,false);
-                pos_B                   = points.get(Util.getInstance().getRandomInt(0, points.size()-1));
+                pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
             } 
             char[][] copy_A = null,copy_B = null;
             for(int level = 0; level < tree_A.length;level++){
@@ -165,7 +164,7 @@ public class GeneticOperators {
      */
     public static void edit(Program prog) throws Exception{
         if(prog != null){
-            boolean edit_main       = Util.getInstance().getRandomBoolean();
+            boolean edit_main       = Randomness.getInstance().getRandomBoolean();
             char[][] tree           = null;
             ArrayList<int[]> points;
             int [] position;
@@ -174,11 +173,11 @@ public class GeneticOperators {
                 tree                        = prog.getMain();
             }else{
                 points                      = Util.getInstance().getPoints(prog.getMain(),true);
-                position                    = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+                position                    = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
                 tree                        = prog.getConditions()[position[0]][position[1]];
                 points                      = Util.getInstance().getPoints(tree,false); 
             } 
-            position                = points.get(Util.getInstance().getRandomInt(0, points.size()-1));  
+            position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
             int l                   = position[0],              //level
                 p                   = position[1],              //position
                 pow                 = (int)Math.pow(2, l),      //power
@@ -220,14 +219,15 @@ public class GeneticOperators {
                 position    = position_stack.pop();
                 if(level <= max_depth){
                     if(level < max_depth){
-                        if(full){
-                            to_add  = Meta.MAINS[Util.getInstance().getRandomInt(0, Meta.MAINS.length)];
-                        }else{ 
-                            int pos = Util.getInstance().getRandomInt(0, Meta.MAINS.length +  Data.initialiseData().getNumberClasses()-1);
+                        if(full){ 
+                            to_add  = Meta.MAINS[Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length)];
+                        }else{  
+                            int pos = Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length +  Data.initialiseData().getNumberClasses());
                             to_add  = pos < Meta.MAINS.length ? Meta.MAINS[pos] : (char)pos;
                         }
                     }else{
-                        to_add = (char) (Meta.MAINS.length + Util.getInstance().getRandomInt(0, Data.initialiseData().getNumberClasses()-1));
+                        
+                        to_add = (char) (Meta.MAINS.length +Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses()-1));
                     }
                     switch(to_add){
                         case Meta.IF:
@@ -272,13 +272,13 @@ public class GeneticOperators {
                 if(level <= max_depth){
                     if(level < max_depth){
                         if(full){
-                            to_add  = Meta.CONDITIONS[Util.getInstance().getRandomInt(0, Meta.CONDITIONS.length-1)];
+                            to_add  = Meta.CONDITIONS[Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length)];
                         }else{
-                            int pos = Util.getInstance().getRandomInt(0, Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes() - 1);
+                            int pos = Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes());
                             to_add  = (char)(pos < Meta.CONDITIONS.length ? Meta.CONDITIONS[pos]: pos);  
                         }
                     }else{
-                        to_add  = (char)(Meta.CONDITIONS.length + Util.getInstance().getRandomInt(0, Data.initialiseData().getNumberAttributes() - 1));
+                        to_add  = (char)(Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes()));
                     }
                     if((int) (to_add)  < Meta.CONDITIONS.length){
                         condtion[level][position]   = to_add;
@@ -293,6 +293,5 @@ public class GeneticOperators {
             }while(!level_stack.empty() && !position_stack.empty());
         }else 
             throw new Exception("Depth of condition to create is invalid.");
-        
     } 
 }

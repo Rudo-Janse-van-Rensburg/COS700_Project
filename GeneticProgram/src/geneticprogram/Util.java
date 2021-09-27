@@ -5,30 +5,16 @@ import java.util.Stack;
 
 
 public class Util {
-    private static Util utilities = null;
-    private static Random random;
+    private static Util utilities = null; 
     private Util(){
-        random = new Random(42069);
+         
     }
     
     public static Util getInstance(){
         if(Util.utilities == null )
             Util.utilities = new Util();
         return Util.utilities;
-    }
-    
-    public int getRandomInt(int min, int max){
-        return random.nextInt(max + 1 - min) + min;
-    }
-    
-    public boolean getRandomBoolean(){
-        return random.nextBoolean();
-    }
-    
-    public void reseed(long seed){
-        random = new Random(seed);
-    }
-    
+    } 
     /**
      * @param tree
      * @param main

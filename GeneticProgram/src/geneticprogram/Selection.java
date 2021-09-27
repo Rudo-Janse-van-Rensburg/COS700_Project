@@ -22,7 +22,6 @@ public class Selection {
             return singleton;
         }else 
             throw new Exception("Invalid selection method.");
-        
     }
     
     public Program select(Generation generation) throws Exception{
@@ -46,7 +45,7 @@ public class Selection {
     private static Program _tournament(Generation generation) throws Exception{
         ArrayList<Integer> competitors = new ArrayList<>();
         do{
-            Integer pos = Util.getInstance().getRandomInt(0, generation.getCapacity()-1);
+            Integer pos = Randomness.getInstance().getRandomIntExclusive(0,generation.getCapacity());
             if(!competitors.contains(pos)) 
                 competitors.add(pos);
         }while(competitors.size() < Parameters.getInstance().getTournament_size());
@@ -61,7 +60,7 @@ public class Selection {
     private static Program _inverseTournament(Generation generation) throws Exception{
         ArrayList<Integer> competitors = new ArrayList<>();
         do{
-            Integer pos = Util.getInstance().getRandomInt(0, generation.getCapacity()-1);
+            Integer pos = Randomness.getInstance().getRandomIntExclusive(0,generation.getCapacity());
             if(!competitors.contains(pos)) 
                 competitors.add(pos);
         }while(competitors.size() < Parameters.getInstance().getTournament_size());
@@ -93,7 +92,7 @@ public class Selection {
             ++pos;
             
         }while(has_capacity);
-        return gen.getIndividual(Util.getInstance().getRandomInt(0, Parameters.getInstance().getPopulation_size()-1));
+        return gen.getIndividual(Randomness.getInstance().getRandomIntExclusive(0,Parameters.getInstance().getPopulation_size()));
     }
     
     private static Program _inverseFitnessProportionate(Generation generation) throws Exception{
@@ -116,9 +115,8 @@ public class Selection {
             ++pos;
             
         }while(has_capacity);
-        return gen.getIndividual(Util.getInstance().getRandomInt(0, Parameters.getInstance().getPopulation_size()-1));
+        return gen.getIndividual(Randomness.getInstance().getRandomIntExclusive(0,Parameters.getInstance().getPopulation_size()));
     }
- 
     
-
+    
 }
