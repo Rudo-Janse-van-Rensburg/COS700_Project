@@ -151,7 +151,76 @@ public class Util {
     } 
     
     public String toString(Program prog){
-        return "";
+        return toStringMain("",prog,prog.getMain(), 0, 0);
     }
+    
+    private String toStringMain(String level,Program prog,char[][] main, int row, int pos){
+        String line = "";
+        char ch = main[row][pos]; 
+        switch(ch){
+            case Meta.IF:
+                line += level + "IF" +toStringCondition(prog,prog.getConditions()[row][pos],0, 0) + "\n{";
+                line += level + toStringMain(level + " ",prog,main,row+1,2*pos + 0) + "\n";
+                line += level + "} ELSE {\n";
+                line += level + toStringMain(level + " ",prog,main,row+1,2*pos + 1) + "\n";
+                line += level + "}";
+                break;
+            default:
+                line = level + (ch - Meta.MAINS.length); 
+        }
+        return line; 
+    }
+    
+    private String toStringCondition(Program prog,char[][] cond, int row, int pos){
+        String line = "(";
+        char ch = cond[row][pos]; 
+        switch(ch){
+            case Meta.GREATER_THAN:  
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " > " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.LESS_THAN:  
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " < " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.GREATER_OR_EQUAL:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " >= " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.EQUAL:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " == " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.ADDITION:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " + " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.SUBTRACTION:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " - " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.DIVISION:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " / " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.MULTIPLICATION:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " * " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.BITWISE_AND:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " & " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.BITWISE_OR:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " | " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.BITWISE_XOR:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " ^ " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.LOGICAL_AND:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " && " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            case Meta.LOGICAL_OR:
+                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " || " +toStringCondition(prog, cond, row+1, 2*pos+1);
+                break;
+            default:
+                int attribute = ch - Meta.CONDITIONS.length;
+                line += ch;
+        }
+        return line+")"; 
+    }
+    
+    
     
 }
