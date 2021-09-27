@@ -73,13 +73,50 @@ public class Selection {
         return prog;
     }
     
-    private static Program _fitnessProportionate(Generation generation){
-        
-        return null;
+    private static Program _fitnessProportionate(Generation generation) throws Exception{
+        double total_fitness    = generation.getTotal_fitness();
+        Generation gen          = new Generation();
+        double [] fitnesses     = new double[Parameters.getInstance().getPopulation_size()];
+        boolean has_capacity    = true;
+        int pos                 = 0 ;
+        do{
+            Program prog    = generation.getIndividual(pos % generation.getCapacity());
+            double fitness  = generation.getFitness(pos % generation.getCapacity()); 
+            int i = 0;
+            while(
+                has_capacity 
+                && 
+                i++ < Math.round((1.0*fitness/1.0*total_fitness)*Parameters.getInstance().getPopulation_size())
+            ){
+                has_capacity = has_capacity && gen.add(prog, fitness);
+            }
+            ++pos;
+            
+        }while(has_capacity);
+        return gen.getIndividual(Util.getInstance().getRandomInt(0, Parameters.getInstance().getPopulation_size()-1));
     }
     
-    private static Program _inverseFitnessProportionate(Generation generation){
-        return null;
+    private static Program _inverseFitnessProportionate(Generation generation) throws Exception{
+        double total_fitness    = generation.getTotal_fitness();
+        Generation gen          = new Generation();
+        double [] fitnesses     = new double[Parameters.getInstance().getPopulation_size()];
+        boolean has_capacity    = true;
+        int pos                 = 0 ;
+        do{
+            Program prog    = generation.getIndividual(pos % generation.getCapacity());
+            double fitness  = generation.getFitness(pos % generation.getCapacity()); 
+            int i = 0;
+            while(
+                has_capacity 
+                && 
+                i++ < Math.round((1 - (1.0*fitness/1.0*total_fitness))*Parameters.getInstance().getPopulation_size())
+            ){
+                has_capacity = has_capacity && gen.add(prog, fitness);
+            }
+            ++pos;
+            
+        }while(has_capacity);
+        return gen.getIndividual(Util.getInstance().getRandomInt(0, Parameters.getInstance().getPopulation_size()-1));
     }
  
     

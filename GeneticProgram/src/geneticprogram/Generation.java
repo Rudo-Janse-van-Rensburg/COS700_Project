@@ -12,11 +12,13 @@ package geneticprogram;
 public class Generation {
     private Program[]   population;
     private double[]    fitnesses;
+    private double total_fitness;
     private int capacity;
     public Generation() throws Exception{
-        capacity    = 0;
-        population  = new Program[Parameters.getInstance().getPopulation_size()];   
-        fitnesses   = new double[Parameters.getInstance().getPopulation_size()];   
+        capacity        = 0;
+        total_fitness   = 0;
+        population      = new Program[Parameters.getInstance().getPopulation_size()];   
+        fitnesses       = new double[Parameters.getInstance().getPopulation_size()];   
     }
     
     /**
@@ -27,6 +29,7 @@ public class Generation {
         if(capacity < population.length){
             population[capacity]    = individual;
             fitnesses[capacity]     = Fitness.getInstance(Fitness.f1).evaluate(individual);
+            total_fitness           += fitnesses[capacity];
             ++capacity;
             return true;
         }else 
@@ -34,10 +37,18 @@ public class Generation {
         
     }
     
+    /**
+     * 
+     * @param individual
+     * @param fitness
+     * @return
+     * @throws Exception 
+     */
     public boolean add(Program individual, double fitness) throws Exception{
         if(capacity < population.length){
             population[capacity]    = individual;
             fitnesses[capacity]     = fitness;
+            total_fitness           += fitnesses[capacity];
             ++capacity;
             return true;
         }else 
@@ -45,6 +56,12 @@ public class Generation {
         
     }
     
+    /**
+     * @return total fitness. 
+     */
+    public double getTotal_fitness(){
+        return total_fitness;
+    }
     
     /**
      * @return whether the generation is empty. 
