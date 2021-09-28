@@ -6,8 +6,8 @@ public class Evolution {
     private static Generation curr      = null,
                               next      = null;
     private Evolution() throws Exception{
-        curr    = new Generation();
-        next    = new Generation();
+        curr    = FlyWeight.getInstance().getGeneration();
+        next    = FlyWeight.getInstance().getGeneration();
     }
     
     /**
@@ -25,11 +25,10 @@ public class Evolution {
      * @throws Exception initial population
      */
     public void createInitialPopulation() throws Exception{
+        curr.recycle();
+        next.recycle();
         
-        curr.clear();
-        next.clear();
-        
-        int num_individuals = (int) Math.floor(Parameters.getInstance().getPopulation_size() / (2 * Parameters.getInstance().getMain_max_depth() - 2 ));     
+        int num_individuals = (int) Math.floor(Parameters.getInstance().getPopulation_size() / ((Parameters.getInstance().getMain_max_depth() << 1) - 2 ));     
         
         boolean has_capcity = true;
         
@@ -39,12 +38,18 @@ public class Evolution {
             while(has_capcity && curr_depth <= Parameters.getInstance().getMain_max_depth()){
                 int individual = 0;
                 while(has_capcity && individual < num_individuals){
-                    Program prog    = new Program(curr_depth);
-                    curr.add(prog);
-                    ++num_individuals;
-                    prog            = new Program(curr_depth);
-                    curr.add(prog);
-                    ++num_individuals;
+                    Program prog    = FlyWeight.getInstance().getProgram();
+                    GeneticOperators.full(prog, curr_depth);
+                    if(!curr.add(prog)){
+                        FlyWeight.getInstance().addProgram(prog);
+                    }else
+                        ++num_individuals;
+                    prog            = FlyWeight.getInstance().getProgram();
+                    GeneticOperators.grow(prog, curr_depth);
+                    if(!curr.add(prog)){
+                        FlyWeight.getInstance().addProgram(prog);
+                    }else 
+                        ++num_individuals;
                 }
                 if(curr_depth < Parameters.getInstance().getMain_max_depth()){
                     ++curr_depth;
@@ -58,7 +63,7 @@ public class Evolution {
      */
     public void evolveGeneration() throws Exception{
         if(!curr.isEmpty()){
-            next.clear();
+            next.recycle();
             int num_crossover = (int) Math.floor(Parameters.getInstance().getCrossover_chance()  * Parameters.getInstance().getPopulation_size());
             int num_mutation  = (int) Math.floor(Parameters.getInstance().getMutation_chance()   * Parameters.getInstance().getPopulation_size());
             int num_hoist     = (int) Math.floor(Parameters.getInstance().getHoist_chance()      * Parameters.getInstance().getPopulation_size());
@@ -67,8 +72,10 @@ public class Evolution {
             boolean has_capcity =  true;
             do{
                 if(num_crossover > 0){
-                    Program a = new Program(Selection.getInstance(Selection.tournament).select(curr));
-                    Program b = new Program(Selection.getInstance(Selection.tournament).select(curr));
+                    Program a = FlyWeight.getInstance().getProgram();
+                    a.copy(Selection.getInstance(Selection.tournament).select(curr));
+                    Program b = FlyWeight.getInstance().getProgram();
+                    b.copy(Selection.getInstance(Selection.tournament).select(curr));
 
                     GeneticOperators.crossover(a, b);
 
@@ -77,7 +84,8 @@ public class Evolution {
                 }
 
                 if(has_capcity && num_mutation > 0){
-                    Program mutant = new Program(Selection.getInstance(Selection.tournament).select(curr));
+                    Program mutant = FlyWeight.getInstance().getProgram();
+                    mutant.copy(Selection.getInstance(Selection.tournament).select(curr));
 
                     GeneticOperators.mutate(mutant);
 
@@ -85,7 +93,8 @@ public class Evolution {
                 }
 
                 if(has_capcity && num_hoist > 0){
-                    Program hoisted = new Program(Selection.getInstance(Selection.tournament).select(curr));
+                    Program hoisted = FlyWeight.getInstance().getProgram();
+                    hoisted.copy(Selection.getInstance(Selection.tournament).select(curr));
 
                     GeneticOperators.hoist(hoisted);
 
@@ -93,7 +102,8 @@ public class Evolution {
                 }
 
                 if(has_capcity && num_edit > 0){
-                    Program edit = new Program(Selection.getInstance(Selection.tournament).select(curr));
+                    Program edit = FlyWeight.getInstance().getProgram();
+                    edit.copy(Selection.getInstance(Selection.tournament).select(curr));
 
                     GeneticOperators.hoist(edit);
 

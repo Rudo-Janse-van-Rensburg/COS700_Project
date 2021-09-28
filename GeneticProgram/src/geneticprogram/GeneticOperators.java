@@ -2,7 +2,6 @@ package geneticprogram;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Stack;
 
 public class GeneticOperators {  
@@ -55,7 +54,7 @@ public class GeneticOperators {
     }
     
     /**
-     * @param a
+     * @param prog
      * @throws Exception 
      */
     public static void hoist(Program prog) throws Exception{
@@ -112,10 +111,14 @@ public class GeneticOperators {
                 points                  = Util.getInstance().getPoints(tree_B,false);
                 pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
             } 
-            char[][] copy_A = null,copy_B = null;
-            for(int level = 0; level < tree_A.length;level++){
-                copy_A = new char[tree_A.length][];
-                copy_B = new char[tree_A.length][];
+            
+            char[][] copy_A = crossover_main? FlyWeight.getInstance().getCharArray2dMain():  FlyWeight.getInstance().getCharArray2dCondtion(),
+                     copy_B = crossover_main? FlyWeight.getInstance().getCharArray2dMain():  FlyWeight.getInstance().getCharArray2dCondtion();
+            
+            //char[][] copy_A = null,copy_B = null;
+            for (char[] tree_A1 : tree_A) {
+                //copy_A = new char[tree_A.length][];
+                //copy_B = new char[tree_A.length][];
                 for (int pos = 0; pos < tree_A.length; pos++) {
                     copy_A[pos] = Arrays.copyOf(tree_A[pos], tree_A[pos].length);
                     copy_B[pos] = Arrays.copyOf(tree_B[pos], tree_B[pos].length); 
@@ -207,8 +210,8 @@ public class GeneticOperators {
         if(max_depth > 2 && max_depth <= Parameters.getInstance().getMain_max_depth()){ 
             char [][][][] condition_tree    = prog.getConditions();
             char [][]     main_tree         = prog.getMain();
-            Stack<Integer> level_stack      = new Stack<Integer>();
-            Stack<Integer> position_stack   = new Stack<Integer>();
+            Stack<Integer> level_stack      = FlyWeight.getInstance().getStackInteger();
+            Stack<Integer> position_stack   = FlyWeight.getInstance().getStackInteger();
             level_stack.push(start_level); 
             position_stack.push(start_pos);
             int level,
@@ -259,8 +262,8 @@ public class GeneticOperators {
      */
     private static void _createCondition(char[][] condtion, int max_depth, int start_level, int start_pos,boolean full) throws Exception{
         if(max_depth > 2 && max_depth <= Parameters.getInstance().getCondition_max_depth()){
-            Stack<Integer> level_stack      = new Stack<Integer>();
-            Stack<Integer> position_stack   = new Stack<Integer>();
+            Stack<Integer> level_stack      = FlyWeight.getInstance().getStackInteger();
+            Stack<Integer> position_stack   = FlyWeight.getInstance().getStackInteger();
             level_stack.push(start_level); 
             position_stack.push(start_pos);
             int level,

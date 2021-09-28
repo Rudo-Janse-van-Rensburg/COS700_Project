@@ -1,22 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package geneticprogram;
-
-/**
- *
- * @author rudo
- */
+ 
 public class Generation {
-    private Program[]   population;
-    private double[]    fitnesses;
+    private final Program[] population;
+    private final double[]  fitnesses;
     private double total_fitness;
     private int capacity;
     public Generation() throws Exception{
         capacity        = 0;
-        total_fitness   = 0;
+        total_fitness   = 0; 
         population      = new Program[Parameters.getInstance().getPopulation_size()];   
         fitnesses       = new double[Parameters.getInstance().getPopulation_size()];   
     }
@@ -24,6 +15,7 @@ public class Generation {
     /**
      * @param individual to add to the population.
      * @return 
+     * @throws Exception 
      */
     public boolean add(Program individual) throws Exception{
         if(capacity < population.length){
@@ -83,7 +75,7 @@ public class Generation {
      * @throws Exception 
      */
     public Program getIndividual(int position) throws Exception{
-        if(position < capacity){
+        if(position >= 0 && position < capacity){
             return population[position];
         }else 
             throw new Exception("Individual position out of bounds.");
@@ -97,12 +89,24 @@ public class Generation {
     }
     
     /**
+     * @throws java.lang.Exception
+     */
+    public void recycle() throws Exception{
+        for (int i = 0; i < capacity; i++) {
+            Program prog = population[i];
+            FlyWeight.getInstance().addCharArray2dMain(prog.getMain());
+            FlyWeight.getInstance().addCharArray4D(prog.getConditions());
+        }
+        capacity = 0;
+    }
+    
+    /**
      * @throws Exception 
      */
     public void clear() throws Exception{
         capacity    = 0;
-        population  = new Program[Parameters.getInstance().getPopulation_size()];
-        fitnesses   = new double[Parameters.getInstance().getPopulation_size()];
+        //population  = new Program[Parameters.getInstance().getPopulation_size()];
+        //fitnesses   = new double[Parameters.getInstance().getPopulation_size()];
     }
     
 }

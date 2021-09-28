@@ -7,17 +7,23 @@ public class Data {
     private Data(){
         
     }
-     
+    
     public static Data initialiseData(){
         if(data == null)
             Data.data = new Data();  
         return Data.data;
     }
 
+    /**
+     * @return number of classes
+     */
     public int getNumberClasses() {
         return numberClasses;
     }
-
+    
+    /**
+     * @return number of attributes
+     */
     public int getNumberAttributes() {
         return numberAttributes;
     }

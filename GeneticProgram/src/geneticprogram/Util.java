@@ -1,6 +1,5 @@
 package geneticprogram;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Stack;
 
 
@@ -23,9 +22,9 @@ public class Util {
      */
     public ArrayList<int[]> getPoints(char[][] tree,boolean main) throws Exception{
         if(tree != null){
-            ArrayList<int[]> points     = new ArrayList<>();
-            Stack<Integer> levels       = new Stack();
-            Stack<Integer> positions    = new Stack();
+            ArrayList<int[]> points     = FlyWeight.getInstance().getArrayListIntArray();
+            Stack<Integer> levels       = FlyWeight.getInstance().getStackInteger();
+            Stack<Integer> positions    = FlyWeight.getInstance().getStackInteger();
             levels.add(0);
             positions.add(0);
             do{
@@ -130,6 +129,8 @@ public class Util {
                        
                }
             }while(levels != null && !levels.empty() && positions != null && positions.empty());
+            FlyWeight.getInstance().addStackInteger(levels);
+            FlyWeight.getInstance().addStackInteger(positions); 
             return points;
         }else
             throw new Exception("Can not get points of an empty tree.");

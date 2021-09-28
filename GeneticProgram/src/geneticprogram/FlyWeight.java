@@ -7,16 +7,24 @@ public class FlyWeight {
     private static FlyWeight singleton = null;
     private final ArrayList<ArrayList<int[]>>   al_int_arr;
     private final ArrayList<Stack<Integer>>     stack_int;
-    private final ArrayList<char[][]>           char_arr_2D;
+    private final ArrayList<char[][]>           char_arr_2D_m;
+    private final ArrayList<char[][]>           char_arr_2D_c;
     private final ArrayList<char[][][][]>       char_arr_4D;
+    private final ArrayList<Program>            programs;
+    private final ArrayList<Generation>         generations;
     
     private FlyWeight(){
-        singleton   = new FlyWeight();
-        al_int_arr  = new ArrayList<>();
-        stack_int   = new ArrayList<>();
-        char_arr_2D = new ArrayList<>();
-        char_arr_4D = new ArrayList<>();
-    }
+        singleton       = new FlyWeight();
+        al_int_arr      = new ArrayList<>();
+        stack_int       = new ArrayList<>();
+        char_arr_2D_m   = new ArrayList<>();
+        char_arr_2D_c   = new ArrayList<>();
+        char_arr_4D     = new ArrayList<>();
+        programs        = new ArrayList<>();
+        generations     = new ArrayList<>();
+    } 
+    
+    
     
     /**
      * @return singleton.
@@ -26,6 +34,52 @@ public class FlyWeight {
             singleton = new FlyWeight();
         }
         return singleton;
+    }
+    
+    /**
+     * @return a Generation
+     * @throws Exception 
+     */
+    public Generation getGeneration() throws Exception{
+        Generation gen = null;
+        if(!generations.isEmpty()){
+            gen = generations.remove(0);
+        }else{
+            gen = new Generation();
+        }
+        return gen;
+    }
+    
+    /**
+     * @param generation 
+     */
+    public void addGeneration(Generation generation) throws Exception{
+        if(generation != null){
+            generations.add(generation);
+        }else
+            throw new Exception("Cannot add a null Generation object to flyweight.");
+    }
+    
+    /**
+     * @return program
+     * @throws Exception 
+     */
+    public Program getProgram() throws Exception{
+        Program prog = null;
+        if(!programs.isEmpty()){
+            prog = programs.remove(0);
+        }else{
+            prog = new Program();
+        }
+        return prog;
+    }
+    
+    
+    public void addProgram(Program prog) throws Exception{
+        if(prog != null){
+            programs.add(prog);
+        }else
+            throw new Exception("Cannot add a null Program object to flyweight.");
     }
     
     /**
@@ -50,7 +104,7 @@ public class FlyWeight {
         if(obj != null){
             al_int_arr.add(obj);
         }else
-            throw new Exception("Cannot add null object to flyweight"); 
+            throw new Exception("Cannot add null ArrayList<int[]> object to flyweight."); 
     }
     
     /**
@@ -75,17 +129,36 @@ public class FlyWeight {
         if(obj != null){
             stack_int.add(obj);
         }else 
-            throw new Exception("Cannot add null object to flyweight");
+            throw new Exception("Cannot add null Stack<Integer> object to flyweight.");
     }
     
     /**
      * @return char[][]
      * @throws Exception 
      */
-    public char[][] getCharArray2D() throws Exception{
+    public char[][] getCharArray2dMain() throws Exception{
         char[][] arr;
-        if(!char_arr_2D.isEmpty()){
-            arr = char_arr_2D.remove(0);
+        if(!char_arr_2D_m.isEmpty()){
+            arr = char_arr_2D_m.remove(0);
+        }else{
+            int power = 1;
+            arr = new char[Parameters.getInstance().getMain_max_depth()][];
+            for (int i = 0; i <Parameters.getInstance().getMain_max_depth() ; i++) {
+                arr[i]  = new char[power];
+                power   = power << 1;
+            }
+        }
+        return arr;
+    }
+    
+    /**
+     * @return char[][]
+     * @throws Exception 
+     */
+    public char[][] getCharArray2dCondtion() throws Exception{
+        char[][] arr;
+        if(!char_arr_2D_c.isEmpty()){
+            arr = char_arr_2D_c.remove(0);
         }else{
             int power = 1;
             arr = new char[Parameters.getInstance().getMain_max_depth()][];
@@ -100,20 +173,30 @@ public class FlyWeight {
     /**
      * @param arr  
      */
-    public void addCharArray2D(char[][] arr) throws Exception{
+    public void addCharArray2dMain(char[][] arr) throws Exception{
         if(arr != null){
-            char_arr_2D.add(arr);
+            char_arr_2D_m.add(arr);
         }else 
-            throw new Exception("Cannot add null object to flyweight");
+            throw new Exception("Cannot add null char[][] object to flyweight.");
+    }
+    
+    /**
+     * @param arr  
+     */
+    public void addCharArray2dCondition(char[][] arr) throws Exception{
+        if(arr != null){
+            char_arr_2D_c.add(arr);
+        }else 
+            throw new Exception("Cannot add null char[][] object to flyweight.");
     }
     
     /**
      * @return char[][][][]
      * @throws Exception 
      */
-    public char[][][][] getCharArray4D() throws Exception{
+    public char[][][][] getCharArray4d() throws Exception{
         char[][][][] arr;
-        if(!char_arr_2D.isEmpty()){
+        if(!char_arr_4D.isEmpty()){
             arr = char_arr_4D.remove(0);
         }else{
             int power   = 1;
@@ -142,7 +225,7 @@ public class FlyWeight {
         if(arr != null){
             char_arr_4D.add(arr);
         }else 
-            throw new Exception("Cannot add null object to flyweight");
+            throw new Exception("Cannot add null char[][][][] object to flyweight.");
     }
     
 }

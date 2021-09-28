@@ -1,19 +1,29 @@
 package geneticprogram;
- 
-import java.lang.reflect.Array;
-
+  
 public class Program {
     private char[][]        main;                //[level in main brach][position in level]
     private char[][][][]    conditions; //[level in main branch rooted from][level in sub-branch][sub-branch level][position in level in sub-branch]
 
-    public Program(int main_depth) throws Exception{
-        _allocateArrays(main_depth);
+    /**
+     * @throws Exception 
+     */
+    public Program() throws Exception{
+        main        = FlyWeight.getInstance().getCharArray2dMain();
+        conditions  = FlyWeight.getInstance().getCharArray4d();
+        //_allocateArrays(main_depth);
     }
     
-    public Program(char[][] m, char[][][][] c) throws Exception{
+    /**
+     * @param m
+     * @param c
+     * @throws Exception 
+     */
+    private void _copy(char[][] m, char[][][][] c) throws Exception{
         if(m != null && c != null){
             int depth   = m.length;
-            _allocateArrays(depth);  
+            main        = FlyWeight.getInstance().getCharArray2dMain();
+            conditions  = FlyWeight.getInstance().getCharArray4d();
+            //_allocateArrays(depth);  
             int main_level  = 0,
                 level_size  = 1;
             for (; main_level < (depth - 1); main_level++) {
@@ -34,34 +44,26 @@ public class Program {
         }else
             throw new Exception("Program could not be instantiated correctly.");
     }
+ 
+    /**
+     * 
+     * @param copy
+     * @throws Exception 
+     */
+    public void copy(Program copy) throws Exception{
+        _copy(copy.main,copy.conditions);
+    }
     
-    public Program(Program copy) throws Exception{
-        this(copy.main,copy.conditions);
-    }
-      
-    private void _allocateArrays(int main_depth) throws Exception{
-        this.main       = new char[main_depth][];
-        this.conditions = new char[main_depth][][][];
-        int power       = 1;
-        int main_level  = 0;
-        for (; main_level < main_depth; main_level++) {
-            this.main[main_level]       = new char[power];
-            this.conditions[main_level] = new char[power][][];
-            for (int pos_in_level = 0; pos_in_level < power; pos_in_level++) {
-                int sub_level_size          = 1;
-                for (int sub_branch_level = 0; sub_branch_level < Parameters.getInstance().getCondition_max_depth(); sub_branch_level++) {
-                    this.conditions[main_level][pos_in_level][sub_branch_level] = new char[sub_level_size];
-                    sub_level_size = sub_level_size << 1;
-                }
-            }
-            power           = power << 1;
-        } 
-    }
-
+    /**
+     * @return 
+     */
     public char[][][][] getConditions() {
         return conditions;
     }
 
+    /**
+     * @return 
+     */
     public char[][] getMain() {
         return main;
     }
