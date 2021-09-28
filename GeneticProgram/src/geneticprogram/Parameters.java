@@ -1,20 +1,23 @@
 package geneticprogram; 
 
 public class Parameters {
+    
     private static int main_max_depth           = 10,           // the maximum dpeth of the main program tree
                        condition_max_depth      = 5,            //
                        population_size          = 200,
-                       tournament_size          = 2;
+                       tournament_size          = 2,
+                       k_folds                  = 10;
     private static Parameters singleton         = null;         //
     private static double   crossover_chance    = 50,
                             mutation_chance     = 30,
                             hoist_chance        = 10,
                             edit_chance         = 10;
-    private Parameters(int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) {
+    private Parameters(int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) {
+        Parameters.k_folds                = kf;
         Parameters.main_max_depth         = mmd;
         Parameters.condition_max_depth    = cmd;
         Parameters.population_size        = ps;
-        Parameters.tournament_size       = ts;
+        Parameters.tournament_size        = ts;
         Parameters.crossover_chance       = cc;
         Parameters.mutation_chance        = mc;
         Parameters.hoist_chance           = hc;
@@ -22,6 +25,7 @@ public class Parameters {
     } 
     
     /**
+     * @param kf
      * @param mmd   - main max depth
      * @param cmd   - condition max depth
      * @param ps    - population size
@@ -31,10 +35,12 @@ public class Parameters {
      * @param hc    - hoist chance
      * @param ec    - edit chance
      * @return Parameters singleton.
+     * @throws Exception
      */
-    public static Parameters setParameters(int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) throws Exception{
+    public static Parameters setParameters(int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) throws Exception{
         if(mmd > 2 && cmd > 0 && ps > 0 && ts > 0){
             if(singleton != null){
+                Parameters.k_folds               = kf;
                 Parameters.main_max_depth        = mmd;
                 Parameters.condition_max_depth   = cmd;
                 Parameters.population_size       = ps;
@@ -45,7 +51,7 @@ public class Parameters {
                 Parameters.edit_chance           = ec;
                 
             }else
-                singleton = new Parameters(mmd,cmd,ps,ts,cc,mc,hc,ec);
+                singleton = new Parameters(kf,mmd,cmd,ps,ts,cc,mc,hc,ec);
             return singleton;
         }else
             throw new Exception("Invalid parameter values.");
@@ -64,7 +70,14 @@ public class Parameters {
         }else
             throw new Exception("Parameters have not been set.");
     }
+
     
+    /**
+     * @return number of folds
+     */
+    public int getK_folds() {
+        return k_folds;
+    }
     
     /**
      * @return tournament size

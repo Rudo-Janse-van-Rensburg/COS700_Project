@@ -1,4 +1,6 @@
 package geneticprogram; 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Randomness {
@@ -24,6 +26,10 @@ public class Randomness {
         singleton.mother  = new Random(seed);
         singleton.child   = new Random(singleton.mother.nextLong());
         return singleton;
+    }
+    
+    public void shuffle(ArrayList<double[]> list){
+        Collections.shuffle(list, child);
     }
     
     public void reseed(){

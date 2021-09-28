@@ -16,7 +16,16 @@ public class GeneticProgram {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("Hi");
+       try{
+           Parameters.setParameters(5, 5, 5, 20, 2, 0.6, 0.3, 0.05, 0.05);
+           
+           Evolution evolution = Evolution.getInstance();
+           evolution.createInitialPopulation();
+           
+       }catch(Exception e){
+           System.err.println("Error    :   "+e.getMessage());
+       }
+       
     }
     
 }
