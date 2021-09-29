@@ -31,7 +31,7 @@ public class GeneticProgram {
             * @return Parameters singleton.
             * @throws Exception
             */
-           Parameters.setParameters(20,5, 5, 3, 1, 2, 0.6, 0.3, 0.05, 0.05);
+           Parameters.setParameters(1,3, 2, 1, 1, 2, 0.6, 0.3, 0.05, 0.05);
            
            Evolution evolution  = Evolution.getInstance(); 
            evolution.print();

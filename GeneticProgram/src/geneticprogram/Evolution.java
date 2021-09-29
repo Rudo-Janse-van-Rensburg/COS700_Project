@@ -34,38 +34,41 @@ public class Evolution {
     /**
      * @throws Exception initial population
      */
-    private void createInitialPopulation() throws Exception{ 
+    private void createInitialPopulation() throws Exception{  
         curr.recycle();
         next.recycle();
         generation  = 0;
-        int num_individuals = (int) Math.floor(Parameters.getInstance().getPopulation_size() / ((Parameters.getInstance().getMain_max_depth() -2 ) << 1 ));     
-        
-        boolean has_capcity = true;
-        
-        while(has_capcity){ 
-            int curr_depth      = 2;
+        int depths  = Parameters.getInstance().getMain_max_depth() - 2 + 1;                             //number of depths 
+        int ipg     = (int) Math.floor(Parameters.getInstance().getPopulation_size() / depths * 1.0);   //individuals per generation 
             
-            while(has_capcity && curr_depth <= Parameters.getInstance().getMain_max_depth()){
-                int individual = 0;
-                while(has_capcity && individual < num_individuals){
-                    Program prog    = FlyWeight.getInstance().getProgram();
-                    GeneticOperators.full(prog, curr_depth);
-                    has_capcity = curr.add(prog);
-                    if(has_capcity){
+        if(Meta.debug){
+            System.out.println("CREATING INITIAL POPULATION...");
+        }
+        boolean has_capcity = true; 
+        Program prog;
+        for (int depth = 2; depth < 2 + depths; depth++) {
+            if(has_capcity){
+                for (int individual = 0; individual < ipg; ) {
+                    prog        = FlyWeight.getInstance().getProgram();
+                    GeneticOperators.full(prog, depth);
+                    has_capcity &= curr.add(prog);
+                    if(has_capcity){ 
                         ++individual;
                         prog            = FlyWeight.getInstance().getProgram();
-                        GeneticOperators.grow(prog, curr_depth);
-                        has_capcity = curr.add(prog);
-                        if(has_capcity){
+                        GeneticOperators.grow(prog, depth);
+                        has_capcity &= curr.add(prog);
+                        if(has_capcity)
                             ++individual;
-                        }else
-                            FlyWeight.getInstance().addProgram(prog); 
+                        else
+                            FlyWeight.getInstance().addProgram(prog);  
+                            
                     }else
                         FlyWeight.getInstance().addProgram(prog);  
                 }
-                ++curr_depth; 
+            }else{
+                depth = Parameters.getInstance().getMain_max_depth();
             }
-        }
+        } 
     }
     
     /**

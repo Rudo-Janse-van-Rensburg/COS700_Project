@@ -259,7 +259,7 @@ public class GeneticOperators {
      * @throws Exception 
      */
     private static void _createCondition(char[][] condtion, int max_depth, int start_level, int start_pos,boolean full) throws Exception{
-        if(max_depth >= 2 && max_depth <=  Parameters.getInstance().getCondition_max_depth()){
+        if(max_depth > 0 && max_depth <=  Parameters.getInstance().getCondition_max_depth()){
             Stack<Integer> level_stack      = FlyWeight.getInstance().getStackInteger();
             Stack<Integer> position_stack   = FlyWeight.getInstance().getStackInteger();
             level_stack.push(start_level); 

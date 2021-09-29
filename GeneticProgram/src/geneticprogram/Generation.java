@@ -21,6 +21,9 @@ public class Generation {
         if(capacity < population.length){
             population[capacity]    = individual;
             fitnesses[capacity]     = Fitness.getInstance(Fitness.f1).evaluate(individual);
+            if(Meta.debug){
+                System.out.println(""+fitnesses[capacity]);
+            }
             total_fitness           += fitnesses[capacity];
             ++capacity;
             return true;
@@ -98,19 +101,22 @@ public class Generation {
      * @throws java.lang.Exception
      */
     public void recycle() throws Exception{
+        
         for (int i = 0; i < capacity; i++) {
             Program prog = population[i];
             FlyWeight.getInstance().addCharArray2dMain(prog.getMain());
             FlyWeight.getInstance().addCharArray4D(prog.getConditions());
         }
-        capacity = 0;
+        total_fitness   = 0;
+        capacity        = 0;
     }
     
     /**
      * @throws Exception 
      */
     public void clear() throws Exception{
-        capacity    = 0;
+        total_fitness   = 0;
+        capacity        = 0;
         //population  = new Program[Parameters.getInstance().getPopulation_size()];
         //fitnesses   = new double[Parameters.getInstance().getPopulation_size()];
     }

@@ -19,14 +19,14 @@ public class Interpreter {
      * @return  
      * @throws Exception 
      */
-    public double Interpret(Program p) throws Exception{
+    public double Interpret(Program p,double[] instance) throws Exception{
         char result = 0;
         if(p != null){
             Stack<Integer> row  = FlyWeight.getInstance().getStackInteger();
             Stack<Integer> pos  = FlyWeight.getInstance().getStackInteger();
             row.push(0);
             pos.push(0);
-            return _interpretMain(p,row,pos);
+            return _interpretMain(p,row,pos,instance);
         }else 
             throw new Exception("Cannot interpret a null program.");
     }
@@ -39,7 +39,7 @@ public class Interpreter {
      * @throws Exception 
      */
     
-    private double _interpretMain(Program prog,Stack<Integer> row,Stack<Integer> pos) throws Exception{
+    private double _interpretMain(Program prog,Stack<Integer> row,Stack<Integer> pos,double[] instance) throws Exception{
         if(row != null && pos != null && !row.empty() && !pos.empty()){
             int r,p;
             do{
@@ -53,7 +53,8 @@ public class Interpreter {
                             if(_interpretCondition(
                                         prog.getConditions()[r][p],
                                         0,
-                                        0
+                                        0,
+                                        instance
                                     ) != 0 
                             ){
                                 /*Condition Evaluated True*/
@@ -78,36 +79,36 @@ public class Interpreter {
         
     }
     
-    private double _interpretCondition(char[][] cond,int row,int pos) throws Exception{
+    private double _interpretCondition(char[][] cond,int row,int pos, double[] instance) throws Exception{
         if(cond != null){ 
             if(row < cond.length && pos < cond[row].length){
                 switch(cond[row][pos]){
                     case Meta.GREATER_THAN:  
-                        return _interpretCondition(cond, row+1, pos << 1 ) > _interpretCondition(cond, row+1, (pos << 1) +1 )? 1 : 0;
+                        return _interpretCondition(cond, row+1, pos << 1,instance)> _interpretCondition(cond, row+1, (pos << 1) +1 ,instance)? 1.0 : 0.0;
                     case Meta.LESS_THAN:
-                        return _interpretCondition(cond, row+1, pos << 1 ) < _interpretCondition(cond, row+1, (pos << 1) +1 )? 1 : 0;
+                        return _interpretCondition(cond, row+1, pos << 1,instance) < _interpretCondition(cond, row+1, (pos << 1) +1 ,instance)? 1 : 0;
                     case Meta.GREATER_OR_EQUAL:
-                        return _interpretCondition(cond, row+1, pos << 1 ) >= _interpretCondition(cond, row+1, (pos << 1) +1 )? 1 : 0;
+                        return _interpretCondition(cond, row+1, pos << 1,instance) >= _interpretCondition(cond, row+1, (pos << 1) +1 ,instance)? 1 : 0;
                     case Meta.EQUAL:
-                        return _interpretCondition(cond, row+1, pos << 1 ) == _interpretCondition(cond, row+1, (pos << 1) +1 )? 1 : 0;
+                        return _interpretCondition(cond, row+1, pos << 1,instance) == _interpretCondition(cond, row+1, (pos << 1) +1 ,instance)? 1 : 0;
                     case Meta.ADDITION:
-                        return _interpretCondition(cond, row+1, pos << 1 ) + _interpretCondition(cond, row+1, (pos << 1) +1 );
+                        return _interpretCondition(cond, row+1, pos << 1,instance) + _interpretCondition(cond, row+1, (pos << 1) +1 ,instance);
                     case Meta.SUBTRACTION:
-                        return _interpretCondition(cond, row+1, pos << 1 ) - _interpretCondition(cond, row+1,(pos << 1) +1 );
+                        return _interpretCondition(cond, row+1, pos << 1,instance) - _interpretCondition(cond, row+1, (pos << 1) +1 ,instance);
                     case Meta.DIVISION:
-                        return _interpretCondition(cond, row+1, pos << 1 ) / _interpretCondition(cond, row+1, (pos << 1) +1 );
+                        return _interpretCondition(cond, row+1, pos << 1,instance) / _interpretCondition(cond, row+1, (pos << 1) +1 ,instance);
                     case Meta.MULTIPLICATION:
-                        return _interpretCondition(cond, row+1, pos << 1 ) * _interpretCondition(cond, row+1, (pos << 1) +1 );
+                        return _interpretCondition(cond, row+1, pos << 1,instance) * _interpretCondition(cond, row+1, (pos << 1) +1 ,instance);
                     case Meta.BITWISE_AND:
-                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1 )) &  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) + 1));
+                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1,instance)) &  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) +1 ,instance));
                     case Meta.BITWISE_OR:
-                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1 )) |  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) + 1));
+                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1,instance)) |  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) +1 ,instance));
                     case Meta.BITWISE_XOR:
-                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1 )) ^  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) + 1));
+                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1,instance)) ^  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) +1 ,instance));
                     case Meta.LOGICAL_AND:
-                        return (_interpretCondition(cond, row+1, pos << 1 ) != 0) && (_interpretCondition(cond, row+1, (pos << 1) +1 ) != 0) ? 1 : 0;
+                        return (_interpretCondition(cond, row+1, pos << 1,instance) != 0) && (_interpretCondition(cond, row+1, (pos << 1) +1 ,instance) != 0) ? 1 : 0;
                     case Meta.LOGICAL_OR:
-                        return (_interpretCondition(cond, row+1, pos << 1 ) != 0) || (_interpretCondition(cond, row+1, (pos << 1) +1 ) != 0) ? 1 : 0;
+                        return (_interpretCondition(cond, row+1, pos << 1,instance) != 0) || (_interpretCondition(cond, row+1, (pos << 1) +1 ,instance) != 0) ? 1 : 0;
                     default:
                         return cond[row][pos] - Meta.CONDITIONS.length;
                 }

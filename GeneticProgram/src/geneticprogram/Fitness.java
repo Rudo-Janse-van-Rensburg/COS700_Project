@@ -1,5 +1,6 @@
 package geneticprogram;
  
+import java.util.Arrays;
 import java.util.List;
 
 public class Fitness {
@@ -56,25 +57,32 @@ public class Fitness {
     } 
     
     private static double _f1(Program prog) throws Exception{ 
-        int number_classes  = Data.initialiseData().getNumberClasses();
-        double target,output, avg_f1 = 0,prec = 0, rec = 0;
-        double[] instance, tp, fp, fn; 
+        int number_classes  = Data.initialiseData().getNumberClasses(),target,output;
+        double  avg_f1 = 0,prec = 0, rec = 0;
+        int[] tp, fp, fn; 
+        double[] instance;
         for (int k = 0; k < Parameters.getInstance().getK_folds(); k++) {
             prec = 0;
             rec = 0;
+
             List<double[]> data =Data.initialiseData().getFold(k);
-            tp  = new double[number_classes];
-            fp  = new double[number_classes];
-            fn  = new double[number_classes];
+            tp  = new int[number_classes];
+            fp  = new int[number_classes];
+            fn  = new int[number_classes];
+            /*for (int i = 0; i < number_classes; i++) {
+                tp[i] = 0;
+                fp[i] = 0;
+                fn[i] = 0;
+            }*/
             for (int i = 0; i < (int) Math.floor(Data.initialiseData().getNumber_instances()/Parameters.getInstance().getK_folds()); i++) {
                 instance    = data.get(i);
-                target      = instance[Data.initialiseData().getNumberAttributes()];
-                output      = Interpreter.getInstance().Interpret(prog);
+                target      = (int)instance[Data.initialiseData().getNumberAttributes()];
+                output      = (int)Interpreter.getInstance().Interpret(prog,instance);
                 if(target == output) 
-                    tp[(int) output] += 1;
+                    tp[output] += 1;
                 else{
-                    fn[(int) target] += 1;
-                    fp[(int) output] += 1;
+                    fn[target] += 1;
+                    fp[output] += 1;
                 } 
             } 
             for (int c = 0; c < number_classes; c++) {
@@ -85,11 +93,17 @@ public class Fitness {
                     rec =  tp[c] / (tp[c]+fn[c]);     
                 }
             }
+            System.out.println("tp  : "+Arrays.toString(tp));
+            System.out.println("fp  : "+Arrays.toString(fp));
+            System.out.println("fn  : "+Arrays.toString(fn));
             prec /= number_classes; 
             rec /= number_classes; 
-            avg_f1 += 2.0 * (prec * rec)/(prec + rec);
+            avg_f1 += 2.0 * (prec * rec)/(prec + rec); 
+            
         }  
-        return avg_f1 / Parameters.getInstance().getK_folds();
+        avg_f1 /= Parameters.getInstance().getK_folds()*1.0;
+        
+        return avg_f1;
     }
     
     private static double _precision(Program prog) throws Exception{
@@ -104,7 +118,7 @@ public class Fitness {
             for (int i = 0; i < (int) Math.floor(Data.initialiseData().getNumber_instances()/Parameters.getInstance().getK_folds()); i++) {
                 instance = data.get(i);
                 target = instance[Data.initialiseData().getNumberAttributes()];
-                output = Interpreter.getInstance().Interpret(prog);
+                output = Interpreter.getInstance().Interpret(prog,instance);
                 if(target == output) 
                     tp[(int) target] += 1;
                 else 
@@ -133,7 +147,7 @@ public class Fitness {
             for (int i = 0; i < (int) Math.floor(Data.initialiseData().getNumber_instances()/Parameters.getInstance().getK_folds()); i++) {
                 instance = data.get(i);
                 target = instance[Data.initialiseData().getNumberAttributes()];
-                output = Interpreter.getInstance().Interpret(prog);
+                output = Interpreter.getInstance().Interpret(prog,instance);
                 if(target == output) 
                     tp[(int) target] += 1;
                 else 
@@ -161,7 +175,7 @@ public class Fitness {
             for (int i = 0; i < (int) Math.floor(Data.initialiseData().getNumber_instances()/Parameters.getInstance().getK_folds()); i++) {
                 instance = data.get(i);
                 target = instance[Data.initialiseData().getNumberAttributes()];
-                output = Interpreter.getInstance().Interpret(prog);
+                output = Interpreter.getInstance().Interpret(prog,instance);
                 if(target == output) 
                     acc += 1;
             }  
