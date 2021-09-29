@@ -61,11 +61,6 @@ public class Fitness {
                 target,
                 output,
                 fold_instances = (int) Math.ceil(Data.initialiseData().getNumber_instances()/Parameters.getInstance().getK_folds()*1.0); 
-        if(Meta.debug){
-            System.out.println("fold instances  : "+fold_instances);
-            System.out.println("number classes  : "+number_classes);
-        }
-        
         double  avg_f1 = 0,prec = 0, rec = 0;
         int[] tp, fp, fn; 
         double[] instance;
@@ -96,21 +91,15 @@ public class Fitness {
             } 
             for (int c = 0; c < number_classes; c++) {
                 if(tp[c] > 0  || fp[c] > 0){
-                    prec =  tp[c] / (tp[c]+fp[c]);     
+                    prec +=  tp[c] / 1.0*(tp[c]+fp[c]);     
                 }
                 if(tp[c] > 0  || fn[c] > 0){
-                    rec =  tp[c] / (tp[c]+fn[c]);     
+                    rec +=  tp[c] / 1.0*(tp[c]+fn[c]);     
                 }
-            }
-            if(Meta.debug){
-                System.out.println("tp  : "+Arrays.toString(tp));
-                System.out.println("fp  : "+Arrays.toString(fp));
-                System.out.println("fn  : "+Arrays.toString(fn));
-            }
-            prec /= number_classes; 
-            rec /= number_classes; 
-            avg_f1 += 2.0 * (prec * rec)/(prec + rec); 
-            
+            } 
+            prec /= 1.0*number_classes; 
+            rec /= 1.0*number_classes; 
+            avg_f1 += 2.0 * (prec * rec)/1.0*(prec + rec); 
         }  
         avg_f1 /= Parameters.getInstance().getK_folds()*1.0;
         
