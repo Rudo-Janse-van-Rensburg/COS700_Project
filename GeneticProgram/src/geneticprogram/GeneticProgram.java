@@ -32,11 +32,11 @@ public class GeneticProgram {
             * @throws Exception
             */
            Parameters.setParameters(1,1, 3, 2, 1, 2, 0.6, 0.3, 0.05, 0.05);
-           
-           Program prog = new Program();
-           GeneticOperators.full(prog, Parameters.getInstance().getMain_max_depth());
-           System.out.println(Util.getInstance().toString(prog));
-           System.out.format("Fitness  :   %f\n",Fitness.getInstance(Fitness.f1).evaluate(prog));
+           Evolution evolution = Evolution.getInstance();
+           evolution.print();
+           while(false && evolution.evolveGeneration()){
+               evolution.print();
+           } 
        }catch(Exception e){
            e.printStackTrace(); 
        }

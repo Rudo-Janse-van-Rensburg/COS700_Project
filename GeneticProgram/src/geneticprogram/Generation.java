@@ -1,5 +1,7 @@
 package geneticprogram;
  
+import java.lang.reflect.Parameter;
+
 public class Generation {
     private final Program[] population;
     private final double[]  fitnesses;
@@ -18,7 +20,7 @@ public class Generation {
      * @throws Exception 
      */
     public boolean add(Program individual) throws Exception{
-        if(capacity < population.length){
+        if(capacity < Parameters.getInstance().getPopulation_size()){
             population[capacity]    = individual;
             fitnesses[capacity]     = Fitness.getInstance(Fitness.f1).evaluate(individual); 
             total_fitness           += fitnesses[capacity];

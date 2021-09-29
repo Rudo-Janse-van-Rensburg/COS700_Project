@@ -162,7 +162,7 @@ public class Util {
                 case Meta.IF:
                     line += level + "IF" +toStringCondition(prog,row,pos,0, 0) + "{\n";
                     line += level + toStringMain(level + " ",prog,main,row+1,(pos << 1)  + 0) + "\n";
-                    line += level + "} ELSE {\n";
+                    line += level + "}ELSE {\n";
                     line += level + toStringMain(level + " ",prog,main,row+1,(pos << 1) + 1) + "\n";
                     line += level + "}";
                     break;
@@ -175,9 +175,9 @@ public class Util {
     }
     
     private String toStringCondition(Program prog,int m_row, int m_pos, int row, int pos) throws Exception{
-        if(row >=0 && row < Parameters.getInstance().getCondition_max_depth()){
+        if(row >=0 && row <=  Parameters.getInstance().getCondition_max_depth()){
             String line = "("; 
-            char ch = prog.getConditions()[m_row][m_pos][row][pos]; 
+            char ch     = prog.getConditions()[m_row][m_pos][row][pos]; 
             switch(ch){
                 case Meta.GREATER_THAN:  
                     line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " > " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
@@ -188,8 +188,14 @@ public class Util {
                 case Meta.GREATER_OR_EQUAL:
                     line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " >= " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
                     break;
+                case Meta.LESS_OR_EQUAL:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " <= " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
                 case Meta.EQUAL:
                     line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " == " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.NOT_EQUAL:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " != " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
                     break;
                 case Meta.ADDITION:
                     line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " + " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);

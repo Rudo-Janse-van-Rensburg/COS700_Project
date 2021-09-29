@@ -19,25 +19,15 @@ public class Program {
      * @throws Exception 
      */
     private void _copy(char[][] m, char[][][][] c) throws Exception{
-        if(m != null && c != null){
-            int depth   = m.length;
-            main        = FlyWeight.getInstance().getCharArray2dMain();
-            conditions  = FlyWeight.getInstance().getCharArray4d();
-            //_allocateArrays(depth);  
-            int main_level  = 0,
-                level_size  = 1;
-            for (; main_level < (depth - 1); main_level++) {
-                for (int position_level = 0; position_level < level_size; position_level++) {
-                    this.main[main_level][position_level]   = m[main_level][position_level];
-                    for (int sub_level = 0; sub_level < Parameters.getInstance().getCondition_max_depth(); sub_level++) {
-                        int sub_level_size = 1;
-                        System.arraycopy(c[main_level][position_level][sub_level], 0, this.conditions[main_level][position_level][sub_level], 0, sub_level_size);
-                        sub_level_size = sub_level_size << 1;
+        if(m != null && c != null){  
+            for (int main_depth = 0; main_depth < Parameters.getInstance().getMain_max_depth(); main_depth++) {
+                System.arraycopy(m[main_depth], 0, this.main[main_depth], 0, 1 << main_depth);
+                for (int condition = 0; condition < 1 << main_depth; condition++) {
+                    for (int condition_depth = 0; condition_depth < Parameters.getInstance().getCondition_max_depth(); condition_depth++) {
+                        System.arraycopy(c[main_depth][condition][condition_depth], 0, this.conditions[main_depth][condition][condition_depth], 0, 1 << condition_depth);
                     }
                 }
-                level_size = level_size << 1;
-            }
-            System.arraycopy(m[main_level], 0, this.main[main_level], 0, level_size);
+            } 
         }else
             throw new Exception("Program could not be instantiated correctly.");
     }

@@ -38,10 +38,12 @@ public class Evolution {
         curr.recycle();
         next.recycle();
         generation  = 0;
-        int depths  = Parameters.getInstance().getMain_max_depth() - 2 + 1;                             //number of depths 
+        double fitness = 0;
+        int depths  = Parameters.getInstance().getMain_max_depth() - 2;                             //number of depths 
         int ipg     = (int) Math.floor(Parameters.getInstance().getPopulation_size() / depths * 1.0);   //individuals per generation 
             
         if(Meta.debug){
+            System.out.format("Depths   : [2,%d]\n",2 + depths);
             System.out.println("CREATING INITIAL POPULATION...");
         }
         boolean has_capcity = true; 
@@ -50,20 +52,31 @@ public class Evolution {
             if(has_capcity){
                 for (int individual = 0; individual < ipg; ) {
                     prog        = FlyWeight.getInstance().getProgram();
-                    GeneticOperators.full(prog, depth);
-                    has_capcity &= curr.add(prog);
+                    GeneticOperators.full(prog, depth);  
+                    has_capcity = has_capcity && curr.add(prog); 
                     if(has_capcity){ 
+                        fitness = curr.getFitness(curr.getCapacity()-1);
+                        if(fitness > best_fitness){
+                            best_fitness =  fitness; 
+                            best_program.copy(prog); 
+                        }
                         ++individual;
                         prog            = FlyWeight.getInstance().getProgram();
                         GeneticOperators.grow(prog, depth);
-                        has_capcity &= curr.add(prog);
-                        if(has_capcity)
+                        has_capcity = has_capcity && curr.add(prog);
+                        if(has_capcity){
+                            fitness = curr.getFitness(curr.getCapacity()-1);
+                            if(fitness > best_fitness){
+                                best_fitness =  fitness;
+                                best_program.copy(prog);
+                            }
                             ++individual;
-                        else
+                        }else
                             FlyWeight.getInstance().addProgram(prog);  
-                            
-                    }else
+                    }else{
+                        individual = ipg;
                         FlyWeight.getInstance().addProgram(prog);  
+                    }
                 }
             }else{
                 depth = Parameters.getInstance().getMain_max_depth();
@@ -155,11 +168,13 @@ public class Evolution {
         return best_program;
     }
     
-    public void print(){
+    public void print() throws Exception{
         System.out.println("=======================================");
         System.out.format("GENERATION   #%d%n",generation);
         System.out.println("---------------------------------------");
-        System.out.println("    fitnesses   :   " + Arrays.toString(curr.getFitnesses()));
+        System.out.println("    fitnesses       :   " + Arrays.toString(curr.getFitnesses()));
+        System.out.format("    best fitness    :   %f\n",best_fitness);
+        System.out.format("    best program    :   \n%s\n",Util.getInstance().toString(best_program));
         System.out.println("=======================================");
     }
     
