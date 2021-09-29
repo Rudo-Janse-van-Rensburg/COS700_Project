@@ -37,51 +37,41 @@ public class Evolution {
     private void createInitialPopulation() throws Exception{  
         curr.recycle();
         next.recycle();
-        generation  = 0; 
-        double fitness = 0;
-        int depths  = Parameters.getInstance().getMain_max_depth() - 2;                             //number of depths 
-        int ipg     = (int) Math.floor(Parameters.getInstance().getPopulation_size() / depths * 1.0);   //individuals per generation 
+        generation  = 0;  
+        int depths      = Parameters.getInstance().getMain_max_depth();
+        int ipg         = (int) Math.ceil(Parameters.getInstance().getPopulation_size() / ((depths - 2)* 1.0));   //individuals per generation 
             
         if(Meta.debug){
-            //System.out.format("Depths   : [2,%d]\n",2 + depths);
             System.out.println("CREATING INITIAL POPULATION...");
+            System.out.format("Population size  :   %d\n",Parameters.getInstance().getPopulation_size());
+            System.out.format("Depths           :   [2,%d]\n",depths);
+            System.out.format("IPG              :   %d\n",ipg);
         }
         boolean has_capcity = true; 
         Program prog;
-        for (int depth = 2; depth < 2 + depths; depth++) {
-            if(has_capcity){
-                for (int individual = 0; individual < ipg; ) {
-                    prog        = FlyWeight.getInstance().getProgram();
-                    GeneticOperators.full(prog, depth);  
-                    has_capcity = has_capcity && curr.add(prog); 
-                    if(has_capcity){ 
-                        fitness = curr.getFitness(curr.getCapacity()-1);
-                        if(fitness > best_fitness){
-                            best_fitness =  fitness; 
-                            best_program.copy(prog); 
-                        }
-                        ++individual;
-                        prog            = FlyWeight.getInstance().getProgram();
-                        GeneticOperators.grow(prog, depth);
-                        has_capcity = has_capcity && curr.add(prog);
-                        if(has_capcity){
-                            fitness = curr.getFitness(curr.getCapacity()-1);
-                            if(fitness > best_fitness){
-                                best_fitness =  fitness;
-                                best_program.copy(prog);
-                            }
-                            ++individual;
-                        }else
-                            FlyWeight.getInstance().addProgram(prog);  
-                    }else{
-                        individual = ipg;
-                        FlyWeight.getInstance().addProgram(prog);  
-                    }
-                }
-            }else{
-                depth = Parameters.getInstance().getMain_max_depth();
+        for (int depth = depths-1; has_capcity && depth >= 2; depth--) {
+            if(Meta.debug && curr.getCapacity() < Parameters.getInstance().getPopulation_size()){
+                System.out.format("depth    :    %d\n",depth);
             }
-        } 
+            for (int individual = 0;has_capcity && individual < ipg; individual+=2) {
+                prog        = FlyWeight.getInstance().getProgram();
+                GeneticOperators.full(prog, depth);  
+                has_capcity = has_capcity && curr.add(prog);
+                if(Meta.debug && has_capcity && false){
+                    System.out.format("full (%d,%d):   \n%s\n",curr.getCapacity(),Parameters.getInstance().getPopulation_size(),Util.getInstance().toString(prog));
+                }
+                prog        = FlyWeight.getInstance().getProgram();
+                GeneticOperators.grow(prog, depth);  
+                has_capcity = has_capcity && curr.add(prog);  
+                if(Meta.debug && has_capcity && false){
+                    System.out.format("grow (%d,%d):   \n%s\n",curr.getCapacity(),Parameters.getInstance().getPopulation_size(),Util.getInstance().toString(prog));
+                }
+            } 
+        }
+        if(curr.getBest_fitness() > best_fitness){
+            best_fitness    = curr.getBest_fitness();
+            best_program.copy(curr.getBest_program());
+        }
     }
     
     /**
@@ -153,20 +143,15 @@ public class Evolution {
                         has_capcity = has_capcity && next.add(edit);
                     } 
                 }while(has_capcity); 
-                curr.clear();
-                for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
-                    
-                    Program prog    = next.getIndividual(i);
-                    double fitness  = next.getFitness(i);
-                    
-                    if(fitness > best_fitness){
-                        best_fitness =  fitness;
-                        best_program.copy(prog);
-                    }
-                    
+                curr.recycle();
+                for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) { 
                     curr.add(next.getIndividual(i),next.getFitness(i));
                 }
                 next.clear();
+                if(curr.getBest_fitness() > best_fitness){
+                    best_fitness    = curr.getBest_fitness();
+                    best_program.copy(curr.getBest_program());
+                }
                 ++generation;
                 return true;
             }else
@@ -187,10 +172,10 @@ public class Evolution {
         System.out.println("=======================================");
         System.out.format("GENERATION   #%d%n",generation);
         System.out.println("---------------------------------------");
-        System.out.format("     avergage fitness    : %f\n",curr.getAverage_fitness());
-        System.out.println("    fitnesses       :   " + Arrays.toString(curr.getFitnesses()));
-        System.out.format("    best fitness    :   %f\n",best_fitness);
-        System.out.format("    best program    :   \n%s\n",Util.getInstance().toString(best_program));
+        System.out.format("    avergage fitness     :   %f\n",curr.getAverage_fitness());
+        System.out.println("    fitnesses            :   " + Arrays.toString(curr.getFitnesses()));
+        System.out.format("    best fitness         :   %f\n",best_fitness);
+        System.out.format("    best program         :   \n%s\n",Util.getInstance().toString(best_program));
         System.out.println("=======================================");
     }
     

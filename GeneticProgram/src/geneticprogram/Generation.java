@@ -3,12 +3,16 @@ package geneticprogram;
 
 public class Generation {
     private final Program[] population;
+    private final Program   best_program;
     private final double[]  fitnesses;
-    private double total_fitness;
-    private int capacity;
+    private double          total_fitness,
+                            best_fitness;
+    private int             capacity;
     public Generation() throws Exception{
         capacity        = 0;
-        total_fitness   = 0; 
+        total_fitness   = 0;
+        best_fitness    = -1;
+        best_program    = FlyWeight.getInstance().getProgram();
         population      = new Program[Parameters.getInstance().getPopulation_size()];   
         fitnesses       = new double[Parameters.getInstance().getPopulation_size()];   
     }
@@ -20,11 +24,7 @@ public class Generation {
      */
     public boolean add(Program individual) throws Exception{
         if(capacity < Parameters.getInstance().getPopulation_size()){
-            population[capacity]    = individual;
-            fitnesses[capacity]     = Fitness.getInstance(Fitness.f1).evaluate(individual); 
-            total_fitness           += fitnesses[capacity];
-            ++capacity;
-            return true;
+            return add(individual, Fitness.getInstance(Fitness.f1).evaluate(individual)); 
         }else 
             return false;
     }
@@ -34,6 +34,20 @@ public class Generation {
      */
     public double[] getFitnesses() {
         return fitnesses;
+    }
+
+    /**
+     * @return 
+     */
+    public double getBest_fitness() {
+        return best_fitness;
+    }
+
+    /**
+     * @return 
+     */
+    public Program getBest_program() {
+        return best_program;
     }
     
     /**
@@ -45,14 +59,19 @@ public class Generation {
      */
     public boolean add(Program individual, double fitness) throws Exception{
         if(capacity < population.length){
+            if(fitness > best_fitness){
+                best_fitness = fitness;
+                best_program.copy(individual); 
+            }
             population[capacity]    = individual;
             fitnesses[capacity]     = fitness;
             total_fitness           += fitnesses[capacity];
             ++capacity;
             return true;
-        }else 
+        }else{
+            FlyWeight.getInstance().addProgram(individual);
             return false;
-        
+        } 
     }
     
     /**
@@ -110,11 +129,9 @@ public class Generation {
         
         for (int i = 0; i < capacity; i++) {
             Program prog = population[i];
-            FlyWeight.getInstance().addCharArray2dMain(prog.getMain());
-            FlyWeight.getInstance().addCharArray4D(prog.getConditions());
+            FlyWeight.getInstance().addProgram(prog); 
         }
-        total_fitness   = 0;
-        capacity        = 0;
+        clear(); 
     }
     
     /**
@@ -123,6 +140,7 @@ public class Generation {
     public void clear() throws Exception{
         total_fitness   = 0;
         capacity        = 0;
+        best_fitness    = -1;
         //population  = new Program[Parameters.getInstance().getPopulation_size()];
         //fitnesses   = new double[Parameters.getInstance().getPopulation_size()];
     }

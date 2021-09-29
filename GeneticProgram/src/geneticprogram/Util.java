@@ -175,7 +175,7 @@ public class Util {
     }
     
     private String toStringCondition(Program prog,int m_row, int m_pos, int row, int pos) throws Exception{
-        if(row >=0 && row <=  Parameters.getInstance().getCondition_max_depth()){
+        if(row >=0 && row <  Parameters.getInstance().getCondition_max_depth()){
             String line = "("; 
             char ch     = prog.getConditions()[m_row][m_pos][row][pos]; 
             switch(ch){
