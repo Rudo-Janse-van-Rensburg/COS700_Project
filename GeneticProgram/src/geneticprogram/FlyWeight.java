@@ -12,9 +12,7 @@ public class FlyWeight {
     private final ArrayList<char[][][][]>       char_arr_4D;
     private final ArrayList<Program>            programs;
     private final ArrayList<Generation>         generations;
-    
     private FlyWeight(){
-        singleton       = new FlyWeight();
         al_int_arr      = new ArrayList<>();
         stack_int       = new ArrayList<>();
         char_arr_2D_m   = new ArrayList<>();
@@ -141,12 +139,7 @@ public class FlyWeight {
         if(!char_arr_2D_m.isEmpty()){
             arr = char_arr_2D_m.remove(0);
         }else{
-            int power = 1;
-            arr = new char[Parameters.getInstance().getMain_max_depth()][];
-            for (int i = 0; i <Parameters.getInstance().getMain_max_depth() ; i++) {
-                arr[i]  = new char[power];
-                power   = power << 1;
-            }
+            arr = new char[Parameters.getInstance().getMain_max_depth()][2 << (Parameters.getInstance().getMain_max_depth() - 1)]; 
         }
         return arr;
     }
@@ -160,12 +153,7 @@ public class FlyWeight {
         if(!char_arr_2D_c.isEmpty()){
             arr = char_arr_2D_c.remove(0);
         }else{
-            int power = 1;
-            arr = new char[Parameters.getInstance().getMain_max_depth()][];
-            for (int i = 0; i <Parameters.getInstance().getMain_max_depth() ; i++) {
-                arr[i]  = new char[power];
-                power   = power << 1;
-            }
+            arr = new char[Parameters.getInstance().getMain_max_depth()][2 << (Parameters.getInstance().getCondition_max_depth()- 1)]; 
         }
         return arr;
     }
@@ -199,20 +187,9 @@ public class FlyWeight {
         if(!char_arr_4D.isEmpty()){
             arr = char_arr_4D.remove(0);
         }else{
-            int power   = 1;
-            arr         = new char[Parameters.getInstance().getMain_max_depth()][][][];
-            int i = 0;
-            for (; i <Parameters.getInstance().getMain_max_depth() ; i++) {
-                arr[i]  = new char[power][][];
-                for (int j = 0; j < power; j++) {
-                    int level_size = 1;
-                    for (int k = 0; k < Parameters.getInstance().getCondition_max_depth(); k++) {
-                        arr[i][j][k] = new char[level_size];
-                        level_size = level_size << 1;
-                    }
-                }
-                power   = power << 1;
-            }
+            int main    = 2 << (Parameters.getInstance().getMain_max_depth() - 1);
+            int cond    = 2 << (Parameters.getInstance().getCondition_max_depth() - 1);
+            arr         = new char[Parameters.getInstance().getMain_max_depth()][main][Parameters.getInstance().getCondition_max_depth()][cond]; 
         }
         return arr;
     }

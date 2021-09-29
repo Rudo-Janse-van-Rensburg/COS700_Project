@@ -26,7 +26,13 @@ public class Generation {
             return true;
         }else 
             return false;
-        
+    }
+
+    /**
+     * @return 
+     */
+    public double[] getFitnesses() {
+        return fitnesses;
     }
     
     /**

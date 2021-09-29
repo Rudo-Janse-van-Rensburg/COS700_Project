@@ -49,7 +49,7 @@ public class Selection {
             if(!competitors.contains(pos)) 
                 competitors.add(pos);
         }while(competitors.size() < Parameters.getInstance().getTournament_size());
-        double fitness  = 0;
+        double fitness  = -1;
         Program prog    = null;
         for(int competitor: competitors) 
             if(generation.getFitness(competitor) > fitness)

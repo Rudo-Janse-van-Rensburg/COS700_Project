@@ -137,75 +137,81 @@ public class Util {
         
     } 
     
-    public String toString(Program prog){
+    public String toString(Program prog) throws Exception{
         return toStringMain("",prog,prog.getMain(), 0, 0);
     }
     
-    private String toStringMain(String level,Program prog,char[][] main, int row, int pos){
-        String line = "";
-        char ch = main[row][pos]; 
-        switch(ch){
-            case Meta.IF:
-                line += level + "IF" +toStringCondition(prog,prog.getConditions()[row][pos],0, 0) + "\n{";
-                line += level + toStringMain(level + " ",prog,main,row+1,2*pos + 0) + "\n";
-                line += level + "} ELSE {\n";
-                line += level + toStringMain(level + " ",prog,main,row+1,2*pos + 1) + "\n";
-                line += level + "}";
-                break;
-            default:
-                line = level + (ch - Meta.MAINS.length); 
-        }
-        return line; 
+    private String toStringMain(String level,Program prog,char[][] main, int row, int pos) throws Exception{
+        if(row >=0 && row < Parameters.getInstance().getMain_max_depth()){
+            String line = "";
+            char ch = main[row][pos]; 
+            switch(ch){
+                case Meta.IF:
+                    line += level + "IF" +toStringCondition(prog,row,pos,0, 0) + "\n{";
+                    line += level + toStringMain(level + " ",prog,main,row+1,(pos << 1)  + 0) + "\n";
+                    line += level + "} ELSE {\n";
+                    line += level + toStringMain(level + " ",prog,main,row+1,(pos << 1) + 1) + "\n";
+                    line += level + "}";
+                    break;
+                default:
+                    line = level + (ch - Meta.MAINS.length); 
+            }
+            return line;
+        }else 
+            throw new Exception("Main row out of bounds.");
     }
     
-    private String toStringCondition(Program prog,char[][] cond, int row, int pos){
-        String line = "(";
-        char ch = cond[row][pos]; 
-        switch(ch){
-            case Meta.GREATER_THAN:  
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " > " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.LESS_THAN:  
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " < " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.GREATER_OR_EQUAL:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " >= " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.EQUAL:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " == " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.ADDITION:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " + " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.SUBTRACTION:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " - " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.DIVISION:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " / " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.MULTIPLICATION:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " * " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.BITWISE_AND:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " & " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.BITWISE_OR:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " | " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.BITWISE_XOR:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " ^ " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.LOGICAL_AND:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " && " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            case Meta.LOGICAL_OR:
-                line += toStringCondition(prog, cond, row+1, 2*pos+0) + " || " +toStringCondition(prog, cond, row+1, 2*pos+1);
-                break;
-            default:
-                int attribute = ch - Meta.CONDITIONS.length;
-                line += ch;
-        }
-        return line+")"; 
+    private String toStringCondition(Program prog,int m_row, int m_pos, int row, int pos) throws Exception{
+        if(row >=0 && row < Parameters.getInstance().getCondition_max_depth()){
+            String line = "("; 
+            char ch = prog.getConditions()[m_row][m_pos][row][pos]; 
+            switch(ch){
+                case Meta.GREATER_THAN:  
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " > " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.LESS_THAN:  
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " < " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.GREATER_OR_EQUAL:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " >= " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.EQUAL:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " == " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.ADDITION:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " + " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.SUBTRACTION:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " - " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.DIVISION:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " / " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.MULTIPLICATION:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " * " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.BITWISE_AND:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " & " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.BITWISE_OR:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " | " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.BITWISE_XOR:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " ^ " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.LOGICAL_AND:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " && " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                case Meta.LOGICAL_OR:
+                    line += toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 0) + " || " + toStringCondition(prog,m_row,m_pos, row+1, (pos << 1)  + 1);
+                    break;
+                default:
+                    int attribute = ch - Meta.CONDITIONS.length;
+                    line += attribute;
+            }
+            return line+")";
+        }else
+            throw new Exception("Condition row out of bounds.");
     }
     
     

@@ -19,7 +19,7 @@ public class Interpreter {
      * @return  
      * @throws Exception 
      */
-    public int Interpret(Program p) throws Exception{
+    public double Interpret(Program p) throws Exception{
         char result = 0;
         if(p != null){
             Stack<Integer> row  = FlyWeight.getInstance().getStackInteger();
@@ -39,7 +39,7 @@ public class Interpreter {
      * @throws Exception 
      */
     
-    private int _interpretMain(Program prog,Stack<Integer> row,Stack<Integer> pos) throws Exception{
+    private double _interpretMain(Program prog,Stack<Integer> row,Stack<Integer> pos) throws Exception{
         if(row != null && pos != null && !row.empty() && !pos.empty()){
             int r,p;
             do{
@@ -78,7 +78,7 @@ public class Interpreter {
         
     }
     
-    private int _interpretCondition(char[][] cond,int row,int pos) throws Exception{
+    private double _interpretCondition(char[][] cond,int row,int pos) throws Exception{
         if(cond != null){ 
             if(row < cond.length && pos < cond[row].length){
                 switch(cond[row][pos]){
@@ -99,11 +99,11 @@ public class Interpreter {
                     case Meta.MULTIPLICATION:
                         return _interpretCondition(cond, row+1, pos << 1 ) * _interpretCondition(cond, row+1, (pos << 1) +1 );
                     case Meta.BITWISE_AND:
-                        return _interpretCondition(cond, row+1, pos << 1 ) & _interpretCondition(cond, row+1, (pos << 1) +1 );
+                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1 )) &  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) + 1));
                     case Meta.BITWISE_OR:
-                        return _interpretCondition(cond, row+1, pos << 1 ) | _interpretCondition(cond, row+1, (pos << 1) +1 );
+                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1 )) |  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) + 1));
                     case Meta.BITWISE_XOR:
-                        return _interpretCondition(cond, row+1, pos << 1 ) ^ _interpretCondition(cond, row+1, (pos << 1) +1 );
+                        return (int)Math.round(_interpretCondition(cond, row+1, pos << 1 )) ^  (int)Math.round(_interpretCondition(cond, row+1, (pos << 1) + 1));
                     case Meta.LOGICAL_AND:
                         return (_interpretCondition(cond, row+1, pos << 1 ) != 0) && (_interpretCondition(cond, row+1, (pos << 1) +1 ) != 0) ? 1 : 0;
                     case Meta.LOGICAL_OR:

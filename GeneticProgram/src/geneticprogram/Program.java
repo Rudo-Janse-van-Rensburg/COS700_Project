@@ -31,16 +31,13 @@ public class Program {
                     this.main[main_level][position_level]   = m[main_level][position_level];
                     for (int sub_level = 0; sub_level < Parameters.getInstance().getCondition_max_depth(); sub_level++) {
                         int sub_level_size = 1;
-                        for (int sub_position_level = 0; sub_position_level < sub_level_size; sub_position_level++) {
-                            this.conditions[main_level][position_level][sub_level][sub_position_level]  = c[main_level][position_level][sub_level][sub_position_level];
-                        }
+                        System.arraycopy(c[main_level][position_level][sub_level], 0, this.conditions[main_level][position_level][sub_level], 0, sub_level_size);
                         sub_level_size = sub_level_size << 1;
                     }
                 }
                 level_size = level_size << 1;
             }
-            for (int position_level = 0; position_level < level_size; position_level++)
-                    this.main[main_level][position_level]   = m[main_level][position_level];
+            System.arraycopy(m[main_level], 0, this.main[main_level], 0, level_size);
         }else
             throw new Exception("Program could not be instantiated correctly.");
     }
@@ -51,7 +48,11 @@ public class Program {
      * @throws Exception 
      */
     public void copy(Program copy) throws Exception{
-        _copy(copy.main,copy.conditions);
+        if(copy != null){
+            _copy(copy.main,copy.conditions);
+        }else 
+            throw new Exception("Cannot copy null Program");
+        
     }
     
     /**

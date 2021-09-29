@@ -17,13 +17,32 @@ public class GeneticProgram {
     public static void main(String[] args) {
         // TODO code application logic here
        try{
-           Parameters.setParameters(5, 5, 5, 20, 2, 0.6, 0.3, 0.05, 0.05);
+           /**
+            * @param mg     - max generation
+            * @param kf
+            * @param mmd    - main max depth
+            * @param cmd    - condition max depth
+            * @param ps     - population size
+            * @param ts     - tournament size
+            * @param cc     - crossover chance
+            * @param mc     - mutation chance
+            * @param hc     - hoist chance
+            * @param ec     - edit chance
+            * @return Parameters singleton.
+            * @throws Exception
+            */
+           Parameters.setParameters(20,5, 5, 3, 1, 2, 0.6, 0.3, 0.05, 0.05);
            
-           Evolution evolution = Evolution.getInstance();
-           evolution.createInitialPopulation();
-           
+           Evolution evolution  = Evolution.getInstance(); 
+           evolution.print();
+           //String str_prg       = Util.getInstance().toString(prog);
+           //System.out.println(str_prg);
+           while(false && evolution.evolveGeneration()){
+               //evolution.print();
+           }
+           Program prog         = evolution.getBest_program();
        }catch(Exception e){
-           System.err.println("Error    :   "+e.getMessage());
+           e.printStackTrace(); 
        }
        
     }

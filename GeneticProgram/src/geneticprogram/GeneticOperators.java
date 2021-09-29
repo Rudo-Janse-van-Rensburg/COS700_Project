@@ -207,7 +207,7 @@ public class GeneticOperators {
      * @throws Exception     
      */
     private static void _createMain(Program prog,int max_depth,int start_level, int start_pos,boolean full) throws Exception{
-        if(max_depth > 2 && max_depth <= Parameters.getInstance().getMain_max_depth()){ 
+        if(max_depth >= 2 && max_depth <= Parameters.getInstance().getMain_max_depth()){ 
             char [][][][] condition_tree    = prog.getConditions();
             char [][]     main_tree         = prog.getMain();
             Stack<Integer> level_stack      = FlyWeight.getInstance().getStackInteger();
@@ -220,8 +220,8 @@ public class GeneticOperators {
             do{ 
                 level       = level_stack.pop();
                 position    = position_stack.pop();
-                if(level <= max_depth){
-                    if(level < max_depth){
+                if(level <= max_depth - 1){
+                    if(level < max_depth - 1){
                         if(full){ 
                             to_add  = Meta.MAINS[Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length)];
                         }else{  
@@ -229,8 +229,7 @@ public class GeneticOperators {
                             to_add  = pos < Meta.MAINS.length ? Meta.MAINS[pos] : (char)pos;
                         }
                     }else{
-                        
-                        to_add = (char) (Meta.MAINS.length +Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses()-1));
+                        to_add = (char) (Meta.MAINS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses()));
                     }
                     switch(to_add){
                         case Meta.IF:
@@ -242,8 +241,7 @@ public class GeneticOperators {
                             }
                             break;
                         default:
-                            main_tree[level][position]      = to_add;
-                            condition_tree[level][position] = null;
+                            main_tree[level][position]      = to_add; 
                             break;
                     }
                 } 
@@ -261,37 +259,44 @@ public class GeneticOperators {
      * @throws Exception 
      */
     private static void _createCondition(char[][] condtion, int max_depth, int start_level, int start_pos,boolean full) throws Exception{
-        if(max_depth > 2 && max_depth <= Parameters.getInstance().getCondition_max_depth()){
+        if(max_depth >= 2 && max_depth <=  Parameters.getInstance().getCondition_max_depth()){
             Stack<Integer> level_stack      = FlyWeight.getInstance().getStackInteger();
             Stack<Integer> position_stack   = FlyWeight.getInstance().getStackInteger();
             level_stack.push(start_level); 
             position_stack.push(start_pos);
             int level,
-                position; 
+                position,
+                condition_range;  
             char to_add = 0;
             do{
-                level       = level_stack.pop();
-                position    = position_stack.pop();
-                if(level <= max_depth){
-                    if(level < max_depth){
-                        if(full){
-                            to_add  = Meta.CONDITIONS[Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length)];
-                        }else{
-                            int pos = Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes());
-                            to_add  = (char)(pos < Meta.CONDITIONS.length ? Meta.CONDITIONS[pos]: pos);  
-                        }
-                    }else{
-                        to_add  = (char)(Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes()));
-                    }
-                    if((int) (to_add)  < Meta.CONDITIONS.length){
+                level           = level_stack.pop();
+                position        = position_stack.pop();
+                condition_range = 0;
+                if(level >= 0 && level <  max_depth && position <= (1 << level)){
+                    if(Parameters.getInstance().getCondition_max_depth() == 1){
+                        to_add =  (char) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0,Data.initialiseData().getNumberAttributes()));
+                    }else if(level ==0){
+                        to_add  = Meta.CONDITIONS[Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length)]; 
+                    }else if(level > 0 && level < max_depth - 1 && full){
+                        to_add  = Meta.CONDITIONS[Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length)]; 
+                    }else if(level > 0 && level < max_depth - 1 && !full){
+                        to_add  = (char) (Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length) + Data.initialiseData().getNumberAttributes()); 
+                    }else {// if(level == max_depth - 1){
+                        to_add  = (char) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0,Data.initialiseData().getNumberAttributes()));
+                    } 
+                    
+                    
+                    if(to_add >= 0 && to_add  <= Meta.CONDITIONS[Meta.CONDITIONS.length-1]){
                         condtion[level][position]   = to_add;
-                        for (int i = 0; i < 2; i++) {
+                        for(int i = 0; i < 2; i++) {
                             level_stack.push(level+1);
                             position_stack.push((position << 1)+i);
                         }
-                    }else{
+                    }else if(to_add >= Meta.CONDITIONS.length && to_add < Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes()){ 
                         condtion[level][position]   = to_add;
-                    } 
+                    }else{
+                        throw new Exception("Invalid Condition primitive.");
+                    }
                 } 
             }while(!level_stack.empty() && !position_stack.empty());
         }else 

@@ -2,7 +2,8 @@ package geneticprogram;
 
 public class Parameters {
     
-    private static int main_max_depth           = 10,           // the maximum dpeth of the main program tree
+    private static int max_generation           = 50,
+                       main_max_depth           = 10,           // the maximum dpeth of the main program tree
                        condition_max_depth      = 5,            //
                        population_size          = 200,
                        tournament_size          = 2,
@@ -12,7 +13,8 @@ public class Parameters {
                             mutation_chance     = 30,
                             hoist_chance        = 10,
                             edit_chance         = 10;
-    private Parameters(int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) {
+    private Parameters(int mg,int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) {
+        Parameters.max_generation         = mg;
         Parameters.k_folds                = kf;
         Parameters.main_max_depth         = mmd;
         Parameters.condition_max_depth    = cmd;
@@ -37,9 +39,10 @@ public class Parameters {
      * @return Parameters singleton.
      * @throws Exception
      */
-    public static Parameters setParameters(int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) throws Exception{
+    public static Parameters setParameters(int mg,int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) throws Exception{
         if(mmd > 2 && cmd > 0 && ps > 0 && ts > 0){
             if(singleton != null){
+                Parameters.max_generation        = mg;
                 Parameters.k_folds               = kf;
                 Parameters.main_max_depth        = mmd;
                 Parameters.condition_max_depth   = cmd;
@@ -48,10 +51,9 @@ public class Parameters {
                 Parameters.crossover_chance      = cc;
                 Parameters.mutation_chance       = mc;
                 Parameters.hoist_chance          = hc;
-                Parameters.edit_chance           = ec;
-                
+                Parameters.edit_chance           = ec; 
             }else
-                singleton = new Parameters(kf,mmd,cmd,ps,ts,cc,mc,hc,ec);
+                singleton = new Parameters(mg,kf,mmd,cmd,ps,ts,cc,mc,hc,ec);
             return singleton;
         }else
             throw new Exception("Invalid parameter values.");
@@ -71,6 +73,12 @@ public class Parameters {
             throw new Exception("Parameters have not been set.");
     }
 
+    /**
+     * @return max generation
+     */
+    public int getMax_generation() {
+        return max_generation;
+    }
     
     /**
      * @return number of folds

@@ -2,7 +2,7 @@ package geneticprogram;
 
 public class Meta {  
     
-                                
+    public static boolean debug                     = true;    
     public static final char    /*IF*/
                                 IF                  = (char) 0;
     
