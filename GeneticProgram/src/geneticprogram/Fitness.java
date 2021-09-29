@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Fitness {
-    public static final byte f1         = 0,
+    public static final byte 
+                      f1                = 0,
                       recall            = 1,
                       precision         = 2,
                       accuracy          = 3;
@@ -65,8 +66,7 @@ public class Fitness {
         int[] tp, fp, fn; 
         double[] instance;
         for (int k = 0; k < Parameters.getInstance().getK_folds(); k++) {
-            prec    = 0;
-            rec     = 0;
+            
 
             List<double[]> data = Data.initialiseData().getFold(k);
             tp  = new int[number_classes];
@@ -89,19 +89,21 @@ public class Fitness {
                     fp[output] += 1;
                 } 
             } 
+            prec    = 0;
+            rec     = 0;
             for (int c = 0; c < number_classes; c++) {
                 if(tp[c] > 0  || fp[c] > 0){
-                    prec +=  tp[c] / 1.0*(tp[c]+fp[c]);     
+                    prec +=  tp[c] / (1.0*(tp[c]+fp[c]));     
                 }
                 if(tp[c] > 0  || fn[c] > 0){
-                    rec +=  tp[c] / 1.0*(tp[c]+fn[c]);     
+                    rec +=  tp[c] / (1.0*(tp[c]+fn[c]));     
                 }
             } 
-            prec /= 1.0*number_classes; 
-            rec /= 1.0*number_classes; 
-            avg_f1 += 2.0 * (prec * rec)/1.0*(prec + rec); 
+            prec /= (1.0*number_classes); 
+            rec /= (1.0*number_classes); 
+            avg_f1 += (2.0 * (prec * rec)/(1.0*(prec + rec))); 
         }  
-        avg_f1 /= Parameters.getInstance().getK_folds()*1.0;
+        avg_f1 /= (Parameters.getInstance().getK_folds()*1.0);
         
         return avg_f1;
     }

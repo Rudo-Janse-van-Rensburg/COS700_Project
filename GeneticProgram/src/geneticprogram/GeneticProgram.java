@@ -36,7 +36,7 @@ public class GeneticProgram {
            Program prog = new Program();
            GeneticOperators.full(prog, Parameters.getInstance().getMain_max_depth());
            System.out.println(Util.getInstance().toString(prog));
-           System.out.println("Fitness  :   "+Fitness.getInstance(Fitness.f1).evaluate(prog));
+           System.out.format("Fitness  :   %f\n",Fitness.getInstance(Fitness.f1).evaluate(prog));
        }catch(Exception e){
            e.printStackTrace(); 
        }
