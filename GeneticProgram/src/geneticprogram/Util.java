@@ -53,7 +53,21 @@ public class Util {
                            positions.add(2*position + i);
                        }
                        break;
+                   case Meta.LESS_OR_EQUAL:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
                    case Meta.EQUAL:
+                       points.add(new int[]{level,position});
+                       for (int i = 0; i < 2; i++) {
+                           levels.add(level + 1);
+                           positions.add(2*position + i);
+                       }
+                       break;
+                   case Meta.NOT_EQUAL:
                        points.add(new int[]{level,position});
                        for (int i = 0; i < 2; i++) {
                            levels.add(level + 1);
@@ -134,7 +148,6 @@ public class Util {
             return points;
         }else
             throw new Exception("Can not get points of an empty tree.");
-        
     } 
     
     public String toString(Program prog) throws Exception{
@@ -147,7 +160,7 @@ public class Util {
             char ch = main[row][pos]; 
             switch(ch){
                 case Meta.IF:
-                    line += level + "IF" +toStringCondition(prog,row,pos,0, 0) + "\n{";
+                    line += level + "IF" +toStringCondition(prog,row,pos,0, 0) + "{\n";
                     line += level + toStringMain(level + " ",prog,main,row+1,(pos << 1)  + 0) + "\n";
                     line += level + "} ELSE {\n";
                     line += level + toStringMain(level + " ",prog,main,row+1,(pos << 1) + 1) + "\n";

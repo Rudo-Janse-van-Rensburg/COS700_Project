@@ -25,7 +25,42 @@ public class Data {
         }
         return singleton;
     }
+
     
+    public List<double[]> getFold(int fold) throws Exception{
+        int sample_size =  (int) Math.floor(number_instances/Parameters.getInstance().getK_folds()*1.0);
+        return data.subList(fold * sample_size, (fold * sample_size) + sample_size);
+    }
+    /**
+     * 
+     * @param file
+     * @throws FileNotFoundException 
+     */
+    private void readFile(String file) throws Exception{
+        number_instances    = 0; 
+        number_classes      = 0;
+        Scanner sc          = new Scanner(new File(file));
+        String[] line       = sc.nextLine().split(",");
+        number_attributes   = line.length - 1;
+        double [] instance;
+        int cls;
+        while(sc.hasNextLine()){
+            instance = new double[number_attributes + 1];
+            line = sc.nextLine().split(",");
+            for (int i = 0; i < number_attributes + 1; i++) {
+                instance[i] = Double.parseDouble(line[i]);
+            } 
+            data.add(instance); 
+            cls = (int) instance[number_attributes];
+            if(cls + 1 > number_classes){
+                number_classes = cls + 1;
+            }
+            ++number_instances;
+        }
+        sc.close(); 
+    }
+    
+        
     /**
      * @return 
      */
@@ -40,41 +75,12 @@ public class Data {
         Randomness.getInstance().reseed();
         Randomness.getInstance().shuffle(data);
     }
-    
-    public List<double[]> getFold(int fold) throws Exception{
-        int sample_size =  (int) Math.floor(number_instances/Parameters.getInstance().getK_folds()*1.0);
-        return data.subList(fold * sample_size, (fold * sample_size) + sample_size);
-    }
-    /**
-     * 
-     * @param file
-     * @throws FileNotFoundException 
-     */
-    private void readFile(String file) throws FileNotFoundException{
-        HashMap<Double,Double> unique_classes = new HashMap<>();
-        Scanner sc = new Scanner(new File(file));
-        String[] line = sc.nextLine().split(",");
-        number_attributes    = line.length - 1;
-        double [] instance;
-        double cls;
-        while(sc.hasNextLine()){
-            instance = new double[number_attributes + 1];
-            line = sc.nextLine().split(",");
-            for (int i = 0; i < number_attributes + 1; i++) {
-                instance[i] = Double.parseDouble(line[i]);
-            } 
-            data.add(instance); 
-            unique_classes.put(instance[number_attributes], instance[number_attributes]); 
-        }
-        sc.close();
-        number_attributes = unique_classes.size();
-    }
 
     /**
      * @return number of classes
      */
     public int getNumberClasses() {
-        return number_attributes;
+        return number_classes;
     }
     
     /**

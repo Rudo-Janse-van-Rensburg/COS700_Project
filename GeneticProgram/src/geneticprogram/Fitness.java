@@ -57,15 +57,23 @@ public class Fitness {
     } 
     
     private static double _f1(Program prog) throws Exception{ 
-        int number_classes  = Data.initialiseData().getNumberClasses(),target,output;
+        int number_classes  = Data.initialiseData().getNumberClasses(),
+                target,
+                output,
+                fold_instances = (int) Math.ceil(Data.initialiseData().getNumber_instances()/Parameters.getInstance().getK_folds()*1.0); 
+        if(Meta.debug){
+            System.out.println("fold instances  : "+fold_instances);
+            System.out.println("number classes  : "+number_classes);
+        }
+        
         double  avg_f1 = 0,prec = 0, rec = 0;
         int[] tp, fp, fn; 
         double[] instance;
         for (int k = 0; k < Parameters.getInstance().getK_folds(); k++) {
-            prec = 0;
-            rec = 0;
+            prec    = 0;
+            rec     = 0;
 
-            List<double[]> data =Data.initialiseData().getFold(k);
+            List<double[]> data = Data.initialiseData().getFold(k);
             tp  = new int[number_classes];
             fp  = new int[number_classes];
             fn  = new int[number_classes];
@@ -74,10 +82,11 @@ public class Fitness {
                 fp[i] = 0;
                 fn[i] = 0;
             }*/
-            for (int i = 0; i < (int) Math.floor(Data.initialiseData().getNumber_instances()/Parameters.getInstance().getK_folds()); i++) {
+            for (int i = 0; i < fold_instances; i++) {
                 instance    = data.get(i);
                 target      = (int)instance[Data.initialiseData().getNumberAttributes()];
                 output      = (int)Interpreter.getInstance().Interpret(prog,instance);
+                
                 if(target == output) 
                     tp[output] += 1;
                 else{
@@ -93,9 +102,11 @@ public class Fitness {
                     rec =  tp[c] / (tp[c]+fn[c]);     
                 }
             }
-            System.out.println("tp  : "+Arrays.toString(tp));
-            System.out.println("fp  : "+Arrays.toString(fp));
-            System.out.println("fn  : "+Arrays.toString(fn));
+            if(Meta.debug){
+                System.out.println("tp  : "+Arrays.toString(tp));
+                System.out.println("fp  : "+Arrays.toString(fp));
+                System.out.println("fn  : "+Arrays.toString(fn));
+            }
             prec /= number_classes; 
             rec /= number_classes; 
             avg_f1 += 2.0 * (prec * rec)/(prec + rec); 

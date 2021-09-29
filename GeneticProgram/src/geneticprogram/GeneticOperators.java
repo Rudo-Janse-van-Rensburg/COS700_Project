@@ -220,21 +220,23 @@ public class GeneticOperators {
             do{ 
                 level       = level_stack.pop();
                 position    = position_stack.pop();
-                if(level <= max_depth - 1){
-                    if(level < max_depth - 1){
-                        if(full){ 
-                            to_add  = Meta.MAINS[Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length)];
-                        }else{  
-                            int pos = Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length +  Data.initialiseData().getNumberClasses());
-                            to_add  = pos < Meta.MAINS.length ? Meta.MAINS[pos] : (char)pos;
+                if(level >= 0 && level < max_depth){
+                    if(level == 0)
+                        to_add  = Meta.MAINS[Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length)]; 
+                    else if(level > 0 && level < max_depth -1){
+                        if(full){
+                            to_add = Meta.MAINS[Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length)]; 
+                        }else{
+                             to_add = (char) Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length + Data.initialiseData().getNumberClasses()); 
                         }
-                    }else{
-                        to_add = (char) (Meta.MAINS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses()));
+                    }else {
+                        to_add = (char) (Meta.MAINS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses())); 
                     }
+                    
                     switch(to_add){
                         case Meta.IF:
                             main_tree[level][position]      = to_add;
-                            _createCondition(condition_tree[level][position],Parameters.getInstance().getCondition_max_depth(),0,0,true);
+                            _createCondition(condition_tree[level][position],Parameters.getInstance().getCondition_max_depth(),0,0,full);
                             for (int i = 0; i < 2; i++) {
                                 level_stack.push(level+1); 
                                 position_stack.push((position << 1)+i);
@@ -244,7 +246,8 @@ public class GeneticOperators {
                             main_tree[level][position]      = to_add; 
                             break;
                     }
-                } 
+                }else
+                    throw new Exception("Invalid Main dimensions."); 
             }while(!level_stack.empty() && !position_stack.empty()); 
         }else
             throw new Exception("Depth of main program to create is invalid.");
@@ -267,26 +270,29 @@ public class GeneticOperators {
             int level,
                 position,
                 condition_range;  
-            char to_add = 0;
+            char to_add; 
             do{
                 level           = level_stack.pop();
                 position        = position_stack.pop();
                 condition_range = 0;
                 if(level >= 0 && level <  max_depth && position <= (1 << level)){
-                    if(Parameters.getInstance().getCondition_max_depth() == 1){
-                        to_add =  (char) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0,Data.initialiseData().getNumberAttributes()));
-                    }else if(level ==0){
-                        to_add  = Meta.CONDITIONS[Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length)]; 
-                    }else if(level > 0 && level < max_depth - 1 && full){
-                        to_add  = Meta.CONDITIONS[Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length)]; 
-                    }else if(level > 0 && level < max_depth - 1 && !full){
-                        to_add  = (char) (Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length) + Data.initialiseData().getNumberAttributes()); 
-                    }else {// if(level == max_depth - 1){
+                    if(level == 0 ){
+                        if(Parameters.getInstance().getCondition_max_depth() > 1){
+                            to_add  =  Meta.CONDITIONS[Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length)]; 
+                        }else{
+                            to_add =  (char) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0,Data.initialiseData().getNumberAttributes()));
+                        }
+                    }else if(level > 0 && level < max_depth - 1){
+                        if(full){
+                            to_add  =  Meta.CONDITIONS[Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length)]; 
+                        }else{
+                            to_add  = (char) Randomness.getInstance().getRandomIntExclusive(0, Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes());
+                        }
+                    }else{
                         to_add  = (char) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0,Data.initialiseData().getNumberAttributes()));
                     } 
                     
-                    
-                    if(to_add >= 0 && to_add  <= Meta.CONDITIONS[Meta.CONDITIONS.length-1]){
+                    if(to_add >= 0 && to_add  < Meta.CONDITIONS.length ){
                         condtion[level][position]   = to_add;
                         for(int i = 0; i < 2; i++) {
                             level_stack.push(level+1);
@@ -297,7 +303,8 @@ public class GeneticOperators {
                     }else{
                         throw new Exception("Invalid Condition primitive.");
                     }
-                } 
+                }else
+                    throw new Exception("Invalid Condition dimensions.");
             }while(!level_stack.empty() && !position_stack.empty());
         }else 
             throw new Exception("Depth of condition to create is invalid.");

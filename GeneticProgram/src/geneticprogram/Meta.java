@@ -4,7 +4,7 @@ public class Meta {
     
     public static boolean debug                     = true;    
     public static final char    /*IF*/
-                                IF                  = (char) 0;
+                                IF                  = 0;
     
                                 /*FUNCTION IN THE MAIN BRANCH*/
     public static final char[]  MAINS               = new char[]{
@@ -12,24 +12,24 @@ public class Meta {
                                                     };
     
     public static final char    /*RELATION*/ 
-                                GREATER_THAN        = (char) 0,
-                                LESS_THAN           = (char) 1,
-                                GREATER_OR_EQUAL    = (char) 2,
-                                LESS_OR_EQUAL       = (char) 3,
-                                EQUAL               = (char) 4,
-                                NOT_EQUAL           = (char) 5,
+                                GREATER_THAN        = 0,
+                                LESS_THAN           = 1,
+                                GREATER_OR_EQUAL    = 2,
+                                LESS_OR_EQUAL       = 3,
+                                EQUAL               = 4,
+                                NOT_EQUAL           = 5,
                                 /*ARITHMETIC*/
-                                ADDITION            = (char) 6,
-                                SUBTRACTION         = (char) 7,
-                                DIVISION            = (char) 8,
-                                MULTIPLICATION      = (char) 9,
+                                ADDITION            = 6,
+                                SUBTRACTION         = 7,
+                                DIVISION            = 8,
+                                MULTIPLICATION      = 9,
                                 /*BITWISE*/         
-                                BITWISE_AND         = (char) 10,
-                                BITWISE_OR          = (char) 11,
-                                BITWISE_XOR         = (char) 12, 
+                                BITWISE_AND         = 10,
+                                BITWISE_OR          = 11,
+                                BITWISE_XOR         = 12, 
                                 /*LOGICAL*/
-                                LOGICAL_AND         = (char) 13,
-                                LOGICAL_OR          = (char) 14;
+                                LOGICAL_AND         = 13,
+                                LOGICAL_OR          = 14;
                                 
                                 /*FUNCTIONS IN THE CONDITION BRANCH*/
     public static final char[]  CONDITIONS          = new char[]{

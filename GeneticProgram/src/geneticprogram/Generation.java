@@ -20,10 +20,7 @@ public class Generation {
     public boolean add(Program individual) throws Exception{
         if(capacity < population.length){
             population[capacity]    = individual;
-            fitnesses[capacity]     = Fitness.getInstance(Fitness.f1).evaluate(individual);
-            if(Meta.debug){
-                System.out.println(""+fitnesses[capacity]);
-            }
+            fitnesses[capacity]     = Fitness.getInstance(Fitness.f1).evaluate(individual); 
             total_fitness           += fitnesses[capacity];
             ++capacity;
             return true;

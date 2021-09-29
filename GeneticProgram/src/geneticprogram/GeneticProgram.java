@@ -31,16 +31,12 @@ public class GeneticProgram {
             * @return Parameters singleton.
             * @throws Exception
             */
-           Parameters.setParameters(1,3, 2, 1, 1, 2, 0.6, 0.3, 0.05, 0.05);
+           Parameters.setParameters(1,1, 3, 2, 1, 2, 0.6, 0.3, 0.05, 0.05);
            
-           Evolution evolution  = Evolution.getInstance(); 
-           evolution.print();
-           //String str_prg       = Util.getInstance().toString(prog);
-           //System.out.println(str_prg);
-           while(false && evolution.evolveGeneration()){
-               //evolution.print();
-           }
-           Program prog         = evolution.getBest_program();
+           Program prog = new Program();
+           GeneticOperators.full(prog, Parameters.getInstance().getMain_max_depth());
+           System.out.println(Util.getInstance().toString(prog));
+           System.out.println("Fitness  :   "+Fitness.getInstance(Fitness.f1).evaluate(prog));
        }catch(Exception e){
            e.printStackTrace(); 
        }
