@@ -37,13 +37,13 @@ public class Evolution {
     private void createInitialPopulation() throws Exception{  
         curr.recycle();
         next.recycle();
-        generation  = 0;
+        generation  = 0; 
         double fitness = 0;
         int depths  = Parameters.getInstance().getMain_max_depth() - 2;                             //number of depths 
         int ipg     = (int) Math.floor(Parameters.getInstance().getPopulation_size() / depths * 1.0);   //individuals per generation 
             
         if(Meta.debug){
-            System.out.format("Depths   : [2,%d]\n",2 + depths);
+            //System.out.format("Depths   : [2,%d]\n",2 + depths);
             System.out.println("CREATING INITIAL POPULATION...");
         }
         boolean has_capcity = true; 
@@ -90,23 +90,38 @@ public class Evolution {
      */
     public boolean evolveGeneration() throws Exception{
         if(!curr.isEmpty()){
-            if(generation < Parameters.getInstance().getMax_generation()){
+            if(generation + 1 < Parameters.getInstance().getMax_generation()){
                 next.recycle();
-                int num_crossover = (int) Math.floor(Parameters.getInstance().getCrossover_chance()  * Parameters.getInstance().getPopulation_size());
-                int num_mutation  = (int) Math.floor(Parameters.getInstance().getMutation_chance()   * Parameters.getInstance().getPopulation_size());
-                int num_hoist     = (int) Math.floor(Parameters.getInstance().getHoist_chance()      * Parameters.getInstance().getPopulation_size());
-                int num_edit      = (int) Math.floor(Parameters.getInstance().getEdit_chance()       * Parameters.getInstance().getPopulation_size());
-
+                int num_crossover = (int) Math.ceil(Parameters.getInstance().getCrossover_chance()  * Parameters.getInstance().getPopulation_size());
+                int num_mutation  = (int) Math.ceil(Parameters.getInstance().getMutation_chance()   * Parameters.getInstance().getPopulation_size());
+                int num_hoist     = (int) Math.ceil(Parameters.getInstance().getHoist_chance()      * Parameters.getInstance().getPopulation_size());
+                int num_edit      = (int) Math.ceil(Parameters.getInstance().getEdit_chance()       * Parameters.getInstance().getPopulation_size());
+                if(Meta.debug){
+                    System.out.format("number crossover  : %d\n",num_crossover);
+                    System.out.format("number mutation   : %d\n",num_mutation);
+                    System.out.format("number hoist      : %d\n",num_hoist);
+                    System.out.format("number edit       : %d\n",num_edit);
+                }
                 boolean has_capcity =  true;
                 do{
-                    if(num_crossover > 0){
+                    if(has_capcity && num_crossover > 0){
                         Program a = FlyWeight.getInstance().getProgram();
                         a.copy(Selection.getInstance(Selection.tournament).select(curr));
                         Program b = FlyWeight.getInstance().getProgram();
                         b.copy(Selection.getInstance(Selection.tournament).select(curr));
-
+                        if(Meta.debug){
+                            System.out.println("CROSSOVER   :");
+                            System.out.format("Parent A    : \n\n%s\n",Util.getInstance().toString(a));
+                            System.out.format("Parent B    : \n\n%s\n",Util.getInstance().toString(b));
+                            
+                        }
                         GeneticOperators.crossover(a, b);
-
+                        if(Meta.debug){
+                            System.out.format("Child A    : \n\n%s\n",Util.getInstance().toString(a));
+                            System.out.format("Child B    : \n\n%s\n",Util.getInstance().toString(b));
+                            
+                        }
+                        
                         has_capcity = has_capcity && next.add(a);
                         has_capcity = has_capcity && next.add(b);
                     }
@@ -172,6 +187,7 @@ public class Evolution {
         System.out.println("=======================================");
         System.out.format("GENERATION   #%d%n",generation);
         System.out.println("---------------------------------------");
+        System.out.format("     avergage fitness    : %f\n",curr.getAverage_fitness());
         System.out.println("    fitnesses       :   " + Arrays.toString(curr.getFitnesses()));
         System.out.format("    best fitness    :   %f\n",best_fitness);
         System.out.format("    best program    :   \n%s\n",Util.getInstance().toString(best_program));

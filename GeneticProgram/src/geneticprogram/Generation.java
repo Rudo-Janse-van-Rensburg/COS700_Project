@@ -1,6 +1,5 @@
 package geneticprogram;
  
-import java.lang.reflect.Parameter;
 
 public class Generation {
     private final Program[] population;
@@ -54,6 +53,14 @@ public class Generation {
         }else 
             return false;
         
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public double getAverage_fitness(){
+        return total_fitness / (1.0 * capacity);
     }
     
     /**

@@ -31,12 +31,11 @@ public class GeneticProgram {
             * @return Parameters singleton.
             * @throws Exception
             */
-           Parameters.setParameters(1,1, 3, 2, 1, 2, 0.6, 0.3, 0.05, 0.05);
+           Parameters.setParameters(2,1, 3, 2, 1, 2, 0.6, 0.3, 0.05, 0.05);
            Evolution evolution = Evolution.getInstance();
-           evolution.print();
-           while(false && evolution.evolveGeneration()){
+           do{
                evolution.print();
-           } 
+           }while(evolution.evolveGeneration()); 
        }catch(Exception e){
            e.printStackTrace(); 
        }

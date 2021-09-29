@@ -45,10 +45,10 @@ public class Selection {
     private static Program _tournament(Generation generation) throws Exception{
         ArrayList<Integer> competitors = new ArrayList<>();
         do{
-            Integer pos = Randomness.getInstance().getRandomIntExclusive(0,generation.getCapacity());
+            int pos = Randomness.getInstance().getRandomIntExclusive(0,generation.getCapacity());
             if(!competitors.contains(pos)) 
                 competitors.add(pos);
-        }while(competitors.size() < Parameters.getInstance().getTournament_size());
+        }while(competitors.size() < Parameters.getInstance().getTournament_size() && competitors.size()  < Parameters.getInstance().getPopulation_size());
         double fitness  = -1;
         Program prog    = null;
         for(int competitor: competitors) 
@@ -63,7 +63,7 @@ public class Selection {
             Integer pos = Randomness.getInstance().getRandomIntExclusive(0,generation.getCapacity());
             if(!competitors.contains(pos)) 
                 competitors.add(pos);
-        }while(competitors.size() < Parameters.getInstance().getTournament_size());
+        }while(competitors.size() < Parameters.getInstance().getTournament_size() && competitors.size()  < Parameters.getInstance().getPopulation_size());
         double fitness  = Integer.MAX_VALUE;
         Program prog    = null;
         for(int competitor: competitors)
