@@ -32,7 +32,7 @@ public class GeneticProgram {
             * @throws Exception
             */
            Parameters.setParameters(
-                   1,
+                   2,
                    1, 
                    10, 
                    3, 
@@ -43,8 +43,8 @@ public class GeneticProgram {
                    0.05, 
                    0.05
            ); 
-           
-            for (int depth = 2; depth < 5; depth++) {
+            /*
+            for (int depth = 2; depth < 8; depth++) {
             //for (int depth = 2; depth < 4; depth++) {
                 System.out.format("DEPTH    %d\n",depth);
                 System.out.println("=======================================");
@@ -76,14 +76,14 @@ public class GeneticProgram {
                 }
                 System.out.println("=======================================");
             }
+            */
            
            
-           /*
            Evolution evolution = Evolution.getInstance();
            do{
                evolution.print();
            }while(evolution.evolveGeneration()); 
-           */
+           
        }catch(Exception e){
            e.printStackTrace(); 
        }

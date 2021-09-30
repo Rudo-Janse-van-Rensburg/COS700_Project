@@ -36,6 +36,49 @@ public class GeneticOperators {
      */
     public static void mutate(Program prog) throws Exception{
         if(prog != null){
+            ArrayList<int[]> points;
+            int [] position;
+            if(Randomness.getInstance().getRandomBoolean()){
+                /*MUTATE MAIN TREE*/
+                points      = Util.getInstance().getPoints(prog.getMain(),true);
+                position    = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                if(false && Meta.debug){
+                    System.out.print("    main points : [" );
+                    for(int[] point : points){
+                        System.out.print(""+Arrays.toString(point));
+                    }
+                    System.out.print("]\n");
+                }
+                
+                _createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], false);
+            }else{
+                /*MUTATE CONDITION SUB-TREE*/
+                points      = Util.getInstance().getMains(prog.getMain());
+                position    = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
+                points                  = Util.getInstance().getPoints(ptr_condition,false);
+                if(false && Meta.debug){
+                    System.out.print("    cond points : [" );
+                    for(int[] point : points){
+                        System.out.print(""+Arrays.toString(point));
+                    }
+                    System.out.print("]\n");
+                } 
+                position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                
+                _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
+            } 
+        }else 
+            throw new Exception("Cannot mutate null program.");
+    }
+    
+    
+    /**
+     * @param prog          - program to mutate.
+     * @throws Exception 
+     */
+    public static void mutate_old(Program prog) throws Exception{
+        if(prog != null){
             ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),true);
             boolean mutate_main     = Randomness.getInstance().getRandomBoolean(); 
             int [] position         = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
