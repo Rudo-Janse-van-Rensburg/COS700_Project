@@ -88,23 +88,27 @@ public class Fitness {
                     fn[target] += 1;
                     fp[output] += 1;
                 } 
-            } 
+            }
+            if(false && Meta.debug){
+                System.out.println(" tp :   "+Arrays.toString(tp));
+                System.out.println(" fp :   "+Arrays.toString(fp));
+                System.out.println(" fn :   "+Arrays.toString(fn));
+            }
             prec    = 0;
             rec     = 0;
             for (int c = 0; c < number_classes; c++) {
                 if(tp[c] > 0  || fp[c] > 0){
-                    prec +=  tp[c] / (1.0*(tp[c]+fp[c]));     
+                    prec +=  (1.0*tp[c]) / (1.0*(tp[c]+fp[c]));     
                 }
                 if(tp[c] > 0  || fn[c] > 0){
-                    rec +=  tp[c] / (1.0*(tp[c]+fn[c]));     
+                    rec +=  (1.0*tp[c]) / (1.0*(tp[c]+fn[c]));     
                 }
             } 
             prec /= (1.0*number_classes); 
             rec /= (1.0*number_classes); 
             avg_f1 += (2.0 * (prec * rec)/(1.0*(prec + rec))); 
         }  
-        avg_f1 /= (Parameters.getInstance().getK_folds()*1.0);
-        
+        avg_f1 = avg_f1 > 0 ?  avg_f1/(1.0*Parameters.getInstance().getK_folds()) : 0; 
         return avg_f1;
     }
     

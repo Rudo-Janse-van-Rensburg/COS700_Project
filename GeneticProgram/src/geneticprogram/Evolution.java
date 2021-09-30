@@ -51,19 +51,19 @@ public class Evolution {
         Program prog;
         for (int depth = depths-1; has_capcity && depth >= 2; depth--) {
             if(Meta.debug && curr.getCapacity() < Parameters.getInstance().getPopulation_size()){
-                System.out.format("depth    :    %d\n",depth);
+                System.out.format("depth            :   %d\n",depth);
             }
             for (int individual = 0;has_capcity && individual < ipg; individual+=2) {
                 prog        = FlyWeight.getInstance().getProgram();
                 GeneticOperators.full(prog, depth);  
                 has_capcity = has_capcity && curr.add(prog);
-                if(Meta.debug && has_capcity && false){
+                if(false && Meta.debug && has_capcity){
                     System.out.format("full (%d,%d):   \n%s\n",curr.getCapacity(),Parameters.getInstance().getPopulation_size(),Util.getInstance().toString(prog));
                 }
                 prog        = FlyWeight.getInstance().getProgram();
                 GeneticOperators.grow(prog, depth);  
                 has_capcity = has_capcity && curr.add(prog);  
-                if(Meta.debug && has_capcity && false){
+                if(false && Meta.debug && has_capcity){
                     System.out.format("grow (%d,%d):   \n%s\n",curr.getCapacity(),Parameters.getInstance().getPopulation_size(),Util.getInstance().toString(prog));
                 }
             } 
@@ -99,18 +99,18 @@ public class Evolution {
                         a.copy(Selection.getInstance(Selection.tournament).select(curr));
                         Program b = FlyWeight.getInstance().getProgram();
                         b.copy(Selection.getInstance(Selection.tournament).select(curr));
-                        if(Meta.debug){
+                        /*if(Meta.debug && false){
                             System.out.println("CROSSOVER   :");
                             System.out.format("Parent A    : \n\n%s\n",Util.getInstance().toString(a));
                             System.out.format("Parent B    : \n\n%s\n",Util.getInstance().toString(b));
                             
-                        }
+                        }*/
                         GeneticOperators.crossover(a, b);
-                        if(Meta.debug){
+                        /*if(Meta.debug && false){
                             System.out.format("Child A    : \n\n%s\n",Util.getInstance().toString(a));
                             System.out.format("Child B    : \n\n%s\n",Util.getInstance().toString(b));
                             
-                        }
+                        }*/
                         
                         has_capcity = has_capcity && next.add(a);
                         has_capcity = has_capcity && next.add(b);
@@ -175,7 +175,7 @@ public class Evolution {
         System.out.format("    avergage fitness     :   %f\n",curr.getAverage_fitness());
         System.out.println("    fitnesses            :   " + Arrays.toString(curr.getFitnesses()));
         System.out.format("    best fitness         :   %f\n",best_fitness);
-        System.out.format("    best program         :   \n%s\n",Util.getInstance().toString(best_program));
+        //System.out.format("    best program         :   \n%s\n",Util.getInstance().toString(best_program));
         System.out.println("=======================================");
     }
     

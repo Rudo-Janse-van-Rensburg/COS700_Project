@@ -43,17 +43,20 @@ public class Selection {
     }
     
     private static Program _tournament(Generation generation) throws Exception{
-        ArrayList<Integer> competitors = new ArrayList<>();
-        do{
-            int pos = Randomness.getInstance().getRandomIntExclusive(0,generation.getCapacity());
-            if(!competitors.contains(pos)) 
-                competitors.add(pos);
-        }while(competitors.size() < Parameters.getInstance().getTournament_size() && competitors.size()  < Parameters.getInstance().getPopulation_size());
+        ArrayList<Integer> competitors  = FlyWeight.getInstance().getArrayListInt();
+        ArrayList<Integer> positions    = FlyWeight.getInstance().getArrayListInt();
+        for (int i = 0; i < generation.getCapacity(); i++) {
+            positions.add(i);
+        }
+        for (int i = 0; i < Parameters.getInstance().getTournament_size(); i++) {
+            competitors.add(positions.remove(Randomness.getInstance().getRandomIntExclusive(0,positions.size())));
+        } 
         double fitness  = -1;
         Program prog    = null;
         for(int competitor: competitors) 
             if(generation.getFitness(competitor) > fitness)
                 prog = generation.getIndividual(competitor);
+        FlyWeight.getInstance().addArrayListInt(competitors);
         return prog;
     }
     

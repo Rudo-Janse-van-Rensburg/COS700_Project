@@ -19,7 +19,7 @@ public class GeneticProgram {
        try{
            /**
             * @param mg     - max generation
-            * @param kf
+            * @param kf     - number of folds in k-cross-validation
             * @param mmd    - main max depth
             * @param cmd    - condition max depth
             * @param ps     - population size
@@ -31,7 +31,18 @@ public class GeneticProgram {
             * @return Parameters singleton.
             * @throws Exception
             */
-           Parameters.setParameters(2,1, 6, 2, 2, 2, 0.6, 0.3, 0.05, 0.05);
+           Parameters.setParameters(
+                   1,
+                   1, 
+                   3, 
+                   3, 
+                   100, 
+                   2, 
+                   0.6, 
+                   0.3, 
+                   0.05, 
+                   0.05
+           );
            Evolution evolution = Evolution.getInstance();
            do{
                evolution.print();

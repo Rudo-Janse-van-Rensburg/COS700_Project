@@ -79,7 +79,7 @@ public class Generation {
      * @return 
      */
     public double getAverage_fitness(){
-        return total_fitness / (1.0 * capacity);
+        return total_fitness > 0 ? total_fitness / (1.0 * capacity) : 0;
     }
     
     /**

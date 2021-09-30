@@ -6,6 +6,7 @@ import java.util.Stack;
 public class FlyWeight {
     private static FlyWeight singleton = null;
     private final ArrayList<ArrayList<int[]>>   al_int_arr;
+    private final ArrayList<ArrayList<Integer>> al_int;
     private final ArrayList<Stack<Integer>>     stack_int;
     private final ArrayList<char[][]>           char_arr_2D_m;
     private final ArrayList<char[][]>           char_arr_2D_c;
@@ -14,6 +15,7 @@ public class FlyWeight {
     private final ArrayList<Generation>         generations;
     private FlyWeight(){
         al_int_arr      = new ArrayList<>();
+        al_int          = new ArrayList<>();
         stack_int       = new ArrayList<>();
         char_arr_2D_m   = new ArrayList<>();
         char_arr_2D_c   = new ArrayList<>();
@@ -35,6 +37,32 @@ public class FlyWeight {
     }
     
     /**
+     * @return ArrayList<Integer>
+     */
+    public ArrayList<Integer> getArrayListInt(){
+        ArrayList<Integer> al;
+        if(al_int.isEmpty()){
+            al = new ArrayList<>();
+        }else{
+            al = al_int.remove(0);
+        }
+        al.clear();
+        return al;
+    }
+    
+    /**
+     * @param al
+     * @throws Exception 
+     */
+    public void addArrayListInt(ArrayList<Integer> al) throws Exception{
+        if(al != null){
+            al_int.add(al);
+        }else
+            throw new Exception("Cannot add a null ArrayList<Integer> object to flyweight. ");
+        
+    }
+    
+    /**
      * @return a Generation
      * @throws Exception 
      */
@@ -50,6 +78,7 @@ public class FlyWeight {
     
     /**
      * @param generation 
+     * @throws Exception 
      */
     public void addGeneration(Generation generation) throws Exception{
         if(generation != null){
