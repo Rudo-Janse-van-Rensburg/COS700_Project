@@ -13,6 +13,7 @@ public class FlyWeight {
     private final ArrayList<char[][][][]>       char_arr_4D;
     private final ArrayList<Program>            programs;
     private final ArrayList<Generation>         generations;
+    
     private FlyWeight(){
         al_int_arr      = new ArrayList<>();
         al_int          = new ArrayList<>();

@@ -44,25 +44,37 @@ public class GeneticProgram {
                    0.05
            ); 
            
-            for (int depth = 2; depth < 9; depth++) {
+            for (int depth = 2; depth < 5; depth++) {
             //for (int depth = 2; depth < 4; depth++) {
                 System.out.format("DEPTH    %d\n",depth);
-                System.out.println("---------------------------------------");
+                System.out.println("=======================================");
                 try{
-                    Program edit = FlyWeight.getInstance().getProgram();
-                    GeneticOperators.full(edit, depth);
-                    System.out.println("GROW    :");
-                    System.out.format("    fitness : %f\n",Fitness.getInstance(Fitness.f1).evaluate(edit));
-                    System.out.format("Full      :   \n%s\n",Util.getInstance().toString(edit));
-                    GeneticOperators.hoist(edit); 
-                    System.out.println("Hoist    :");
-                    System.out.format("    fitness : %f\n",Fitness.getInstance(Fitness.f1).evaluate(edit));
-                    System.out.format("Edit      :   \n%s\n",Util.getInstance().toString(edit));
+                    Program a = FlyWeight.getInstance().getProgram();
+                    Program b = FlyWeight.getInstance().getProgram();
+                    System.out.println("FULL   A :");
+                    GeneticOperators.full(a, depth);
+                    System.out.format("\n%s\n",Util.getInstance().toString(a));
+                    System.out.format("\n  fitness : %f\n\n",Fitness.getInstance(Fitness.f1).evaluate(a));
+                    
+                    System.out.println("FULL   B :");
+                    GeneticOperators.full(b, depth);
+                    System.out.format("\n%s\n",Util.getInstance().toString(b));
+                    System.out.format("\n  fitness : %f\n\n",Fitness.getInstance(Fitness.f1).evaluate(a));
+                    
+                    System.out.println("---------------------------------------");
+
+                    GeneticOperators.crossover(a, b);
+                    System.out.println("CROSSOVER A :"); 
+                    System.out.format("\n%s\n",Util.getInstance().toString(a));
+                    System.out.format("\n  fitness : %f\n\n",Fitness.getInstance(Fitness.f1).evaluate(a)); 
+                    
+                    System.out.println("CROSSOVER B :");  
+                    System.out.format("\n%s\n",Util.getInstance().toString(b));
+                    System.out.format("\n  fitness : %f\n\n",Fitness.getInstance(Fitness.f1).evaluate(b));
                 }catch(Exception e){
                     e.printStackTrace();
                 }
-                System.out.println("---------------------------------------");
-               
+                System.out.println("=======================================");
             }
            
            

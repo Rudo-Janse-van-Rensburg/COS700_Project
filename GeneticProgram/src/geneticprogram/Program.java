@@ -21,10 +21,10 @@ public class Program {
     private void _copy(char[][] m, char[][][][] c) throws Exception{
         if(m != null && c != null){  
             for (int main_depth = 0; main_depth < Parameters.getInstance().getMain_max_depth(); main_depth++) {
-                System.arraycopy(m[main_depth], 0, this.main[main_depth], 0, 1 << main_depth);
-                for (int condition = 0; condition < 1 << main_depth; condition++) {
+                System.arraycopy(m[main_depth], 0, this.main[main_depth], 0, (1 << main_depth));
+                for (int condition = 0; condition < (1 << main_depth); condition++) {
                     for (int condition_depth = 0; condition_depth < Parameters.getInstance().getCondition_max_depth(); condition_depth++) {
-                        System.arraycopy(c[main_depth][condition][condition_depth], 0, this.conditions[main_depth][condition][condition_depth], 0, 1 << condition_depth);
+                        System.arraycopy(c[main_depth][condition][condition_depth], 0, this.conditions[main_depth][condition][condition_depth], 0, (1 << condition_depth));
                     }
                 }
             } 

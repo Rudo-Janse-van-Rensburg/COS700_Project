@@ -100,78 +100,139 @@ public class GeneticOperators {
     public static void crossover(Program a,Program b) throws Exception{
         if(a != null && b != null){
             boolean     crossover_main  = Randomness.getInstance().getRandomBoolean();
-            int[]       pos_A,pos_B;
-            char[][]    tree_A,tree_B;
+            int[]       pos_A,pos_B; 
             ArrayList<int[]> points;
+            if(Meta.debug){
+                System.out.println("Main    : "+crossover_main);
+            }
+            Program temp = FlyWeight.getInstance().getProgram();
+            temp.copy(b);
             if(crossover_main){
                 /*CROSSOVER MAIN TREE*/
-                tree_A                  = a.getMain(); 
-                points                  = Util.getInstance().getPoints(tree_A,true);
-                pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                tree_B                  = b.getMain(); 
-                points                  = Util.getInstance().getPoints(tree_B,true);
-                pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-            }else{
-                /*CROSSOVER CONDITION SUB-TREES*/
-                int[] pos;
-                //pick a condition sub-branch in tree A
                 points                  = Util.getInstance().getPoints(a.getMain(),true);
-                pos                     = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                tree_A                  = a.getConditions()[pos[0]][pos[1]];
+                pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                points                  = Util.getInstance().getPoints(b.getMain(),true);
+                pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                
+                int a_level             = pos_A[0],
+                    a_position          = pos_A[1],
+                    b_level             = pos_B[0],
+                    b_position          = pos_B[1],
+                    a_levels            = Parameters.getInstance().getMain_max_depth() - a_level,
+                    b_levels            = Parameters.getInstance().getMain_max_depth() - b_level;
+                
+                /*
+                    Copy A to B
+                */
+                int level = 0;
+                do{
+                    if(b_level + level < Parameters.getInstance().getMain_max_depth() - 1){
+                        for (int position = 0; position < (1 << level); position++) {
+                            b.getMain()[b_level+level][(b_position << level) + position]  = a.getMain()[a_level+level][(a_position << level) + position];
+                            b.getConditions()[b_level + level][(b_position << level) + position] = a.getConditions()[a_level + level][(a_position << level) + position];
+                        }
+                    }else{
+                        for (int position = 0; position < (1 << level); position++) {
+                            if(a.getMain()[a_level + level][(a_position << level) + position] < Meta.MAINS.length ){
+                                b.getMain()[b_level + level][(b_position << level) + position] = (char) (Meta.MAINS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses()));
+                            }else{
+                                b.getMain()[b_level + level][(b_position << level) + position] = a.getMain()[a_level + level][(a_position << level) + position];
+                            }
+                            b.getConditions()[b_level + level][(b_position<< level) + position] = a.getConditions()[a_level + level][(a_position << level) + position];
+                        }
+                    }
+                    ++level;
+                }while(b_level +  level < Parameters.getInstance().getMain_max_depth() && level < a_levels);
+                 
+                /*
+                    Copy B to A
+                */
+                level = 0;
+                do{
+                    if(a_level + level < Parameters.getInstance().getMain_max_depth() - 1){
+                        for (int position = 0; position < (1 << level); position++) {
+                            a.getMain()[a_level+level][(a_position << level) + position]       = temp.getMain()[b_level + level][(b_position << level) + position];
+                            a.getConditions()[a_level+level][(a_position << level) + position] = temp.getConditions()[b_level + level][(b_position << level) + position];
+                        }
+                    }else{
+                        for (int position = 0; position < (1 << level); position++) {
+                            if(temp.getMain()[b_level + level][(b_position << level) + position] < Meta.MAINS.length ){
+                                a.getMain()[a_level+level][(a_position << level) + position] = (char) (Meta.MAINS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses()));
+                            }else{
+                                a.getMain()[a_level+level][(a_position << level) + position] = temp.getMain()[b_level + level][(b_position << level) + position];
+                            }
+                            a.getConditions()[a_level+level][(a_position << level) + position] = temp.getConditions()[b_level + level][(b_position << level) + position];
+                        }
+                    }
+                    ++level;
+                }while(a_level + level < Parameters.getInstance().getMain_max_depth() && level < b_levels);
+            }else{
+                /*CROSSOVER CONDITION SUB-TREES*/ 
+                //pick a condition sub-branch in tree A
+                points                  = Util.getInstance().getMains(a.getMain());
+                pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                char [][] tree_A        = a.getConditions()[pos_A[0]][pos_A[1]];
                 points                  = Util.getInstance().getPoints(tree_A,false);
                 pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                
                 //pick a condition sub-branch in tree B
-                points                  = Util.getInstance().getPoints(b.getMain(),true);
-                pos                     = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                tree_B                  = b.getConditions()[pos[0]][pos[1]];
+                points                  = Util.getInstance().getMains(b.getMain());
+                pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                char [][] tree_B        = b.getConditions()[pos_B[0]][pos_B[1]];
+                char [][] tree_temp     = temp.getConditions()[pos_B[0]][pos_B[1]];
                 points                  = Util.getInstance().getPoints(tree_B,false);
                 pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-            } 
-            
-            char[][] copy_A = crossover_main? FlyWeight.getInstance().getCharArray2dMain():  FlyWeight.getInstance().getCharArray2dCondtion(),
-                     copy_B = crossover_main? FlyWeight.getInstance().getCharArray2dMain():  FlyWeight.getInstance().getCharArray2dCondtion();
-            
-            //char[][] copy_A = null,copy_B = null;
-            for (char[] tree_A1 : tree_A) {
-                //copy_A = new char[tree_A.length][];
-                //copy_B = new char[tree_A.length][];
-                for (int pos = 0; pos < tree_A.length; pos++) {
-                    copy_A[pos] = Arrays.copyOf(tree_A[pos], tree_A[pos].length);
-                    copy_B[pos] = Arrays.copyOf(tree_B[pos], tree_B[pos].length); 
-                }
-            }
-            int pow_A = 1, pow_B = 1;
-            for (int level = 0; level < tree_A.length; level++) {
-                for (int pos = 0; pos < tree_A[level].length; pos++) {
-                    if(
-                        level >= pos_A[0]                               //  The right level of A                                
-                        && 
-                        pos_B[0] + (level - pos_A[0]) < tree_B.length   //  B has a level          
-                        && 
-                        pos >= (pow_A*pos_A[1])                         //  The correct branch of A        
-                        &&
-                        (pow_A*pos_B[1]) + (pos - (pow_A*(pos_A[1]))) <  tree_B[pos_B[0] + (level - pos_A[0])].length
-                    )
-                    {
-                        tree_A[level][pos]  = copy_B[pos_B[0] + (level - pos_A[0])][(pow_A*pos_B[1]) + (pos - (pow_A*(pos_A[1])))];
+                
+                
+                int a_level             = pos_A[0],
+                    a_position          = pos_A[1],
+                    b_level             = pos_B[0],
+                    b_position          = pos_B[1],
+                    a_levels            = Parameters.getInstance().getCondition_max_depth()- a_level,
+                    b_levels            = Parameters.getInstance().getCondition_max_depth() - b_level;
+                
+                /*
+                    Copy A to B
+                */
+                int level = 0;
+                do{
+                    if(b_level + level < Parameters.getInstance().getCondition_max_depth()- 1){
+                        for (int position = 0; position < (1 << level); position++) {
+                            tree_B[b_level+level][(b_position << level) + position]  = tree_A[a_level+level][(a_position << level) + position]; 
+                        }
+                    }else{
+                        for (int position = 0; position < (1 << level); position++) {
+                            if(tree_A[a_level + level][(a_position << level) + position] < Meta.CONDITIONS.length ){
+                                tree_B[b_level + level][b_position + position] = (char) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberAttributes()));
+                            }else{
+                                tree_B[b_level+level][(b_position << level) + position]  = tree_A[a_level+level][(a_position << level) + position]; 
+                            } 
+                        }
                     }
-                    if(
-                        level >= pos_B[0]                               //  The right level of B                                
-                        && 
-                        pos_A[0] + (level - pos_B[0]) < tree_A.length   //  A has a level          
-                        && 
-                        pos >= (pow_B*pos_B[1])                         //  The correct branch of B        
-                        &&
-                        (pow_B*pos_A[1]) + (pos - (pow_B*(pos_B[1]))) <  tree_A[pos_A[0] + (level - pos_B[0])].length
-                    )
-                    {
-                        tree_B[level][pos]  = copy_A[pos_B[0] + (level - pos_B[0])][(pow_B*pos_A[1]) + (pos - (pow_B*(pos_B[1])))];
+                    ++level;
+                }while((b_level +  level) < Parameters.getInstance().getCondition_max_depth() && level < a_levels);
+                
+                /*
+                    Copy B to A
+                */
+                level = 0;
+                do{
+                    if(a_level + level < Parameters.getInstance().getCondition_max_depth()- 1){
+                        for (int position = 0; position < (1 << level); position++) {
+                            tree_A[a_level+level][(a_position << level) + position]  = tree_temp[b_level+level][(b_position << level) + position];  
+                        }
+                    }else{
+                        for (int position = 0; position < (1 << level); position++) {
+                            if(tree_temp[b_level+level][b_position + position] < Meta.CONDITIONS.length ){
+                                tree_A[a_level+level][(a_position << level) + position] = (char) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberAttributes()));
+                            }else{
+                                tree_A[a_level+level][(a_position << level) + position]  = tree_temp[b_level+level][(b_position << level) + position];  
+                            } 
+                        }
                     }
-                }
-                pow_A = level >= pos_A[0] ? pow_A << 1 : pow_A; 
-                pow_B = level >= pos_B[0] ? pow_B << 1 : pow_B; 
-            }
-             
+                    ++level;
+                }while((a_level +  level) < Parameters.getInstance().getCondition_max_depth() && level < b_levels);
+            }   
         }else 
             throw new Exception("Cannot crossover null programs.");
         
