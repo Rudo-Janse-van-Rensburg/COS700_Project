@@ -201,7 +201,7 @@ public class GeneticOperators {
             } 
             
             position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));  
-            if(Meta.debug){
+            if(false && Meta.debug){
                 System.out.println("main    : "+main);
                 System.out.print("points    : [" );
                 for(int[] point : points){

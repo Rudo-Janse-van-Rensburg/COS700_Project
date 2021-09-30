@@ -50,12 +50,12 @@ public class GeneticProgram {
                 System.out.println("---------------------------------------");
                 try{
                     Program edit = FlyWeight.getInstance().getProgram();
-                    GeneticOperators.grow(edit, depth);
+                    GeneticOperators.full(edit, depth);
                     System.out.println("GROW    :");
                     System.out.format("    fitness : %f\n",Fitness.getInstance(Fitness.f1).evaluate(edit));
                     System.out.format("Full      :   \n%s\n",Util.getInstance().toString(edit));
-                    GeneticOperators.edit(edit); 
-                    System.out.println("Edit    :");
+                    GeneticOperators.hoist(edit); 
+                    System.out.println("Hoist    :");
                     System.out.format("    fitness : %f\n",Fitness.getInstance(Fitness.f1).evaluate(edit));
                     System.out.format("Edit      :   \n%s\n",Util.getInstance().toString(edit));
                 }catch(Exception e){
