@@ -76,7 +76,7 @@ public class GeneticOperators {
     public static void hoist(Program prog) throws Exception{
         if(prog != null){
             char[][] tree_prog      = prog.getMain();
-            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),true);
+            ArrayList<int[]> points = Util.getInstance().getMains(tree_prog);
             int [] pos              = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
             char[][] main           = prog.getMain();
             char[][][][] cond       = prog.getConditions();
@@ -182,34 +182,42 @@ public class GeneticOperators {
      * @throws Exception 
      */
     public static void edit(Program prog) throws Exception{
-        if(prog != null){
-            boolean edit_main       = Randomness.getInstance().getRandomBoolean();
+        if(prog != null){ 
             char[][] tree           = null;
             ArrayList<int[]> points;
             int [] position;
-            if(edit_main){
-                points                      = Util.getInstance().getPoints(prog.getMain(),true);
-                tree                        = prog.getMain();
+            points                      = Util.getInstance().getMains(prog.getMain());
+            int depth;
+            boolean main = Randomness.getInstance().getRandomBoolean(); 
+            if(main){
+                
+                tree        = prog.getMain();
+                depth       = Parameters.getInstance().getMain_max_depth();
             }else{
-                points                      = Util.getInstance().getPoints(prog.getMain(),true);
-                position                    = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                tree                        = prog.getConditions()[position[0]][position[1]];
-                points                      = Util.getInstance().getPoints(tree,false); 
+                position    = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                tree        = prog.getConditions()[position[0]][position[1]];
+                points      = Util.getInstance().getConditions(tree);
+                depth       = Parameters.getInstance().getCondition_max_depth();
             } 
-            position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-            int l                   = position[0],              //level
-                p                   = position[1],              //position
-                pow                 = (int)Math.pow(2, l),      //power
-                start               = p << 1;                   //start 
-            for (int i = l+1; i < tree.length; i++) {
-                for (int j = start; j < start+pow; j++) {
-                    char temp       = tree[i][j];
-                    tree[i][j]      = tree[i][j+pow];
-                    tree[i][j+pow]  = temp;
+            
+            position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));  
+            if(Meta.debug){
+                System.out.println("main    : "+main);
+                System.out.print("points    : [" );
+                for(int[] point : points){
+                    System.out.print("("+Arrays.toString(point)+","+tree[point[0]][point[1]]+")");
                 }
-                start = start << 1;
-                pow   = start << 1;  
+                System.out.print("]\n");
+                System.out.println(""+Arrays.toString(position));
             }
+            for (int level = position[0] + 1 ; level < depth; level++) {
+                int pow = level - position[0] - 1; 
+                for (int pos = position[1] * (1 << pow); pos < (position[1] + 1 )*(1 << pow); pos++) {
+                    char temp           = tree[level][pos];
+                    tree[level][pos]    = tree[level][pos + ((position[1] + 1 )*(1 << pow))];
+                    tree[level][pos + pos + ((position[1] + 1 )*(1 << pow))]  = temp;
+                }
+            } 
        } else 
             throw new Exception("Cannot edit null program.");
     }

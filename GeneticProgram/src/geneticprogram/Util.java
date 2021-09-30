@@ -14,6 +14,139 @@ public class Util {
             Util.utilities = new Util();
         return Util.utilities;
     } 
+    
+    /**
+     * 
+     * @param tree
+     * @return
+     * @throws Exception 
+     */
+    public ArrayList<int[]> getMains(char[][] tree) throws Exception{
+        if(tree != null){
+            ArrayList<int[]> points     = FlyWeight.getInstance().getArrayListIntArray();
+            Stack<Integer> levels       = FlyWeight.getInstance().getStackInteger();
+            Stack<Integer> positions    = FlyWeight.getInstance().getStackInteger();
+            levels.add(0);
+            positions.add(0);
+            do{
+               int level    = levels.pop();
+                int position = positions.pop();  
+                int ch = tree[level][position];
+                if(ch < Meta.MAINS.length){
+                   points.add(new int[]{level,position});
+                    for (int i = 0; i < 2; i++) {
+                        levels.push(level + 1);
+                        positions.push((position << 1) + i);
+                    } 
+                }
+            }while(!levels.empty() && !positions.empty());
+            FlyWeight.getInstance().addStackInteger(levels);
+            FlyWeight.getInstance().addStackInteger(positions); 
+            return points;
+        }else
+            throw new Exception("Can not get points of an empty tree.");
+    }
+    
+    /**
+     * 
+     * @param tree
+     * @return
+     * @throws Exception 
+     */
+    public ArrayList<int[]> getClasses(char[][] tree) throws Exception{
+        if(tree != null){
+            ArrayList<int[]> points     = FlyWeight.getInstance().getArrayListIntArray();
+            Stack<Integer> levels       = FlyWeight.getInstance().getStackInteger();
+            Stack<Integer> positions    = FlyWeight.getInstance().getStackInteger();
+            levels.add(0);
+            positions.add(0);
+            do{
+               int level    = levels.pop();
+               int position = positions.pop();  
+               int ch = tree[level][position];
+               if(ch < Meta.MAINS.length){
+                    for (int i = 0; i < 2; i++) {
+                        levels.push(level + 1);
+                        positions.push((position << 1) + i);
+                    } 
+               }else{
+                   points.add(new int[]{level,position});
+               }
+            }while(!levels.empty() && !positions.empty());
+            FlyWeight.getInstance().addStackInteger(levels);
+            FlyWeight.getInstance().addStackInteger(positions); 
+            return points;
+        }else
+            throw new Exception("Can not get points of an empty tree.");
+    }
+    
+    
+    /**
+     * 
+     * @param tree
+     * @return
+     * @throws Exception 
+     */
+    public ArrayList<int[]> getConditions(char[][] tree) throws Exception{
+        if(tree != null){
+            ArrayList<int[]> points     = FlyWeight.getInstance().getArrayListIntArray();
+            Stack<Integer> levels       = FlyWeight.getInstance().getStackInteger();
+            Stack<Integer> positions    = FlyWeight.getInstance().getStackInteger();
+            levels.add(0);
+            positions.add(0);
+            do{
+               int level    = levels.pop();
+               int position = positions.pop();  
+               int ch = tree[level][position];
+               if(ch < Meta.CONDITIONS.length){
+                   points.add(new int[]{level,position});
+                    for (int i = 0; i < 2; i++) {
+                        levels.push(level + 1);
+                        positions.push((position << 1) + i);
+                    } 
+                   }
+            }while(!levels.empty() && !positions.empty());
+            FlyWeight.getInstance().addStackInteger(levels);
+            FlyWeight.getInstance().addStackInteger(positions); 
+            return points;
+        }else
+            throw new Exception("Can not get points of an empty tree.");
+    }
+    
+    /**
+     * 
+     * @param tree
+     * @return
+     * @throws Exception 
+     */
+    public ArrayList<int[]> getAttributes(char[][] tree) throws Exception{
+        if(tree != null){
+            ArrayList<int[]> points     = FlyWeight.getInstance().getArrayListIntArray();
+            Stack<Integer> levels       = FlyWeight.getInstance().getStackInteger();
+            Stack<Integer> positions    = FlyWeight.getInstance().getStackInteger();
+            levels.add(0);
+            positions.add(0);
+            do{
+               int level    = levels.pop();
+               int position = positions.pop();  
+               int ch = tree[level][position];
+               if(ch < Meta.CONDITIONS.length){
+                    for (int i = 0; i < 2; i++) {
+                        levels.push(level + 1);
+                        positions.push((position << 1) + i);
+                    } 
+               }else{
+                   points.add(new int[]{level,position});
+               }
+            }while(!levels.empty() && !positions.empty());
+            FlyWeight.getInstance().addStackInteger(levels);
+            FlyWeight.getInstance().addStackInteger(positions); 
+            return points;
+        }else
+            throw new Exception("Can not get points of an empty tree.");
+    }
+    
+    
     /**
      * @param tree
      * @param main
@@ -34,17 +167,17 @@ public class Util {
                int ch = tree[level][position];
                if(main){
                    if(ch < Meta.MAINS.length){
-                       for (int i = 1; i >=0; i--) {
+                       for (int i = 0; i < 2; i++) {
                            levels.push(level + 1);
                            positions.push((position << 1) + i);
-                       }
+                       } 
                    }
                }else{
                    if(ch < Meta.CONDITIONS.length){
-                       for (int i = 1; i >=0; i--) {
+                       for (int i = 0; i < 2; i++) {
                            levels.push(level + 1);
                            positions.push((position << 1) + i);
-                       }
+                       } 
                    }
                } 
             }while(!levels.empty() && !positions.empty());

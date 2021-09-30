@@ -44,17 +44,22 @@ public class GeneticProgram {
                    0.05
            ); 
            
-            for (int depth = 0; depth < 10; depth++) {
+            for (int depth = 2; depth < 9; depth++) {
+            //for (int depth = 2; depth < 4; depth++) {
                 System.out.format("DEPTH    %d\n",depth);
                 System.out.println("---------------------------------------");
                 try{
-                    Program mutant = FlyWeight.getInstance().getProgram();
-                    GeneticOperators.grow(mutant, depth);
-                    System.out.format("Grow      :   \n%s\n",Util.getInstance().toString(mutant));
-                    GeneticOperators.mutate(mutant);
-                    //System.out.format("Mutant    :   \n%s\n",Util.getInstance().toString(mutant));
+                    Program edit = FlyWeight.getInstance().getProgram();
+                    GeneticOperators.grow(edit, depth);
+                    System.out.println("GROW    :");
+                    System.out.format("    fitness : %f\n",Fitness.getInstance(Fitness.f1).evaluate(edit));
+                    System.out.format("Full      :   \n%s\n",Util.getInstance().toString(edit));
+                    GeneticOperators.edit(edit); 
+                    System.out.println("Edit    :");
+                    System.out.format("    fitness : %f\n",Fitness.getInstance(Fitness.f1).evaluate(edit));
+                    System.out.format("Edit      :   \n%s\n",Util.getInstance().toString(edit));
                 }catch(Exception e){
-                    System.err.println("Error : "+e.getMessage());
+                    e.printStackTrace();
                 }
                 System.out.println("---------------------------------------");
                
