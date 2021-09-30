@@ -41,12 +41,13 @@ public class FlyWeight {
      */
     public ArrayList<Integer> getArrayListInt(){
         ArrayList<Integer> al;
-        if(al_int.isEmpty()){
-            al = new ArrayList<>();
-        }else{
+        if(!al_int.isEmpty()){
             al = al_int.remove(0);
+            al.clear();
+        }else{
+            al = new ArrayList<>();
         }
-        al.clear();
+        
         return al;
     }
     
@@ -118,7 +119,7 @@ public class FlyWeight {
             obj = al_int_arr.remove(0);
             obj.clear();
         }else{
-            obj = new ArrayList<int[]>();
+            obj = new ArrayList<>();
         }
         return obj;
     }

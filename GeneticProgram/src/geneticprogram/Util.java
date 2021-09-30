@@ -30,119 +30,24 @@ public class Util {
             do{
                int level    = levels.pop();
                int position = positions.pop(); 
-               switch(tree[level][position]){
-                   case Meta.IF:
-                       /*IF or GREATER THAN*/
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
+               points.add(new int[]{level,position});
+               int ch = tree[level][position];
+               if(main){
+                   if(ch < Meta.MAINS.length){
+                       for (int i = 1; i >=0; i--) {
+                           levels.push(level + 1);
+                           positions.push((position << 1) + i);
                        }
-                       break; 
-                   case Meta.LESS_THAN:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
+                   }
+               }else{
+                   if(ch < Meta.CONDITIONS.length){
+                       for (int i = 1; i >=0; i--) {
+                           levels.push(level + 1);
+                           positions.push((position << 1) + i);
                        }
-                       break;
-                   case Meta.GREATER_OR_EQUAL:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.LESS_OR_EQUAL:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.EQUAL:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.NOT_EQUAL:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.ADDITION:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.SUBTRACTION:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.DIVISION:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.MULTIPLICATION:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.BITWISE_AND:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.BITWISE_OR:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.BITWISE_XOR:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.LOGICAL_AND:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   case Meta.LOGICAL_OR:
-                       points.add(new int[]{level,position});
-                       for (int i = 0; i < 2; i++) {
-                           levels.add(level + 1);
-                           positions.add(2*position + i);
-                       }
-                       break;
-                   default:
-                       points.add(new int[]{level,position}); 
-                       break;
-                       
-               }
-            }while(levels != null && !levels.empty() && positions != null && positions.empty());
+                   }
+               } 
+            }while(!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
             FlyWeight.getInstance().addStackInteger(positions); 
             return points;
@@ -160,11 +65,16 @@ public class Util {
             char ch = main[row][pos]; 
             switch(ch){
                 case Meta.IF:
-                    line += level + "IF" +toStringCondition(prog,row,pos,0, 0) + "{\n";
-                    line += level + toStringMain(level + " ",prog,main,row+1,(pos << 1)  + 0) + "\n";
-                    line += level + "}ELSE {\n";
-                    line += level + toStringMain(level + " ",prog,main,row+1,(pos << 1) + 1) + "\n";
+                    line += level + "IF" +toStringCondition(prog,row,pos,0, 0) + "{";
+                    line += "\n";
+                    line += level + toStringMain(level + "  ",prog,main,row+1,(pos << 1)  + 0);
+                    line += "\n";
+                    line += level + "}ELSE { ";
+                    line += "\n";
+                    line += level + toStringMain(level + "  ",prog,main,row+1,(pos << 1) + 1);
+                    line += "\n";
                     line += level + "}";
+                    line += "\n";
                     break;
                 default:
                     line = level + (ch - Meta.MAINS.length); 

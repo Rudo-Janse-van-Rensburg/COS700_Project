@@ -13,7 +13,7 @@ public class GeneticOperators {
      */
     public static void grow(Program prog,int depth) throws Exception{
         if(prog != null){
-            _createMain(prog,Parameters.getInstance().getMain_max_depth(),0,0,false);
+            _createMain(prog,depth,0,0,false);
         }else
             throw new Exception("Cannot grow null program."); 
     }
@@ -41,12 +41,28 @@ public class GeneticOperators {
             int [] position         = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
             if(mutate_main){
                 /*MUTATE MAIN TREE*/
+                if(false && Meta.debug){
+                    System.out.print("    main points : [" );
+                    for(int[] point : points){
+                        System.out.print(""+Arrays.toString(point));
+                    }
+                    System.out.print("]\n");
+                }
+                
                 _createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], false);
             }else{
                 /*MUTATE CONDITION SUB-TREE*/
                 char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
                 points                  = Util.getInstance().getPoints(ptr_condition,false);
+                if(false && Meta.debug){
+                    System.out.print("    cond points : [" );
+                    for(int[] point : points){
+                        System.out.print(""+Arrays.toString(point));
+                    }
+                    System.out.print("]\n");
+                } 
                 position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                
                 _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
             } 
         }else 
@@ -224,7 +240,7 @@ public class GeneticOperators {
                     if(level == 0)
                         to_add  = Meta.MAINS[Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length)]; 
                     else if(level > 0 && level < max_depth -1){
-                        if(full){
+                        if(full || Randomness.getInstance().getRandomBoolean()){
                             to_add = Meta.MAINS[Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length)]; 
                         }else{
                              to_add = (char) Randomness.getInstance().getRandomIntExclusive(0, Meta.MAINS.length + Data.initialiseData().getNumberClasses()); 
