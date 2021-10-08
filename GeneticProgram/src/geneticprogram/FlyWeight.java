@@ -141,8 +141,9 @@ public class FlyWeight {
      */
     public Stack<Integer> getStackInteger(){
         Stack<Integer> obj = null;
-        if(!al_int_arr.isEmpty()){
+        if(!stack_int.isEmpty()){
             obj = stack_int.remove(0);
+            stack_int.trimToSize();
             obj.clear();
         }else{
             obj = new Stack<Integer>();

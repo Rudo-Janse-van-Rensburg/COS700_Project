@@ -32,7 +32,7 @@ public class GeneticProgram {
             * @throws Exception
             */
            Parameters.setParameters(
-                   2,
+                   4,
                    1, 
                    10, 
                    3, 

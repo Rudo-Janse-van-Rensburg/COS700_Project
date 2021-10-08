@@ -82,7 +82,7 @@ public class Interpreter {
     
     private double _interpretCondition(char[][] cond,int row,int pos, double[] instance) throws Exception{
         if(cond != null){ 
-            if(row < Parameters.getInstance().getCondition_max_depth() && pos <  1 << row){
+            if(row < Parameters.getInstance().getCondition_max_depth() && pos <  (1 << row)){
                 switch(cond[row][pos]){
                     case Meta.GREATER_THAN:  
                         return _interpretCondition(cond, row+1, pos << 1,instance) > _interpretCondition(cond, row+1, (pos << 1) +1 ,instance)? 1 : 0;

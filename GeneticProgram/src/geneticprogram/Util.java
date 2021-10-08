@@ -153,7 +153,7 @@ public class Util {
      * @return
      * @throws Exception 
      */
-    public ArrayList<int[]> getPoints(char[][] tree,boolean main) throws Exception{
+    private ArrayList<int[]> getPoints(char[][] tree,boolean main) throws Exception{
         if(tree != null){
             ArrayList<int[]> points     = FlyWeight.getInstance().getArrayListIntArray();
             Stack<Integer> levels       = FlyWeight.getInstance().getStackInteger();

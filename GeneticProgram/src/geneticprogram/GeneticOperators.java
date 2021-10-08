@@ -40,8 +40,20 @@ public class GeneticOperators {
             int [] position;
             if(Randomness.getInstance().getRandomBoolean()){
                 /*MUTATE MAIN TREE*/
-                points      = Util.getInstance().getPoints(prog.getMain(),true);
+                if(Randomness.getInstance().getRandomBoolean()){
+                    points      = Util.getInstance().getMains(prog.getMain());
+                    if(points.isEmpty()){
+                        points      = Util.getInstance().getClasses(prog.getMain());
+                    }
+                }else{
+                    points      = Util.getInstance().getClasses(prog.getMain());
+                    if(points.isEmpty()){
+                        points      = Util.getInstance().getMains(prog.getMain());
+                    }
+                }
+                
                 position    = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                FlyWeight.getInstance().addArrayListIntArray(points);
                 if(false && Meta.debug){
                     System.out.print("    main points : [" );
                     for(int[] point : points){
@@ -53,64 +65,42 @@ public class GeneticOperators {
                 _createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], false);
             }else{
                 /*MUTATE CONDITION SUB-TREE*/
+                
+                /*
+                WHAT IF NO IF's? 
+                MAKE SUBROUTINES
+                */
                 points      = Util.getInstance().getMains(prog.getMain());
                 position    = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
-                points                  = Util.getInstance().getPoints(ptr_condition,false);
+                char[][] ptr_condition = prog.getConditions()[position[0]][position[1]];
+                if(Randomness.getInstance().getRandomBoolean()){
+                    FlyWeight.getInstance().addArrayListIntArray(points);
+                    points   = Util.getInstance().getAttributes(ptr_condition); 
+                    if(points.isEmpty()){
+                        points   = Util.getInstance().getConditions(ptr_condition); 
+                    }
+                    position = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                }else{
+                    FlyWeight.getInstance().addArrayListIntArray(points);
+                    points   = Util.getInstance().getConditions(ptr_condition); 
+                    if(points.isEmpty()){
+                        points   = Util.getInstance().getAttributes(ptr_condition); 
+                    }
+                    position = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                } 
                 if(false && Meta.debug){
                     System.out.print("    cond points : [" );
                     for(int[] point : points){
                         System.out.print(""+Arrays.toString(point));
                     }
                     System.out.print("]\n");
-                } 
-                position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                
+                }  
                 _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
             } 
         }else 
             throw new Exception("Cannot mutate null program.");
     }
-    
-    
-    /**
-     * @param prog          - program to mutate.
-     * @throws Exception 
-     */
-    public static void mutate_old(Program prog) throws Exception{
-        if(prog != null){
-            ArrayList<int[]> points = Util.getInstance().getPoints(prog.getMain(),true);
-            boolean mutate_main     = Randomness.getInstance().getRandomBoolean(); 
-            int [] position         = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-            if(mutate_main){
-                /*MUTATE MAIN TREE*/
-                if(false && Meta.debug){
-                    System.out.print("    main points : [" );
-                    for(int[] point : points){
-                        System.out.print(""+Arrays.toString(point));
-                    }
-                    System.out.print("]\n");
-                }
-                
-                _createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], false);
-            }else{
-                /*MUTATE CONDITION SUB-TREE*/
-                char[][] ptr_condition  = prog.getConditions()[position[0]][position[1]];
-                points                  = Util.getInstance().getPoints(ptr_condition,false);
-                if(false && Meta.debug){
-                    System.out.print("    cond points : [" );
-                    for(int[] point : points){
-                        System.out.print(""+Arrays.toString(point));
-                    }
-                    System.out.print("]\n");
-                } 
-                position                = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                
-                _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], false);
-            } 
-        }else 
-            throw new Exception("Cannot mutate null program.");
-    }
+ 
     
     /**
      * @param prog
@@ -145,17 +135,41 @@ public class GeneticOperators {
             boolean     crossover_main  = Randomness.getInstance().getRandomBoolean();
             int[]       pos_A,pos_B; 
             ArrayList<int[]> points;
-            if(Meta.debug){
+            if(false && Meta.debug){
                 System.out.println("Main    : "+crossover_main);
             }
             Program temp = FlyWeight.getInstance().getProgram();
             temp.copy(b);
             if(crossover_main){
                 /*CROSSOVER MAIN TREE*/
-                points                  = Util.getInstance().getPoints(a.getMain(),true);
-                pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                points                  = Util.getInstance().getPoints(b.getMain(),true);
-                pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                if(Randomness.getInstance().getRandomBoolean()){
+                    points                  = Util.getInstance().getMains(a.getMain());
+                    if(points.isEmpty()){
+                        points                  = Util.getInstance().getClasses(a.getMain());
+                    }
+                    pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                    
+                }else{
+                    points                  = Util.getInstance().getClasses(a.getMain());
+                    if(points.isEmpty()){
+                        points                  = Util.getInstance().getMains(a.getMain());
+                    }
+                    pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                }
+                if(Randomness.getInstance().getRandomBoolean()){
+                    points                  = Util.getInstance().getMains(b.getMain());
+                    if(points.isEmpty()){
+                        points                  = Util.getInstance().getClasses(b.getMain());
+                    }
+                    pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                }else{
+                    points                  = Util.getInstance().getClasses(b.getMain()); 
+                    if(points.isEmpty()){
+                        points                  = Util.getInstance().getMains(b.getMain());
+                    }
+                    pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                }
+                
                 
                 int a_level             = pos_A[0],
                     a_position          = pos_A[1],
@@ -215,17 +229,25 @@ public class GeneticOperators {
                 points                  = Util.getInstance().getMains(a.getMain());
                 pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
                 char [][] tree_A        = a.getConditions()[pos_A[0]][pos_A[1]];
-                points                  = Util.getInstance().getPoints(tree_A,false);
-                pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                
+                if(Randomness.getInstance().getRandomBoolean()){
+                    points                  = Util.getInstance().getConditions(tree_A);
+                    pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                }else{
+                    points                  = Util.getInstance().getAttributes(tree_A);
+                    pos_A                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                }
                 //pick a condition sub-branch in tree B
                 points                  = Util.getInstance().getMains(b.getMain());
                 pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
                 char [][] tree_B        = b.getConditions()[pos_B[0]][pos_B[1]];
                 char [][] tree_temp     = temp.getConditions()[pos_B[0]][pos_B[1]];
-                points                  = Util.getInstance().getPoints(tree_B,false);
-                pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
-                
+                if(Randomness.getInstance().getRandomBoolean()){
+                    points                  = Util.getInstance().getConditions(tree_B);
+                    pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                }else{
+                    points                  = Util.getInstance().getAttributes(tree_B);
+                    pos_B                   = points.get(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+                } 
                 
                 int a_level             = pos_A[0],
                     a_position          = pos_A[1],
