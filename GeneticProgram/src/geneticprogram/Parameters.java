@@ -40,7 +40,7 @@ public class Parameters {
      * @throws Exception
      */
     public static Parameters setParameters(int mg,int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) throws Exception{
-        if(mmd >= 2 && cmd > 0 && ps > 0 && ts > 0 && ps >  ts){
+        if(mmd >  3 && cmd > 3 && ps > 0 && ts > 0 && ps >  ts){
             if(singleton != null){
                 Parameters.max_generation        = mg;
                 Parameters.k_folds               = kf;

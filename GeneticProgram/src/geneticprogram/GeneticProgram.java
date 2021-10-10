@@ -5,6 +5,10 @@
  */
 package geneticprogram;
 
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+
 /**
  *
  * @author rudo
@@ -16,78 +20,60 @@ public class GeneticProgram {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-       try{
-           /**
-            * @param mg     - max generation
-            * @param kf     - number of folds in k-cross-validation
-            * @param mmd    - main max depth
-            * @param cmd    - condition max depth
-            * @param ps     - population size
-            * @param ts     - tournament size
-            * @param cc     - crossover chance
-            * @param mc     - mutation chance
-            * @param hc     - hoist chance
-            * @param ec     - edit chance
-            * @return Parameters singleton.
-            * @throws Exception
-            */
-           Parameters.setParameters(
-                   4,
-                   1, 
-                   10, 
-                   3, 
-                   100, 
-                   2, 
-                   0.6, 
-                   0.3, 
-                   0.05, 
-                   0.05
-           ); 
-            /*
-            for (int depth = 2; depth < 8; depth++) {
-            //for (int depth = 2; depth < 4; depth++) {
-                System.out.format("DEPTH    %d\n",depth);
-                System.out.println("=======================================");
-                try{
-                    Program a = FlyWeight.getInstance().getProgram();
-                    Program b = FlyWeight.getInstance().getProgram();
-                    System.out.println("FULL   A :");
-                    GeneticOperators.full(a, depth);
-                    System.out.format("\n%s\n",Util.getInstance().toString(a));
-                    System.out.format("\n  fitness : %f\n\n",Fitness.getInstance(Fitness.f1).evaluate(a));
-                    
-                    System.out.println("FULL   B :");
-                    GeneticOperators.full(b, depth);
-                    System.out.format("\n%s\n",Util.getInstance().toString(b));
-                    System.out.format("\n  fitness : %f\n\n",Fitness.getInstance(Fitness.f1).evaluate(a));
-                    
-                    System.out.println("---------------------------------------");
+        try {
 
-                    GeneticOperators.crossover(a, b);
-                    System.out.println("CROSSOVER A :"); 
-                    System.out.format("\n%s\n",Util.getInstance().toString(a));
-                    System.out.format("\n  fitness : %f\n\n",Fitness.getInstance(Fitness.f1).evaluate(a)); 
-                    
-                    System.out.println("CROSSOVER B :");  
-                    System.out.format("\n%s\n",Util.getInstance().toString(b));
-                    System.out.format("\n  fitness : %f\n\n",Fitness.getInstance(Fitness.f1).evaluate(b));
-                }catch(Exception e){
-                    e.printStackTrace();
+            /**
+             * @param mg - max generation
+             * @param kf - number of folds in k-cross-validation
+             * @param mmd - main max depth
+             * @param cmd - condition max depth
+             * @param ps - population size
+             * @param ts - tournament size
+             * @param cc - crossover chance
+             * @param mc - mutation chance
+             * @param hc - hoist chance
+             * @param ec - edit chance
+             * @return Parameters singleton.
+             * @throws Exception
+             */
+            System.out.println("hi");
+            Parameters.setParameters(
+                      1,
+                      1,
+                      5,
+                      4,
+                      500,
+                      2,
+                      1,//0.6, 
+                      0,//0.3, 
+                      0,//0.05, 
+                      0//0.05
+            );
+            Program full = FlyWeight.getInstance().getProgram();
+            Program grow = FlyWeight.getInstance().getProgram();
+            GeneticOperatorThread g_thread = FlyWeight.getInstance().getGeneticOperatorThread();
+            GeneticOperatorThread f_thread = FlyWeight.getInstance().getGeneticOperatorThread();
+            final CountDownLatch  latch = new CountDownLatch(2);
+            f_thread.start(latch,0, new Program[]{full}, Meta.FULL, Parameters.getInstance().getMain_max_depth());
+            g_thread.start(latch,0, new Program[]{grow}, Meta.GROW, Parameters.getInstance().getMain_max_depth());
+            
+            latch.await();
+            
+            for (int i = 0; i < Parameters.getInstance().getMain_max_depth(); i++) {
+                for (int j = 0; j < 1 << i; j++) {
+                    System.out.println("main " + i + " " + j);
+                    System.out.println("" + grow.getMain()[i][j]);
+                    System.out.println("condition " + i + " " + j);
+                    for (int k = 0; k < Parameters.getInstance().getCondition_max_depth(); k++) {
+                        System.out.println("" + Arrays.toString(grow.getConditions()[i][j][k]));
+                    }
                 }
-                System.out.println("=======================================");
-            }
-            */
-           
-           
-           Evolution evolution = Evolution.getInstance();
-           do{
-               evolution.print();
-           }while(evolution.evolveGeneration()); 
-           
-       }catch(Exception e){
-           e.printStackTrace(); 
-       }
-       
+            } 
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
-    
+
 }

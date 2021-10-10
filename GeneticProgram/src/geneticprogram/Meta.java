@@ -3,15 +3,14 @@ package geneticprogram;
 public class Meta {  
     
     public static boolean debug                     = true;    
-    public static final char    /*IF*/
+    public static final byte    /*IF*/
                                 IF                  = 0;
     
                                 /*FUNCTION IN THE MAIN BRANCH*/
-    public static final char[]  MAINS               = new char[]{
+    public static final byte[]  MAINS               = new byte[]{
                                                         IF
                                                     };
-    
-    public static final char    /*RELATION*/ 
+    public static final byte    /*RELATION*/ 
                                 GREATER_THAN        = 0,
                                 LESS_THAN           = 1,
                                 GREATER_OR_EQUAL    = 2,
@@ -32,7 +31,7 @@ public class Meta {
                                 LOGICAL_OR          = 14;
                                 
                                 /*FUNCTIONS IN THE CONDITION BRANCH*/
-    public static final char[]  CONDITIONS          = new char[]{
+    public static final byte[]  CONDITIONS          = new byte[]{
                                                         GREATER_THAN,
                                                         LESS_THAN,
                                                         GREATER_OR_EQUAL,
@@ -50,7 +49,13 @@ public class Meta {
                                                         LOGICAL_OR
                                                     }; 
     
-    
+    public static final char 
+                                                MUTATE = 'M',
+                                                EDIT        = 'E',
+                                                CROSSOVER = 'C',
+                                                HOIST       = 'H',
+                                                GROW        = 'G',
+                                                FULL        = 'F';
     
     
 }

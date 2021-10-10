@@ -21,13 +21,16 @@ public class Interpreter {
      * @throws Exception 
      */
     public double Interpret(Program p,double[] instance) throws Exception{
-        char result = 0;
+        byte result = 0;
         if(p != null){
             Stack<Integer> row  = FlyWeight.getInstance().getStackInteger();
             Stack<Integer> pos  = FlyWeight.getInstance().getStackInteger();
             row.push(0);
             pos.push(0);
-            return _interpretMain(p,row,pos,instance);
+            double value = _interpretMain(p,row,pos,instance);
+            FlyWeight.getInstance().addStackInteger(pos);
+            FlyWeight.getInstance().addStackInteger(row);
+            return value;
         }else 
             throw new Exception("Cannot interpret a null program.");
     }
@@ -69,7 +72,7 @@ public class Interpreter {
                         default:
                             /*A class*/
                             return prog.getMain()[r][p] - Meta.MAINS.length ;
-                            //return Character.getNumericValue();
+                            //return byte.getNumericValue();
                     }
                 }else
                     throw new Exception("Main program did not terminate within the maximum depth.");
@@ -80,7 +83,7 @@ public class Interpreter {
         
     }
     
-    private double _interpretCondition(char[][] cond,int row,int pos, double[] instance) throws Exception{
+    private double _interpretCondition(byte[][] cond,int row,int pos, double[] instance) throws Exception{
         if(cond != null){ 
             if(row < Parameters.getInstance().getCondition_max_depth() && pos <  (1 << row)){
                 switch(cond[row][pos]){

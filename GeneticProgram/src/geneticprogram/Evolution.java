@@ -2,20 +2,20 @@ package geneticprogram;
  
 import java.util.Arrays;
 
+
+
 public class Evolution {
     
     private static Evolution instance   = null;
     private static Generation curr      = null,
-                              next      = null;
-    private double  best_fitness;
+                              next      = null; 
     private final Program best_program;
     private int     generation;
     
     
     private Evolution() throws Exception{
         curr    = FlyWeight.getInstance().getGeneration();
-        next    = FlyWeight.getInstance().getGeneration();
-        best_fitness    = 0;
+        next    = FlyWeight.getInstance().getGeneration(); 
         best_program    = new Program();
         createInitialPopulation();
     }
@@ -53,24 +53,32 @@ public class Evolution {
             if(Meta.debug && curr.getCapacity() < Parameters.getInstance().getPopulation_size()){
                 System.out.format("depth            :   %d\n",depth);
             }
-            for (int individual = 0;has_capcity && individual < ipg; individual+=2) {
+            int individual = 0;
+            for (;has_capcity && individual < ipg;) {
                 prog        = FlyWeight.getInstance().getProgram();
-                GeneticOperators.full(prog, depth);  
+                GeneticOperators.full(prog, depth,0);  
                 has_capcity = has_capcity && curr.add(prog);
+                if(has_capcity){
+                    ++individual;
+                }
                 if(false && Meta.debug && has_capcity){
-                    System.out.format("full (%d,%d):   \n%s\n",curr.getCapacity(),Parameters.getInstance().getPopulation_size(),Util.getInstance().toString(prog));
+                    System.out.format("full (%d,%d):   \n%s\n",curr.getCapacity(),Parameters.getInstance().getPopulation_size(),Helper.toString(prog));
                 }
                 prog        = FlyWeight.getInstance().getProgram();
-                GeneticOperators.grow(prog, depth);  
+                GeneticOperators.grow(prog, depth,0);  
                 has_capcity = has_capcity && curr.add(prog);  
+                if(has_capcity){
+                    ++individual;
+                }
                 if(false && Meta.debug && has_capcity){
-                    System.out.format("grow (%d,%d):   \n%s\n",curr.getCapacity(),Parameters.getInstance().getPopulation_size(),Util.getInstance().toString(prog));
+                    System.out.format("grow (%d,%d):   \n%s\n",curr.getCapacity(),Parameters.getInstance().getPopulation_size(),Helper.toString(prog));
                 }
             } 
         }
-        if(curr.getBest_fitness() > best_fitness){
-            best_fitness    = curr.getBest_fitness();
-            best_program.copy(curr.getBest_program());
+        while(has_capcity){
+                prog        = FlyWeight.getInstance().getProgram();
+                GeneticOperators.full(prog, Parameters.getInstance().getMain_max_depth(),0);  
+                has_capcity = has_capcity && curr.add(prog);  
         }
     }
     
@@ -93,6 +101,7 @@ public class Evolution {
                     System.out.format("number edit       : %d\n",num_edit);
                 }
                 boolean has_capcity =  true;
+                
                 do{
                     if(has_capcity && num_crossover > 0){
                         Program a = FlyWeight.getInstance().getProgram();
@@ -101,14 +110,14 @@ public class Evolution {
                         b.copy(Selection.getInstance(Selection.tournament).select(curr));
                         /*if(Meta.debug && false){
                             System.out.println("CROSSOVER   :");
-                            System.out.format("Parent A    : \n\n%s\n",Util.getInstance().toString(a));
-                            System.out.format("Parent B    : \n\n%s\n",Util.getInstance().toString(b));
+                            System.out.format("Parent A    : \n\n%s\n",Helper.toString(a));
+                            System.out.format("Parent B    : \n\n%s\n",Helper.toString(b));
                             
                         }*/
-                        GeneticOperators.crossover(a, b);
+                        GeneticOperators.crossover(a, b,Randomness.getInstance().getRandomLong());
                         /*if(Meta.debug && false){
-                            System.out.format("Child A    : \n\n%s\n",Util.getInstance().toString(a));
-                            System.out.format("Child B    : \n\n%s\n",Util.getInstance().toString(b));
+                            System.out.format("Child A    : \n\n%s\n",Helper.toString(a));
+                            System.out.format("Child B    : \n\n%s\n",Helper.toString(b));
                             
                         }*/
                         
@@ -120,7 +129,7 @@ public class Evolution {
                         Program mutant = FlyWeight.getInstance().getProgram();
                         mutant.copy(Selection.getInstance(Selection.tournament).select(curr));
 
-                        GeneticOperators.mutate(mutant);
+                        GeneticOperators.mutate(mutant,Randomness.getInstance().getRandomLong());
 
                         has_capcity = has_capcity && next.add(mutant);
                     }
@@ -129,7 +138,7 @@ public class Evolution {
                         Program hoisted = FlyWeight.getInstance().getProgram();
                         hoisted.copy(Selection.getInstance(Selection.tournament).select(curr));
 
-                        GeneticOperators.hoist(hoisted);
+                        GeneticOperators.hoist(hoisted,Randomness.getInstance().getRandomLong());
 
                         has_capcity = has_capcity && next.add(hoisted);
                     }
@@ -138,7 +147,7 @@ public class Evolution {
                         Program edit = FlyWeight.getInstance().getProgram();
                         edit.copy(Selection.getInstance(Selection.tournament).select(curr));
 
-                        GeneticOperators.hoist(edit);
+                        GeneticOperators.hoist(edit,Randomness.getInstance().getRandomLong());
 
                         has_capcity = has_capcity && next.add(edit);
                     } 
@@ -147,11 +156,7 @@ public class Evolution {
                 for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) { 
                     curr.add(next.getIndividual(i),next.getFitness(i));
                 }
-                next.clear();
-                if(curr.getBest_fitness() > best_fitness){
-                    best_fitness    = curr.getBest_fitness();
-                    best_program.copy(curr.getBest_program());
-                }
+                next.clear(); 
                 ++generation;
                 return true;
             }else
@@ -159,10 +164,7 @@ public class Evolution {
         }else 
             throw new Exception("Cannot evolve empty generation."); 
     } 
-
-    public double getBest_fitness() {
-        return best_fitness;
-    }
+ 
 
     public Program getBest_program() {
         return best_program;
@@ -174,8 +176,9 @@ public class Evolution {
         System.out.println("---------------------------------------");
         System.out.format("    avergage fitness     :   %f\n",curr.getAverage_fitness());
         System.out.println("    fitnesses            :   " + Arrays.toString(curr.getFitnesses()));
-        System.out.format("    best fitness         :   %f\n",best_fitness);
-        //System.out.format("    best program         :   \n%s\n",Util.getInstance().toString(best_program));
+        System.out.format("    best fitness         :   %f\n",curr.getBest_fitness());
+        System.out.format("    worst  fitness      :   %f\n",curr.getWorst_fitness());
+        //System.out.format("    best program         :   \n%s\n",Helper.toString(best_program));
         System.out.println("=======================================");
     }
     

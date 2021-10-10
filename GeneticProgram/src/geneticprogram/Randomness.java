@@ -36,6 +36,13 @@ public class Randomness {
         child.setSeed(mother.nextLong());
     }
     
+    public void setSeed(long seed){
+        child.setSeed(seed);
+    }
+    public long getRandomLong(){
+        return child.nextLong();
+    }
+    
     public int getRandomIntInclusive(int min, int max){
         return child.nextInt(max + 1 - min) + min;
     }
