@@ -15,8 +15,8 @@ public class Factory {
             
             
             public static boolean  createMainPrimitive(byte[][] tree,int current_depth,int current_pos, int max_depth, boolean full,Random rand) throws Exception{
-                        if(current_depth >= max_depth){
-                                    throw new Exception("Cannot create primitive at depth "+current_depth+" of max depth "+max_depth);
+                        if(current_depth >= max_depth || current_pos > 1 << current_depth){
+                                    throw new Exception("Cannot create primitive at depth "+current_depth+" of max depth "+max_depth+" at position "+current_pos +" of max position "+(1 << current_depth));
                         }
                         if(current_depth == 0){ 
                                      tree[current_depth][current_pos] = (byte) Meta.MAINS[ rand.nextInt(Meta.MAINS.length - 0) + 0];
@@ -35,9 +35,11 @@ public class Factory {
                                                             return false;
                                                 }
                                     }
-                        }else{
+                        }else if( current_depth == max_depth - 1){
                                     tree[current_depth][current_pos] =  (byte) (Meta.MAINS.length +  rand.nextInt(Data.initialiseData().getNumberClasses() - 0) + 0);
                                     return false;
+                        } else{
+                            return false;
                         }
             }
             
@@ -45,8 +47,7 @@ public class Factory {
                         if(current_depth >= max_depth){
                                     throw new Exception("Cannot create primitive at depth "+current_depth+" of max depth "+max_depth);
                         }
-                        if(current_depth == 0){
-                            
+                        if(current_depth == 0){ 
                                      tree[current_depth][current_pos] = (byte)  Meta.CONDITIONS[ rand.nextInt(Meta.CONDITIONS.length - 0) + 0];
                                      return true;
                         }else if(current_depth > 0 && current_depth < max_depth - 1){
@@ -62,9 +63,11 @@ public class Factory {
                                                             return false;
                                                 }
                                     }
-                        }else{
+                        }else if( current_depth == max_depth - 1){
                                     tree[current_depth][current_pos] =  (byte)  (Meta.CONDITIONS.length + rand.nextInt(Data.initialiseData().getNumberAttributes() - 0) + 0);
                                     return false;
+                        }else{
+                            return false;
                         }
             }
 }

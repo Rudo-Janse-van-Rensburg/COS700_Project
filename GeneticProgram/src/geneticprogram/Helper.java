@@ -12,15 +12,15 @@ public class Helper {
         temp.copy(b);
         int[] pos_A, pos_B;
         // Get all the main primitives of Tree A - making sure it is not the root of tree A 
-        pos_A = getMainPrimitive(a.getMain(), false,rand);
+        pos_A = getMainPrimitive(a.getMain(), false, rand);
         // Get all the main primitives of Tree B  
 
         if (a.getMain()[pos_A[0]][pos_A[1]] < Meta.MAINS.length) {
             //if A is a function, then pick any point in B
-            pos_B = getMainPrimitive(b.getMain(), true,rand);
+            pos_B = getMainPrimitive(b.getMain(), true, rand);
         } else {
             //otherwise pick a non-root point in B
-            pos_B = getMainPrimitive(b.getMain(), false,rand);
+            pos_B = getMainPrimitive(b.getMain(), false, rand);
         }
         int a_level = pos_A[0],
                   a_position = pos_A[1],
@@ -77,25 +77,25 @@ public class Helper {
         return true;
     }
 
-    public static boolean _crossoverCondition(Program a, Program b,Random rand) throws Exception {
+    public static boolean _crossoverCondition(Program a, Program b, Random rand) throws Exception {
         Program temp = FlyWeight.getInstance().getProgram();
         temp.copy(b);
         /*CROSSOVER CONDITION SUB-TREES*/
         //pick a condition sub-branch in tree A and B
-        int[] pos_A = getMainFunction(a.getMain(), true,rand),
-                  pos_B = getMainFunction(b.getMain(), true,rand);
+        int[] pos_A = getMainFunction(a.getMain(), true, rand),
+                  pos_B = getMainFunction(b.getMain(), true, rand);
 
         byte[][] tree_A = a.getConditions()[pos_A[0]][pos_A[1]];
         byte[][] tree_B = b.getConditions()[pos_B[0]][pos_B[1]];
         byte[][] tree_temp = b.getConditions()[pos_B[0]][pos_B[1]];
 
         //pick a crossover point in A and B 
-        pos_A = getConditionPrimitive(tree_A, true,rand);
+        pos_A = getConditionPrimitive(tree_A, true, rand);
         if (tree_A[pos_A[0]][pos_A[1]] < Meta.CONDITIONS.length) {
             //tree a is function
-            pos_B = getConditionPrimitive(tree_B, true,rand);
+            pos_B = getConditionPrimitive(tree_B, true, rand);
         } else {
-            pos_B = getConditionPrimitive(tree_B, false,rand);
+            pos_B = getConditionPrimitive(tree_B, false, rand);
         }
 
         int a_level = pos_A[0],
@@ -152,25 +152,28 @@ public class Helper {
 
     /**
      * @param prog - program to mutate.
+     * @param rand
+     * @return 
      * @throws Exception
      */
-    public static boolean _mutateMain(Program prog,Random rand) throws Exception {
-        int[] position = getMainPrimitive(prog.getMain(), true, rand); 
-        Helper._createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], true,rand);
+    public static boolean _mutateMain(Program prog, Random rand) throws Exception {
+        int[] position = getMainPrimitive(prog.getMain(), true, rand);
+        Helper._createMain(prog, Parameters.getInstance().getMain_max_depth(), position[0], position[1], true, rand);
         return true;
 
     }
 
     /**
      * @param prog
+     * @param rand
      * @return
      * @throws Exception
      */
     public static boolean _mutateCondition(Program prog, Random rand) throws Exception {
-        int[] position = getMainFunction(prog.getMain(), true,rand);
+        int[] position = getMainFunction(prog.getMain(), true, rand);
         byte[][] ptr_condition = prog.getConditions()[position[0]][position[1]];
-        position = getConditionPrimitive(prog.getConditions()[position[0]][position[1]], true,rand);
-        _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], true,rand);
+        position = getConditionPrimitive(prog.getConditions()[position[0]][position[1]], true, rand);
+        _createCondition(ptr_condition, Parameters.getInstance().getCondition_max_depth(), position[0], position[1], true, rand);
         return true;
 
     }
@@ -181,15 +184,16 @@ public class Helper {
      * @param start_level - the starting level of the creation.
      * @param start_pos - the starting position of the creation.
      * @param full - whether this should be full or grow method.
+     * @param rand
      * @throws Exception
      */
     public static void _createMain(Program prog, int max_depth, int start_level, int start_pos, boolean full, Random rand) throws Exception {
-        if (max_depth >= 2 && max_depth <= Parameters.getInstance().getMain_max_depth()) { 
+        if (max_depth >= 2 && max_depth <= Parameters.getInstance().getMain_max_depth()) {
             byte[][] main_tree = prog.getMain();
-            for (int depth = start_level; depth < max_depth; depth++) {
-                for (int position = 0; position < (1 << (depth - start_level)); position++) {
-                    if (Factory.createMainPrimitive(main_tree, depth, (start_pos << depth) + position, max_depth, full,rand)) {
-                        _createCondition(prog.getConditions()[depth][position], Parameters.getInstance().getCondition_max_depth(), 0, 0, full,rand);
+            for (int level_offset = 0; level_offset < max_depth - start_level; level_offset++) {
+                for (int position_offset = 0; position_offset < (1 << level_offset); position_offset++) {
+                    if (Factory.createMainPrimitive(main_tree, start_level+level_offset, (start_pos << level_offset) + position_offset, max_depth, full, rand)) {
+                        _createCondition(prog.getConditions()[start_level+level_offset][ (start_pos << level_offset) + position_offset], Parameters.getInstance().getCondition_max_depth(), 0, 0, full, rand);
                     }
                 }
             } 
@@ -199,38 +203,39 @@ public class Helper {
     }
 
     /**
-     * @param condtion - the condition branch to write to.
      * @param max_depth - the maximum depth of the branch.
      * @param start_level - the start level of the condition branch.
      * @param start_pos - the start position of the level.
      * @param full - whether full or grow method should be used.
      * @throws Exception
      */
-    public static void _createCondition(byte[][] condition, int max_depth, int start_level, int start_pos, boolean full,Random rand) throws Exception {
-        if (max_depth >= 2 && max_depth <= Parameters.getInstance().getCondition_max_depth()) { 
+    public static void _createCondition(byte[][] condition, int max_depth, int start_level, int start_pos, boolean full, Random rand) throws Exception {
+        if (max_depth >= 2 && max_depth <= Parameters.getInstance().getCondition_max_depth()) {
             for (int depth_offset = 0; depth_offset < Parameters.getInstance().getCondition_max_depth() - (start_level); depth_offset++) {
                 for (int position_offset = 0; position_offset < (1 << depth_offset); position_offset++) {
                     Factory.createConditionPrimitive(
                               condition,
-                              (start_level+depth_offset), 
-                              ((start_pos << depth_offset) + position_offset), 
-                              max_depth, 
+                              (start_level + depth_offset),
+                              ((start_pos << depth_offset) + position_offset),
+                              max_depth,
                               full,
                               rand);
                 }
-            }  
+            }
         } else {
             throw new Exception("Depth of condition to create is invalid.");
         }
     }
+ 
 
     /**
      * @param tree
      * @param include_root
+     * @param rand
      * @return
      * @throws Exception
      */
-    public static int[] getMainFunction(byte[][] tree, boolean include_root,Random rand) throws Exception {
+    public static int[] getMainFunction(byte[][] tree, boolean include_root, Random rand) throws Exception {
         if (tree != null) {
             ArrayList<int[]> points = FlyWeight.getInstance().getArrayListIntArray();
             Stack<Integer> levels = FlyWeight.getInstance().getStackInteger();
@@ -240,7 +245,7 @@ public class Helper {
             do {
                 int level = levels.pop();
                 int position = positions.pop();
-                int ch = tree[level][position];
+                byte ch = tree[level][position];
                 if (ch < Meta.MAINS.length) {
                     /*A main function*/
                     if (!include_root) {
@@ -259,7 +264,7 @@ public class Helper {
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
             FlyWeight.getInstance().addStackInteger(positions);
-            int[] point = points.remove(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+            int[] point = points.remove(rand.nextInt(points.size() + 0) - 0);
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
@@ -270,10 +275,11 @@ public class Helper {
     /**
      * @param tree
      * @param include_root
+     * @param rand
      * @return
      * @throws Exception
      */
-    public static int[] getMainTerminal(byte[][] tree, boolean include_root,Random rand) throws Exception {
+    public static int[] getMainTerminal(byte[][] tree, boolean include_root, Random rand) throws Exception {
         if (tree != null) {
             ArrayList<int[]> points = FlyWeight.getInstance().getArrayListIntArray();
             Stack<Integer> levels = FlyWeight.getInstance().getStackInteger();
@@ -303,7 +309,7 @@ public class Helper {
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
             FlyWeight.getInstance().addStackInteger(positions);
-            int[] point = points.remove(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+            int[] point = points.remove(rand.nextInt(points.size() + 0) - 0);
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
@@ -314,10 +320,11 @@ public class Helper {
     /**
      * @param tree
      * @param include_root
+     * @param rand
      * @return
      * @throws Exception
      */
-    public static int[] getMainPrimitive(byte[][] tree, boolean include_root,Random rand) throws Exception {
+    public static int[] getMainPrimitive(byte[][] tree, boolean include_root, Random rand) throws Exception {
         if (tree != null) {
             ArrayList<int[]> points = FlyWeight.getInstance().getArrayListIntArray();
             Stack<Integer> levels = FlyWeight.getInstance().getStackInteger();
@@ -328,7 +335,7 @@ public class Helper {
                 int level = levels.pop();
                 int position = positions.pop();
                 int ch = tree[level][position];
-                if (ch < Meta.MAINS.length) {
+                if (ch < Meta.MAINS.length ) {
                     /*A main function*/
                     if (!include_root) {
                         if (level > 0) {
@@ -354,7 +361,7 @@ public class Helper {
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
             FlyWeight.getInstance().addStackInteger(positions);
-            int[] point = points.remove(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+            int[] point = points.remove(rand.nextInt(points.size() + 0) - 0);
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
@@ -364,10 +371,12 @@ public class Helper {
 
     /**
      * @param tree
+     * @param include_root
+     * @param rand
      * @return
      * @throws Exception
      */
-    public static int[] getConditionPrimitive(byte[][] tree, boolean include_root,Random rand) throws Exception {
+    public static int[] getConditionPrimitive(byte[][] tree, boolean include_root, Random rand) throws Exception {
         if (tree != null) {
             ArrayList<int[]> points = FlyWeight.getInstance().getArrayListIntArray();
             Stack<Integer> levels = FlyWeight.getInstance().getStackInteger();
@@ -377,8 +386,8 @@ public class Helper {
             do {
                 int level = levels.pop();
                 int position = positions.pop();
-                int ch = tree[level][position];
-                if (ch < Meta.CONDITIONS.length) {
+                byte ch = tree[level][position];
+                if (ch < Meta.CONDITIONS.length ) {
                     if (!include_root) {
                         if (level > 0) {
                             points.add(new int[]{level, position});
@@ -404,7 +413,7 @@ public class Helper {
             FlyWeight.getInstance().addStackInteger(levels);
             FlyWeight.getInstance().addStackInteger(positions);
             FlyWeight.getInstance().addStackInteger(positions);
-            int[] point = points.remove(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+            int[] point = points.remove(rand.nextInt(points.size() + 0) - 0);
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
@@ -414,6 +423,7 @@ public class Helper {
 
     /**
      * @param tree
+     * @param include_root
      * @return
      * @throws Exception
      */
@@ -428,7 +438,7 @@ public class Helper {
                 int level = levels.pop();
                 int position = positions.pop();
                 int ch = tree[level][position];
-                if (ch < Meta.CONDITIONS.length) {
+                if (ch < Meta.CONDITIONS.length ) {
                     if (!include_root) {
                         if (level > 0) {
                             points.add(new int[]{level, position});
@@ -456,6 +466,7 @@ public class Helper {
 
     /**
      * @param tree
+     * @param include_root
      * @return
      * @throws Exception
      */
@@ -469,8 +480,8 @@ public class Helper {
             do {
                 int level = levels.pop();
                 int position = positions.pop();
-                int ch = tree[level][position];
-                if (ch < Meta.CONDITIONS.length) {
+                byte ch = tree[level][position];
+                if (ch < Meta.CONDITIONS[Meta.CONDITIONS.length - 1]) {
                     for (int i = 0; i < 2; i++) {
                         levels.push(level + 1);
                         positions.push((position << 1) + i);
@@ -504,21 +515,19 @@ public class Helper {
         if (row >= 0 && row < Parameters.getInstance().getMain_max_depth()) {
             String line = "";
             byte ch = main[row][pos];
-            switch (ch) {
-                case Meta.IF:
-                    line += level + "IF" + toStringCondition(prog, row, pos, 0, 0) + "{";
-                    line += "\n";
-                    line += level + toStringMain(level + "  ", prog, main, row + 1, (pos << 1) + 0);
-                    line += "\n";
-                    line += level + "}ELSE { ";
-                    line += "\n";
-                    line += level + toStringMain(level + "  ", prog, main, row + 1, (pos << 1) + 1);
-                    line += "\n";
-                    line += level + "}";
-                    line += "\n";
-                    break;
-                default:
-                    line = level + (ch - Meta.MAINS.length);
+            if (ch < Meta.MAINS.length) {
+                line += level + "IF" + toStringCondition(prog, row, pos, 0, 0) + "{";
+                line += "\n";
+                line += level + toStringMain(level + "  ", prog, main, row + 1, (pos << 1) + 0);
+                line += "\n";
+                line += level + "}ELSE { ";
+                line += "\n";
+                line += level + toStringMain(level + "  ", prog, main, row + 1, (pos << 1) + 1);
+                line += "\n";
+                line += level + "}";
+                line += "\n";
+            } else if (ch < Meta.MAINS.length + Data.initialiseData().getNumberClasses()) {
+                line = level + (ch - Meta.MAINS.length);
             }
             return line;
         } else {
@@ -530,56 +539,58 @@ public class Helper {
         if (row >= 0 && row < Parameters.getInstance().getCondition_max_depth()) {
             String line = "(";
             byte ch = prog.getConditions()[m_row][m_pos][row][pos];
-            switch (ch) {
-                case Meta.GREATER_THAN:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " > " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.LESS_THAN:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " < " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.GREATER_OR_EQUAL:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " >= " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.LESS_OR_EQUAL:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " <= " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.EQUAL:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " == " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.NOT_EQUAL:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " != " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.ADDITION:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " + " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.SUBTRACTION:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " - " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.DIVISION:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " / " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.MULTIPLICATION:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " * " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.BITWISE_AND:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " & " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.BITWISE_OR:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " | " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.BITWISE_XOR:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " ^ " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.LOGICAL_AND:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " && " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                case Meta.LOGICAL_OR:
-                    line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " || " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                    break;
-                default:
-                    int attribute = ch - Meta.CONDITIONS.length;
-                    line += attribute;
-            }
+            if (ch < Meta.CONDITIONS.length) {
+                switch (ch) {
+                    case Meta.GREATER_THAN:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " > " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.LESS_THAN:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " < " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.GREATER_OR_EQUAL:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " >= " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.LESS_OR_EQUAL:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " <= " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.EQUAL:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " == " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.NOT_EQUAL:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " != " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.ADDITION:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " + " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.SUBTRACTION:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " - " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.DIVISION:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " / " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.MULTIPLICATION:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " * " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.BITWISE_AND:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " & " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.BITWISE_OR:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " | " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.BITWISE_XOR:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " ^ " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.LOGICAL_AND:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " && " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;
+                    case Meta.LOGICAL_OR:
+                        line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " || " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
+                        break;  
+                }
+            } else if (ch < Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes()) {
+                int attribute = ch - Meta.CONDITIONS.length;
+                line += attribute;
+            } 
             return line + ")";
         } else {
             throw new Exception("Condition row out of bounds.");

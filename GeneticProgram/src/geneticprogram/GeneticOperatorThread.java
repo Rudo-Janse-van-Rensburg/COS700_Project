@@ -44,16 +44,12 @@ public class GeneticOperatorThread extends Thread {
                 case Meta.MUTATE:
                     GeneticOperators.mutate(parents[0], seed);
                     System.out.println("mutate thread exitting");
-                     latch.countDown();
-                    
-                   
+                    // latch.countDown(); 
                     break;
                 case Meta.CROSSOVER:
                     GeneticOperators.crossover(parents[0], parents[1], seed);
                     System.out.println("crossover thread exitting");
-                     latch.countDown();
-                    
-                    
+                     latch.countDown(); 
                     break;
                 case Meta.HOIST:
                     GeneticOperators.hoist(parents[0], seed);
@@ -67,12 +63,11 @@ public class GeneticOperatorThread extends Thread {
                     break;
                 case Meta.GROW:
                     GeneticOperators.grow(parents[0], max_depth, seed);
-                    System.out.println("grow thread exitting");
+                    //System.out.println("grow thread exitting");
                     latch.countDown();
                     break;
                 case Meta.FULL:
-                    GeneticOperators.full(parents[0], max_depth, seed);
-                    System.out.println("full thread exitting " + operation);
+                    GeneticOperators.full(parents[0], max_depth, seed); 
                     latch.countDown();
                     break;
             }

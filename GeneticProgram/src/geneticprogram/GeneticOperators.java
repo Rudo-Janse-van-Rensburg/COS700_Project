@@ -1,10 +1,8 @@
 package geneticprogram;
 
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.Stack;
 
 public class GeneticOperators {
 
@@ -91,6 +89,7 @@ public class GeneticOperators {
     /**
      * @param a - parent A.
      * @param b - parent B.
+     * @param seed
      * @throws Exception
      */
     public static void crossover(Program a, Program b, long seed) throws Exception {
@@ -108,6 +107,7 @@ public class GeneticOperators {
 
     /**
      * @param prog - program to edit.
+     * @param seed
      * @throws Exception
      */
     public static void edit(Program prog, long seed) throws Exception {
