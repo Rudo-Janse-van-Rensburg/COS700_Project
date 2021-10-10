@@ -53,13 +53,22 @@ public class GeneticProgram {
             Program grow = FlyWeight.getInstance().getProgram();
             GeneticOperatorThread g_thread = FlyWeight.getInstance().getGeneticOperatorThread();
             GeneticOperatorThread f_thread = FlyWeight.getInstance().getGeneticOperatorThread();
-            final CountDownLatch  latch = new CountDownLatch(2);
-            f_thread.start(latch,0, new Program[]{full}, Meta.FULL, Parameters.getInstance().getMain_max_depth());
-            g_thread.start(latch,0, new Program[]{grow}, Meta.GROW, Parameters.getInstance().getMain_max_depth());
-            
+            Data.initialiseData();
+            /*
+            final CountDownLatch latch = new CountDownLatch(2);
+            f_thread.reset(latch, 0, Meta.FULL,full, Parameters.getInstance().getMain_max_depth());
+            g_thread.reset(latch, 0, Meta.GROW,grow, Parameters.getInstance().getMain_max_depth());
+            f_thread.start();
+            g_thread.start();
             latch.await();
-            
-            for (int i = 0; i < Parameters.getInstance().getMain_max_depth(); i++) {
+            FlyWeight.getInstance().addGeneticOperatorThread(f_thread);
+            FlyWeight.getInstance().addGeneticOperatorThread(g_thread);
+            */
+            Evolution evolution = Evolution.getInstance();
+            do{
+                evolution.print();
+            }while(evolution.evolveGeneration());
+           /* for (int i = 0; i < Parameters.getInstance().getMain_max_depth(); i++) {
                 for (int j = 0; j < 1 << i; j++) {
                     System.out.println("main " + i + " " + j);
                     System.out.println("" + grow.getMain()[i][j]);
@@ -68,7 +77,7 @@ public class GeneticProgram {
                         System.out.println("" + Arrays.toString(grow.getConditions()[i][j][k]));
                     }
                 }
-            } 
+            }*/
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -6,7 +6,6 @@
 package geneticprogram;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
 
 /**
  * @author rudo
@@ -32,6 +31,11 @@ public class GeneticOperatorThread extends Thread {
         this.parents = parents;
     }
 
+    public Program[] getParents() {
+        return parents;
+    }
+
+    
     @Override
     public void run() {
         System.out.println("starting thread " + operation);
@@ -79,28 +83,24 @@ public class GeneticOperatorThread extends Thread {
         System.out.println("exiting thread " + operation);
     }
 
-    public void start(CountDownLatch latch, long seed, Program[] parents, char op, int depth) {
-        this.latch = latch;
-        this.parents = parents;
-        this.operation = op;
-        this.max_depth = depth;
-        this.seed = seed;
-        Randomness.getInstance().reseed();
+    public void start(){ 
         if (t == null) {
             t = new Thread(this);
             t.start();
         }
     }
+    public void reset(CountDownLatch latch, long seed, char op, Program prog,int depth) {
+        this.latch = latch; 
+        this.operation = op;
+        this.max_depth = depth;
+        this.seed = seed; 
+        this.parents = new Program[]{prog};
+    }
 
-    public void start(CountDownLatch latch, long seed, Program[] parents, char op) {
+    public void reset(CountDownLatch latch, long seed, Program[] parents, char op) {
         this.latch = latch;
         this.parents = parents;
         this.operation = op;
-        this.seed = seed;
-        Randomness.getInstance().reseed();
-        if (t == null) {
-            t = new Thread(this);
-            t.start();
-        }
+        this.seed = seed; 
     }
 }

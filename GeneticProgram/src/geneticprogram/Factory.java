@@ -26,7 +26,7 @@ public class Factory {
                                              tree[current_depth][current_pos] = (byte)  Meta.MAINS[ rand.nextInt(Meta.MAINS.length - 0) + 0];
                                              return true;
                                     }else{
-                                                if(Randomness.getInstance().getRandomBoolean()){
+                                                if(rand.nextBoolean()){
                                                             
                                                             tree[current_depth][current_pos] = (byte)  Meta.MAINS[ rand.nextInt(Meta.MAINS.length - 0) + 0];
                                                             return true;
@@ -54,7 +54,7 @@ public class Factory {
                                              tree[current_depth][current_pos] = (byte)  Meta.CONDITIONS[ rand.nextInt(Meta.CONDITIONS.length - 0) + 0];
                                              return true;
                                     }else{
-                                                if(Randomness.getInstance().getRandomBoolean()){
+                                                if(rand.nextBoolean()){
                                                             tree[current_depth][current_pos] = (byte)  Meta.CONDITIONS[ rand.nextInt(Meta.CONDITIONS.length - 0) + 0];
                                                             return true;
                                                 }else{ 

@@ -18,10 +18,12 @@ public class FlyWeight {
     private final ArrayList<Program> programs;
     private final ArrayList<Generation> generations;
     private final ArrayList<GeneticOperatorThread> go_threads;
+    private final ArrayList<ArrayList<GeneticOperatorThread>> go_arr_threads;
     private final ArrayList<Random> random_arr;
     private final ArrayList<CyclicBarrier> cb_arr;
 
     private FlyWeight() {
+        go_arr_threads = new ArrayList<>();
         cb_arr = new ArrayList<>();
         random_arr = new ArrayList<>();
         go_threads = new ArrayList<>();
@@ -45,21 +47,22 @@ public class FlyWeight {
         return singleton;
     }
 
-    public void addCyclicBarrier(CyclicBarrier obj) throws Exception{
-        if(obj != null){
+    public void addCyclicBarrier(CyclicBarrier obj) throws Exception {
+        if (obj != null) {
             cb_arr.add(obj);
-        }else throw new Exception("Cannot add null CyclicBarrier object");
+        } else {
+            throw new Exception("Cannot add null CyclicBarrier object");
+        }
     }
 
     public CyclicBarrier getCyclicBarrier() {
-        if(cb_arr.isEmpty()){
+        if (cb_arr.isEmpty()) {
             return new CyclicBarrier(0);
-        }else{ 
+        } else {
             return cb_arr.remove(0);
         }
     }
-    
-    
+
     public void addGeneticOperatorThread(GeneticOperatorThread thread) {
         go_threads.add(thread);
     }
@@ -73,6 +76,24 @@ public class FlyWeight {
         }
     }
 
+    public void addGeneticOperatorThread(ArrayList<GeneticOperatorThread> obj) throws Exception {
+        if (obj != null) {
+            go_arr_threads.add(obj);
+        } else {
+            throw new Exception("Cannot add null ArrayList<GeneticOperatorThread> obj ");
+        }
+    }
+
+    public ArrayList<GeneticOperatorThread> getGeneticOperatorThreads() {
+        if (go_arr_threads.isEmpty()) {
+            return new ArrayList<GeneticOperatorThread>();
+        } else {
+            ArrayList<GeneticOperatorThread> thread = go_arr_threads.remove(0);
+            thread.clear();
+            return thread;
+        }
+    }
+
     public void addRandom(Random obj) throws Exception {
         if (obj != null) {
             random_arr.add(obj);
@@ -82,10 +103,12 @@ public class FlyWeight {
     }
 
     public Random getRandom() {
-        if (random_arr.isEmpty()) {
-            return new Random();
-        } else {
-            return random_arr.remove(0);
+        synchronized (singleton) { 
+            if (random_arr.isEmpty()) {
+                return new Random();
+            } else {
+                return random_arr.remove(0);
+            }
         }
     }
 
@@ -255,6 +278,7 @@ public class FlyWeight {
         }
         return arr;
     }
+
     /**
      * @param arr
      */
@@ -271,7 +295,7 @@ public class FlyWeight {
      */
     public void addByteArray2dCondition(byte[][] arr) throws Exception {
         if (arr != null) {
-          shrt_arr_2D_c.add(arr);
+            shrt_arr_2D_c.add(arr);
         } else {
             throw new Exception("Cannot add null byte[][] object to flyweight.");
         }

@@ -19,7 +19,6 @@ public class GeneticOperators {
             rand.setSeed(seed);
             Helper._createMain(prog, depth, 0, 0, false, rand);
             FlyWeight.getInstance().addRandom(rand);
-
         } else {
             throw new Exception("Cannot grow null program.");
         }
