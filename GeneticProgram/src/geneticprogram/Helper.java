@@ -388,7 +388,7 @@ public class Helper {
             do {
                 int level = levels.pop();
                 int position = positions.pop();
-                byte ch = tree[level][position];
+                int ch = tree[level][position];
                 if (ch < Meta.CONDITIONS.length ) {
                     if (!include_root) {
                         if (level > 0) {
@@ -413,7 +413,6 @@ public class Helper {
                 }
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
-            FlyWeight.getInstance().addStackInteger(positions);
             FlyWeight.getInstance().addStackInteger(positions);
             int[] point = points.remove(rand.nextInt(points.size() + 0) - 0);
             FlyWeight.getInstance().addArrayListIntArray(points);

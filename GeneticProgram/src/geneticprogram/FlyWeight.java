@@ -64,11 +64,11 @@ public class FlyWeight {
         }
     }
 
-    public GeneticOperatorThread getGeneticOperatorThread() {
+    public synchronized GeneticOperatorThread getGeneticOperatorThread() {
         return new GeneticOperatorThread();
     }
 
-    public void addGeneticOperatorThreads(ArrayList<GeneticOperatorThread> obj) throws Exception {
+    public synchronized void addGeneticOperatorThreads(ArrayList<GeneticOperatorThread> obj) throws Exception {
         if (obj != null) {
             go_arr_threads.add(obj);
         } else {
@@ -76,7 +76,7 @@ public class FlyWeight {
         }
     }
 
-    public Stack<int[]> getStack_int_arr() {
+    public synchronized Stack<int[]> getStack_int_arr() {
         if (stack_int_arr.isEmpty()) {
             return new Stack<int[]>();
         } else {
@@ -85,7 +85,7 @@ public class FlyWeight {
         }
     }
 
-    public void addStack_int_arr(Stack<int[]> obj) throws Exception {
+    public synchronized void addStack_int_arr(Stack<int[]> obj) throws Exception {
         if (obj != null) {
             stack_int_arr.add(obj);
         } else {
@@ -93,7 +93,7 @@ public class FlyWeight {
         }
     }
 
-    public ArrayList<GeneticOperatorThread> getGeneticOperatorThreads() {
+    public synchronized ArrayList<GeneticOperatorThread> getGeneticOperatorThreads() {
         if (go_arr_threads.isEmpty()) {
             return new ArrayList<GeneticOperatorThread>();
         } else {
@@ -103,15 +103,17 @@ public class FlyWeight {
         }
     }
 
-    public void addRandom(Random obj) throws Exception {
-        if (obj != null) {
-            random_arr.add(obj);
-        } else {
-            throw new Exception("Cannot add null Random obj");
+    public synchronized void addRandom(Random obj) throws Exception {
+        synchronized (singleton) {
+            if (obj != null) {
+                random_arr.add(obj);
+            } else {
+                throw new Exception("Cannot add null Random obj");
+            }
         }
     }
 
-    public Random getRandom() {
+    public synchronized Random getRandom() {
         synchronized (singleton) {
             if (random_arr.isEmpty()) {
                 return new Random();
@@ -124,7 +126,7 @@ public class FlyWeight {
     /**
      * @return ArrayList<Integer>
      */
-    public ArrayList<Integer> getArrayListInt() {
+    public synchronized ArrayList<Integer> getArrayListInt() {
         ArrayList<Integer> al;
         if (!al_int.isEmpty()) {
             al = al_int.remove(0);
@@ -140,7 +142,7 @@ public class FlyWeight {
      * @param al
      * @throws Exception
      */
-    public void addArrayListInt(ArrayList<Integer> al) throws Exception {
+    public synchronized void addArrayListInt(ArrayList<Integer> al) throws Exception {
         if (al != null) {
             al_int.add(al);
         } else {
@@ -153,7 +155,7 @@ public class FlyWeight {
      * @return a Generation
      * @throws Exception
      */
-    public Generation getGeneration() throws Exception {
+    public synchronized Generation getGeneration() throws Exception {
         Generation gen = null;
         if (!generations.isEmpty()) {
             gen = generations.remove(0);
@@ -167,7 +169,7 @@ public class FlyWeight {
      * @param generation
      * @throws Exception
      */
-    public void addGeneration(Generation generation) throws Exception {
+    public synchronized void addGeneration(Generation generation) throws Exception {
         if (generation != null) {
             generations.add(generation);
         } else {
@@ -179,7 +181,7 @@ public class FlyWeight {
      * @return program
      * @throws Exception
      */
-    public Program getProgram() throws Exception {
+    public synchronized Program getProgram() throws Exception {
         Program prog = null;
         if (!programs.isEmpty()) {
             prog = programs.remove(0);
@@ -189,7 +191,7 @@ public class FlyWeight {
         return prog;
     }
 
-    public void addProgram(Program prog) throws Exception {
+    public synchronized void addProgram(Program prog) throws Exception {
         if (prog != null) {
             programs.add(prog);
         } else {
@@ -200,7 +202,7 @@ public class FlyWeight {
     /**
      * @return ArrayList<int[]>
      */
-    public ArrayList<int[]> getArrayListIntArray() {
+    public synchronized ArrayList<int[]> getArrayListIntArray() {
         ArrayList<int[]> obj = null;
         if (!al_int_arr.isEmpty()) {
             obj = al_int_arr.remove(0);
@@ -215,7 +217,7 @@ public class FlyWeight {
      * @param obj
      * @throws Exception
      */
-    public void addArrayListIntArray(ArrayList<int[]> obj) throws Exception {
+    public synchronized void addArrayListIntArray(ArrayList<int[]> obj) throws Exception {
         if (obj != null) {
             al_int_arr.add(obj);
         } else {
@@ -226,7 +228,7 @@ public class FlyWeight {
     /**
      * @return Stack<Integer>
      */
-    public Stack<Integer> getStackInteger() {
+    public synchronized Stack<Integer> getStackInteger() {
         synchronized (singleton) {
             if (!stack_int.isEmpty()) {
                 Stack<Integer> obj = stack_int.remove(0);
@@ -242,7 +244,7 @@ public class FlyWeight {
      * @param obj
      * @throws Exception
      */
-    public void addStackInteger(Stack<Integer> obj) throws Exception {
+    public synchronized void addStackInteger(Stack<Integer> obj) throws Exception {
         synchronized (singleton) {
             if (obj != null) {
                 stack_int.add(obj);
@@ -257,7 +259,7 @@ public class FlyWeight {
      * @return byte[][]
      * @throws Exception
      */
-    public byte[][] addByteArray2dMain() throws Exception {
+    public synchronized byte[][] addByteArray2dMain() throws Exception {
         byte[][] arr;
         if (!shrt_arr_2D_m.isEmpty()) {
             arr = shrt_arr_2D_m.remove(0);
@@ -274,7 +276,7 @@ public class FlyWeight {
      * @return byte[][]
      * @throws Exception
      */
-    public byte[][] getByteArray2dCondtion() throws Exception {
+    public synchronized byte[][] getByteArray2dCondtion() throws Exception {
         byte[][] arr;
         if (!shrt_arr_2D_c.isEmpty()) {
             arr = shrt_arr_2D_c.remove(0);
@@ -284,7 +286,7 @@ public class FlyWeight {
         return arr;
     }
 
-    public byte[][] getByteArray2dMain() throws Exception {
+    public synchronized byte[][] getByteArray2dMain() throws Exception {
         byte[][] arr;
         if (!shrt_arr_2D_m.isEmpty()) {
             arr = shrt_arr_2D_m.remove(0);
@@ -297,7 +299,7 @@ public class FlyWeight {
     /**
      * @param arr
      */
-    public void addByteArray2dMain(byte[][] arr) throws Exception {
+    public synchronized void addByteArray2dMain(byte[][] arr) throws Exception {
         if (arr != null) {
             shrt_arr_2D_m.add(arr);
         } else {
@@ -308,7 +310,7 @@ public class FlyWeight {
     /**
      * @param arr
      */
-    public void addByteArray2dCondition(byte[][] arr) throws Exception {
+    public synchronized void addByteArray2dCondition(byte[][] arr) throws Exception {
         if (arr != null) {
             shrt_arr_2D_c.add(arr);
         } else {
@@ -320,7 +322,7 @@ public class FlyWeight {
      * @return byte[][][][]
      * @throws Exception
      */
-    public byte[][][][] addByteArray4d() throws Exception {
+    public synchronized byte[][][][] addByteArray4d() throws Exception {
         byte[][][][] arr;
         if (!shrt_arr_4D.isEmpty()) {
             arr = shrt_arr_4D.remove(0);
@@ -336,7 +338,7 @@ public class FlyWeight {
      * @param arr
      * @throws Exception
      */
-    public void addByteArray4D(byte[][][][] arr) throws Exception {
+    public synchronized void addByteArray4D(byte[][][][] arr) throws Exception {
         if (arr != null) {
             shrt_arr_4D.add(arr);
         } else {

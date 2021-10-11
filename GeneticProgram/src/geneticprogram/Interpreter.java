@@ -54,8 +54,8 @@ public class Interpreter {
                 if (r <= Parameters.getInstance().getMain_max_depth()) {
                     /*Still not at the leaf of a main sub-branch*/
                     p = pos.pop();
-                    byte ch = prog.getMain()[r][p];
-                    if (ch == Meta.IF) { 
+                    int ch = prog.getMain()[r][p];
+                    if (ch  < Meta.MAINS.length) { 
                         if (_interpretCondition(
                                 prog.getConditions()[r][p],
                                 0,

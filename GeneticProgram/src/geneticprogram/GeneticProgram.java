@@ -44,7 +44,7 @@ public class GeneticProgram {
                       1,
                       2,
                       2,
-                      2,
+                      100,
                       2,
                       0,//0.6, 
                       1,//0.3, 
