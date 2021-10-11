@@ -36,10 +36,10 @@ public class GeneticProgram {
             Parameters.setParameters(
                       50,
                       1,
-                      3,
-                      2,
+                      5,
+                      5,
                       500,
-                      2,
+                      4,
                       1,//0.6, 
                       0,//0.3, 
                       0,//0.05, 

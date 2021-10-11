@@ -42,7 +42,7 @@ public class Helper {
                 int to_add = a.getMain()[a_curr_level][a_start_pos + position_offset];
                 if(b_curr_level == (Parameters.getInstance().getMain_max_depth()-1) || a_curr_level == (Parameters.getInstance().getMain_max_depth()-1)){
                     if(to_add < Meta.MAINS.length){
-                        b.getMain()[b_curr_level][b_start_pos + position_offset]  = (byte) (rand.nextInt(Data.initialiseData().getNumberClasses() - 0) + 0);
+                        b.getMain()[b_curr_level][b_start_pos + position_offset]  = (byte) (Meta.MAINS.length+rand.nextInt(Data.initialiseData().getNumberClasses() - 0) + 0);
                     }else{
                         b.getMain()[b_curr_level][b_start_pos + position_offset] = a.getMain()[a_curr_level][a_start_pos + position_offset];
                     }  
@@ -65,7 +65,7 @@ public class Helper {
                 int to_add = temp.getMain()[b_curr_level][b_start_pos + position_offset];
                 if(b_curr_level == (Parameters.getInstance().getMain_max_depth()-1) || a_curr_level == (Parameters.getInstance().getMain_max_depth()-1)){
                     if(to_add < Meta.MAINS.length){
-                        a.getMain()[a_curr_level][a_start_pos + position_offset]  = (byte) (rand.nextInt(Data.initialiseData().getNumberClasses() - 0) + 0);
+                        a.getMain()[a_curr_level][a_start_pos + position_offset]  = (byte) (Meta.MAINS.length+rand.nextInt(Data.initialiseData().getNumberClasses() - 0) + 0);
                     }else{
                         a.getMain()[a_curr_level][a_start_pos + position_offset] = temp.getMain()[b_curr_level][b_start_pos + position_offset];
                     }  
@@ -76,52 +76,92 @@ public class Helper {
                     System.arraycopy(temp.getConditions()[b_curr_level][b_start_pos + position_offset][cl], 0, a.getConditions()[a_curr_level][a_start_pos + position_offset][cl], 0, 1 << cl);
                 }
             }
-        }
-
-        /* 
-        int level = 0;
-        do {
-            if (b_level + level < Parameters.getInstance().getMain_max_depth() - 1) {
-                for (int position = 0; position < (1 << level); position++) {
-                    b.getMain()[b_level + level][(b_position << level) + position] = a.getMain()[a_level + level][(a_position << level) + position];
-                    b.getConditions()[b_level + level][(b_position << level) + position] = a.getConditions()[a_level + level][(a_position << level) + position];
-                }
-            } else {
-                for (int position = 0; position < (1 << level); position++) {
-                    if (a.getMain()[a_level + level][(a_position << level) + position] < Meta.MAINS.length) {
-                        b.getMain()[b_level + level][(b_position << level) + position] = (byte) (Meta.MAINS.length + rand.nextInt(Data.initialiseData().getNumberClasses() + 0) - 0);
-                    } else {
-                        b.getMain()[b_level + level][(b_position << level) + position] = a.getMain()[a_level + level][(a_position << level) + position];
-                    }
-                    b.getConditions()[b_level + level][(b_position << level) + position] = a.getConditions()[a_level + level][(a_position << level) + position];
-                }
-            }
-            ++level;
-        } while (b_level + level < Parameters.getInstance().getMain_max_depth() && level < a_levels);
- 
-        level = 0;
-        do {
-            if (a_level + level < Parameters.getInstance().getMain_max_depth() - 1) {
-                for (int position = 0; position < (1 << level); position++) {
-                    a.getMain()[a_level + level][(a_position << level) + position] = temp.getMain()[b_level + level][(b_position << level) + position];
-                    a.getConditions()[a_level + level][(a_position << level) + position] = temp.getConditions()[b_level + level][(b_position << level) + position];
-                }
-            } else {
-                for (int position = 0; position < (1 << level); position++) {
-                    if (temp.getMain()[b_level + level][(b_position << level) + position] < Meta.MAINS.length) {
-                        a.getMain()[a_level + level][(a_position << level) + position] = (byte) (Meta.MAINS.length + rand.nextInt(Data.initialiseData().getNumberClasses() + 0) - 0);
-                    } else {
-                        a.getMain()[a_level + level][(a_position << level) + position] = temp.getMain()[b_level + level][(b_position << level) + position];
-                    }
-                    a.getConditions()[a_level + level][(a_position << level) + position] = temp.getConditions()[b_level + level][(b_position << level) + position];
-                }
-            }
-            ++level;
-        } while (a_level + level < Parameters.getInstance().getMain_max_depth() && level < b_levels);*/
+        } 
         return true;
     }
 
-    public static boolean _crossoverCondition(Program a, Program b, Random rand) throws Exception {
+        public static boolean _crossoverCondition(Program a, Program b, Random rand) throws Exception {
+        if (false && Meta.debug) {
+            System.out.println("crossing over condition");
+        }
+        /*CROSSOVER Condition TREE*/
+        Program temp = FlyWeight.getInstance().getProgram();
+        temp.copy(b);
+        
+        
+        int[] pos_A, pos_B;
+        // Get all the main primitives of Tree A - making sure it is not the root of tree A 
+        pos_A = getMainFunction(a.getMain(), true, rand);
+
+        // Get all the main primitives of Tree B  
+        int a_main_level = pos_A[0],
+             a_main_position = pos_A[1];
+        
+        pos_B = getMainFunction(b.getMain(), true, rand);
+        int b_main_level = pos_B[0],
+             b_main_position = pos_B[1];
+       
+             
+        pos_A   = getConditionPrimitive(a.getConditions()[a_main_level][a_main_position], true, rand);
+        
+        if (a.getConditions()[a_main_level][a_main_position][pos_A[0]][pos_A[1]] < Meta.CONDITIONS.length) {
+            //if A is a function, then pick any point in B
+             pos_B   = getConditionPrimitive(b.getConditions()[b_main_level][b_main_position], true, rand);
+             
+        } else {
+            //otherwise pick a non-root point in B
+            pos_B   = getConditionPrimitive(b.getConditions()[b_main_level][b_main_position], false, rand); 
+        }
+        int a_level = pos_A[0],
+                  a_position = pos_A[1],
+                  b_level = pos_B[0],
+                  b_position = pos_B[1],
+                  a_levels = Parameters.getInstance().getCondition_max_depth()- a_level,
+                  b_levels = Parameters.getInstance().getCondition_max_depth() - b_level;
+        
+        /*Copy A to B */
+        for (int level_offset = 0; level_offset <  b_levels && level_offset <  a_levels; level_offset++) { 
+            int a_curr_level = a_level + level_offset, 
+                    b_curr_level = b_level + level_offset;
+            int a_start_pos = a_position << level_offset, 
+                 b_start_pos = b_position << level_offset; 
+            for (int position_offset = 0; position_offset < (1 << level_offset); position_offset++) {
+                int to_add = a.getConditions()[a_main_level][a_main_position][a_curr_level][a_start_pos + position_offset];
+                if(b_curr_level == (Parameters.getInstance().getCondition_max_depth()-1) || a_curr_level == (Parameters.getInstance().getCondition_max_depth()-1)){
+                    if(to_add < Meta.CONDITIONS.length){
+                        b.getConditions()[b_main_level][b_main_position][b_curr_level][b_start_pos + position_offset]  = (byte) (Meta.CONDITIONS.length + rand.nextInt(Data.initialiseData().getNumberAttributes()- 0) + 0);
+                    }else{
+                        b.getConditions()[b_main_level][b_main_position][b_curr_level][b_start_pos + position_offset] = a.getConditions()[a_main_level][a_main_position][a_curr_level][a_start_pos + position_offset];
+                    }  
+                }else{
+                    b.getConditions()[b_main_level][b_main_position][b_curr_level][b_start_pos + position_offset] = a.getConditions()[a_main_level][a_main_position][a_curr_level][a_start_pos + position_offset];
+                } 
+            }
+        }
+        
+        /*Copy B to A*/
+        for (int level_offset = 0; level_offset <  b_levels && level_offset <  a_levels; level_offset++) { 
+            int a_curr_level = a_level + level_offset, 
+                    b_curr_level = b_level + level_offset;
+            int a_start_pos = a_position << level_offset, 
+                 b_start_pos = b_position << level_offset; 
+            for (int position_offset = 0; position_offset < (1 << level_offset); position_offset++) {
+                int to_add = temp.getConditions()[b_main_level][b_main_position][b_curr_level][b_start_pos + position_offset];
+                if(b_curr_level == (Parameters.getInstance().getCondition_max_depth()-1) || a_curr_level == (Parameters.getInstance().getCondition_max_depth()-1)){
+                    if(to_add < Meta.CONDITIONS.length){
+                        a.getConditions()[a_main_level][a_main_position][a_curr_level][a_start_pos + position_offset]  = (byte) (Meta.CONDITIONS.length +rand.nextInt(Data.initialiseData().getNumberAttributes() - 0) + 0);
+                    }else{
+                        a.getConditions()[a_main_level][a_main_position][a_curr_level][a_start_pos + position_offset] = temp.getConditions()[b_main_level][b_main_position][b_curr_level][b_start_pos + position_offset];
+                    }  
+                }else{
+                    a.getConditions()[a_main_level][a_main_position][a_curr_level][a_start_pos + position_offset] = temp.getConditions()[b_main_level][b_main_position][b_curr_level][b_start_pos + position_offset];
+                } 
+            }
+        } 
+        return true;
+    }
+    
+    private static boolean _crossoverConditionOld(Program a, Program b, Random rand) throws Exception {
         if (Meta.debug) {
             System.out.println("crossing over condition");
         }
