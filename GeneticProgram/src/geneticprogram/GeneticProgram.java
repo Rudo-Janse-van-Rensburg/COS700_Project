@@ -39,7 +39,7 @@ public class GeneticProgram {
                       5,
                       5,
                       500,
-                      4,
+                      2,
                       1,//0.6, 
                       0,//0.3, 
                       0,//0.05, 

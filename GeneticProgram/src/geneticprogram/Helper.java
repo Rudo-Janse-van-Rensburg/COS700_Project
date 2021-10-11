@@ -102,7 +102,7 @@ public class Helper {
              b_main_position = pos_B[1];
        
              
-        pos_A   = getConditionPrimitive(a.getConditions()[a_main_level][a_main_position], true, rand);
+        pos_A   = getConditionPrimitive(a.getConditions()[a_main_level][a_main_position], false, rand);
         
         if (a.getConditions()[a_main_level][a_main_position][pos_A[0]][pos_A[1]] < Meta.CONDITIONS.length) {
             //if A is a function, then pick any point in B
@@ -500,7 +500,11 @@ public class Helper {
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
             FlyWeight.getInstance().addStackInteger(positions);
-            int[] point = points.remove(rand.nextInt(points.size() + 0) - 0);
+            int[] point;
+            synchronized(points){
+                 point= points.remove(rand.nextInt(points.size() + 0) - 0);
+            }
+            
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
