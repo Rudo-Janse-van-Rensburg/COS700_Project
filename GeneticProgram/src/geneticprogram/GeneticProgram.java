@@ -34,11 +34,11 @@ public class GeneticProgram {
              */
             System.out.println("hi");
             Parameters.setParameters(
-                      2,
+                      50,
                       1,
                       3,
                       2,
-                      4,
+                      500,
                       2,
                       1,//0.6, 
                       0,//0.3, 

@@ -66,7 +66,7 @@ public class GeneticOperatorThread extends Thread {
                     break;
                 case Meta.CROSSOVER:
                     GeneticOperators.crossover(parents[0], parents[1], seed);
-                    System.out.println("crossover thread exitting");
+                    //System.out.println("crossover thread exitting");
                     //Thread.sleep(10);
                      latch.countDown(); 
                     break;

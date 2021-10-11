@@ -142,7 +142,7 @@ public class Evolution {
                 int individual = 0;
                 do {
                     if (num_threads > 0 && num_crossover > 0) {
-                        if (Meta.debug) {
+                        if (false && Meta.debug) {
                             System.out.println("Crossover");
                         }
                         Program a = FlyWeight.getInstance().getProgram();
