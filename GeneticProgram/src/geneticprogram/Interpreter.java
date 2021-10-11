@@ -89,7 +89,7 @@ public class Interpreter {
             if (row < Parameters.getInstance().getCondition_max_depth() && pos < (1 << row)) {
                 int ch = cond[row][pos];
                 if (ch < Meta.CONDITIONS.length) {
-                    switch (cond[row][pos]) {
+                    switch (ch) {
                         case Meta.GREATER_THAN:
                             return _interpretCondition(cond, row + 1, pos << 1, instance) > _interpretCondition(cond, row + 1, (pos << 1) + 1, instance) ? 1 : 0;
                         case Meta.LESS_THAN:

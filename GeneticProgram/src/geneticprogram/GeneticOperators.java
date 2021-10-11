@@ -70,17 +70,17 @@ public class GeneticOperators {
             int position = pos[1];
             byte[][] main = prog.getMain();
             byte[][][][] cond = prog.getConditions();
-            for (int l = 0; l < Parameters.getInstance().getMain_max_depth() - level; l++) {
-                int level_offset = level;
-                int position_offset = (l * position); //starting position in level
-
-                for (int p = 0; p < (1 << l); p++) {
-                    main[l][p] = main[level + l][position_offset + p];
-                    for (int cl = 0; cl < Parameters.getInstance().getCondition_max_depth(); cl++) {
-                        System.arraycopy(cond[level + l][position_offset + p][cl], 0, cond[l][p][cl], 0, 1 << cl);
-                    }
+            for (int hoist_level = 0; hoist_level < (Parameters.getInstance().getMain_max_depth() - level) ; hoist_level++) {
+                int number_positions = 1 << hoist_level;
+                int start_position = position <<  hoist_level;
+                for (int hoist_position = 0; hoist_position < number_positions; hoist_position++) {
+                    main[hoist_level][hoist_position] = main[level + hoist_level][start_position+hoist_position] ;
+                    
+                    for (int cd = 0; cd < Parameters.getInstance().getCondition_max_depth();cd++) {
+                        System.arraycopy(cond[level + hoist_level][start_position+hoist_position][cd], 0, cond[hoist_level][hoist_position][cd], 0, 1 << cd);
+                    } 
                 }
-            }
+            } 
         } else {
             throw new Exception("Cannot hoist null program.");
         }
@@ -115,29 +115,44 @@ public class GeneticOperators {
             Random rand = FlyWeight.getInstance().getRandom();
             rand.setSeed(seed);
             byte[][] tree = null;
-            int[] position = Helper.getMainFunction(prog.getMain(), true, rand);
+            int[] position = null;
             int depth;
             if (rand.nextBoolean()) {
                 /*Edit Main Tree*/
+                position = Helper.getMainFunction(prog.getMain(), true, rand);
                 tree = prog.getMain();
                 depth = Parameters.getInstance().getMain_max_depth();
             } else {
                 /*Edit Condition Sub-tree*/
+                 position = Helper.getMainFunction(prog.getMain(), true, rand);
                 tree = prog.getConditions()[position[0]][position[1]];
                 position = Helper.getConditionFunction(tree, true,rand);
                 depth = Parameters.getInstance().getCondition_max_depth();
             } 
             int start_level = position[0],
                     start_position = position[1];
-            
-            for (int level_offset = 1; level_offset < depth-start_level; level_offset++) {
-                for (int position_offset = 0; position_offset < 1 << (level_offset-1); position_offset++) {
-                    byte temp = tree[start_level+level_offset][start_position + position_offset]; 
-                     tree[start_level+level_offset][start_position + position_offset] =  tree[start_level+level_offset][((start_position + 1) << (level_offset-1)) + position_offset];
-                     tree[start_level+level_offset][((start_position + 1) << (level_offset-1)) + position_offset] = temp;
+            for (int level = start_level ; level < depth; level++) {
+                int begin_pos = start_position << (level - start_level); 
+                int end_pos     = begin_pos + (1 << (level - start_level));
+                for (int pos = begin_pos; pos < end_pos; pos++) {
+                     byte temp = tree[level][pos]; 
+                     tree[level][pos] =  tree[level][pos + (end_pos-begin_pos)];
+                    tree[level][pos + (end_pos-begin_pos)]= temp;
                 }
             }
             
+            /*
+            for (int level_offset = 1; level_offset < depth - start_level; level_offset++) {
+                for (int position_offset = 0; position_offset < (1 << (level_offset-1)); position_offset++) {
+                    int curr_level = start_level + level_offset;
+                    int left_pos = (start_position << (1 << (level_offset-1))) + position_offset;
+                    int right_pos = left_pos + (1 << (level_offset-1));
+                    byte temp = tree[curr_level][right_pos]; 
+                     tree[curr_level][right_pos] =  tree[curr_level][left_pos];
+                      tree[curr_level][left_pos]= temp;
+                }
+            }
+            */
             /*
             for (int level = position[0] + 1; level < depth; level++) {
                 int pow = level - position[0] - 1;

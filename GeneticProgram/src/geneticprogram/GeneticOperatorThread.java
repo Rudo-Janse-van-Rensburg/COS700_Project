@@ -70,7 +70,7 @@ public class GeneticOperatorThread extends Thread {
                     break;
                 case Meta.EDIT:
                     GeneticOperators.edit(parents[0], seed);
-                    System.out.println("edit thread exitting"); 
+                    //System.out.println("edit thread exitting"); 
                     latch.countDown();
                     break;
                 case Meta.GROW:

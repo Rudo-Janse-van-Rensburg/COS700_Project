@@ -5,12 +5,6 @@
  */
 package geneticprogram;
 
-import java.util.Arrays;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
-import jdk.jshell.execution.Util;
-
 /**
  *
  * @author rudo
@@ -42,14 +36,14 @@ public class GeneticProgram {
             Parameters.setParameters(
                       50,
                       1,
-                      2,
-                      2,
-                      20,
+                      5,
+                      4,
+                      50,
                       2,
                       0,//0.6, 
                       0,//0.3, 
-                      0,//0.05, 
-                      1//0.05
+                      1,//0.05, 
+                      0//0.05
             ); 
             Evolution evolution = Evolution.getInstance();
             do{
