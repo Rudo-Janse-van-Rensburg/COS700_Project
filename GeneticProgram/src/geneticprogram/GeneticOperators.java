@@ -115,26 +115,30 @@ public class GeneticOperators {
             Random rand = FlyWeight.getInstance().getRandom();
             rand.setSeed(seed);
             byte[][] tree = null;
-            ArrayList<int[]> points;
             int[] position = Helper.getMainFunction(prog.getMain(), true, rand);
             int depth;
-            if (Randomness.getInstance().getRandomBoolean()) {
+            if (rand.nextBoolean()) {
                 /*Edit Main Tree*/
                 tree = prog.getMain();
                 depth = Parameters.getInstance().getMain_max_depth();
             } else {
                 /*Edit Condition Sub-tree*/
-                position = Helper.getConditionFunction(prog.getConditions()[position[0]][position[1]], true);
+                tree = prog.getConditions()[position[0]][position[1]];
+                position = Helper.getConditionFunction(tree, true,rand);
                 depth = Parameters.getInstance().getCondition_max_depth();
-            }
-            if (false && Meta.debug) {
-                System.out.print("points    : [");
-                for (int[] point : points) {
-                    System.out.print("(" + Arrays.toString(point) + "," + tree[point[0]][point[1]] + ")");
+            } 
+            int start_level = position[0],
+                    start_position = position[1];
+            
+            for (int level_offset = 1; level_offset < depth-start_level; level_offset++) {
+                for (int position_offset = 0; position_offset < 1 << (level_offset-1); position_offset++) {
+                    byte temp = tree[start_level+level_offset][start_position + position_offset]; 
+                     tree[start_level+level_offset][start_position + position_offset] =  tree[start_level+level_offset][((start_position + 1) << (level_offset-1)) + position_offset];
+                     tree[start_level+level_offset][((start_position + 1) << (level_offset-1)) + position_offset] = temp;
                 }
-                System.out.print("]\n");
-                System.out.println("" + Arrays.toString(position));
             }
+            
+            /*
             for (int level = position[0] + 1; level < depth; level++) {
                 int pow = level - position[0] - 1;
                 for (int pos = position[1] * (1 << pow); pos < (position[1] + 1) * (1 << pow); pos++) {
@@ -142,7 +146,7 @@ public class GeneticOperators {
                     tree[level][pos] = tree[level][pos + ((position[1] + 1) * (1 << pow))];
                     tree[level][pos + pos + ((position[1] + 1) * (1 << pow))] = temp;
                 }
-            }
+            }*/
             FlyWeight.getInstance().addRandom(rand);
         } else {
             throw new Exception("Cannot edit null program.");

@@ -44,12 +44,12 @@ public class GeneticProgram {
                       1,
                       2,
                       2,
-                      500,
+                      20,
                       2,
                       0,//0.6, 
-                      1,//0.3, 
+                      0,//0.3, 
                       0,//0.05, 
-                      0//0.05
+                      1//0.05
             ); 
             Evolution evolution = Evolution.getInstance();
             do{

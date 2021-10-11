@@ -65,7 +65,7 @@ public class GeneticOperatorThread extends Thread {
                     break;
                 case Meta.HOIST:
                     GeneticOperators.hoist(parents[0], seed);
-                    System.out.println("hoist thread exitting"); 
+                    //System.out.println("hoist thread exitting"); 
                     latch.countDown();
                     break;
                 case Meta.EDIT:

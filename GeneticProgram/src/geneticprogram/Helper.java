@@ -42,7 +42,7 @@ public class Helper {
             } else {
                 for (int position = 0; position < (1 << level); position++) {
                     if (a.getMain()[a_level + level][(a_position << level) + position] < Meta.MAINS.length) {
-                        b.getMain()[b_level + level][(b_position << level) + position] = (byte) (Meta.MAINS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses()));
+                        b.getMain()[b_level + level][(b_position << level) + position] = (byte) (Meta.MAINS.length + rand.nextInt(Data.initialiseData().getNumberClasses() + 0) - 0); 
                     } else {
                         b.getMain()[b_level + level][(b_position << level) + position] = a.getMain()[a_level + level][(a_position << level) + position];
                     }
@@ -65,7 +65,7 @@ public class Helper {
             } else {
                 for (int position = 0; position < (1 << level); position++) {
                     if (temp.getMain()[b_level + level][(b_position << level) + position] < Meta.MAINS.length) {
-                        a.getMain()[a_level + level][(a_position << level) + position] = (byte) (Meta.MAINS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberClasses()));
+                        a.getMain()[a_level + level][(a_position << level) + position] = (byte) (Meta.MAINS.length + rand.nextInt(Data.initialiseData().getNumberClasses() + 0) - 0); 
                     } else {
                         a.getMain()[a_level + level][(a_position << level) + position] = temp.getMain()[b_level + level][(b_position << level) + position];
                     }
@@ -116,8 +116,8 @@ public class Helper {
                 }
             } else {
                 for (int position = 0; position < (1 << level); position++) {
-                    if (tree_A[a_level + level][(a_position << level) + position] < Meta.CONDITIONS.length) {
-                        tree_B[b_level + level][b_position + position] = (byte) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberAttributes()));
+                    if (tree_A[a_level + level][(a_position << level) + position] < Meta.CONDITIONS.length) { 
+                        tree_B[b_level + level][b_position + position] = (byte) (Meta.CONDITIONS.length  + rand.nextInt(Data.initialiseData().getNumberAttributes() + 0) - 0); 
                     } else {
                         tree_B[b_level + level][(b_position << level) + position] = tree_A[a_level + level][(a_position << level) + position];
                     }
@@ -138,7 +138,7 @@ public class Helper {
             } else {
                 for (int position = 0; position < (1 << level); position++) {
                     if (tree_temp[b_level + level][b_position + position] < Meta.CONDITIONS.length) {
-                        tree_A[a_level + level][(a_position << level) + position] = (byte) (Meta.CONDITIONS.length + Randomness.getInstance().getRandomIntExclusive(0, Data.initialiseData().getNumberAttributes()));
+                        tree_A[a_level + level][(a_position << level) + position] = (byte)  (Meta.CONDITIONS.length  + rand.nextInt(Data.initialiseData().getNumberAttributes() + 0) - 0); 
                     } else {
                         tree_A[a_level + level][(a_position << level) + position] = tree_temp[b_level + level][(b_position << level) + position];
                     }
@@ -247,7 +247,7 @@ public class Helper {
             do {
                 int level = levels.pop();
                 int position = positions.pop();
-                byte ch = tree[level][position];
+                int ch = tree[level][position];
                 if (ch < Meta.MAINS.length) {
                     /*A main function*/
                     if (!include_root) {
@@ -425,10 +425,11 @@ public class Helper {
     /**
      * @param tree
      * @param include_root
+     * @param rand
      * @return
      * @throws Exception
      */
-    public static int[] getConditionFunction(byte[][] tree, boolean include_root) throws Exception {
+    public static int[] getConditionFunction(byte[][] tree, boolean include_root, Random rand) throws Exception {
         if (tree != null) {
             ArrayList<int[]> points = FlyWeight.getInstance().getArrayListIntArray();
             Stack<Integer> levels = FlyWeight.getInstance().getStackInteger();
@@ -455,9 +456,8 @@ public class Helper {
                 }
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
-            FlyWeight.getInstance().addStackInteger(positions);
-            FlyWeight.getInstance().addStackInteger(positions);
-            int[] point = points.remove(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+            FlyWeight.getInstance().addStackInteger(positions); 
+            int[] point = points.remove( rand.nextInt(points.size() -0 )+ 0); 
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
@@ -468,10 +468,11 @@ public class Helper {
     /**
      * @param tree
      * @param include_root
+     * @param rand
      * @return
      * @throws Exception
      */
-    public static int[] getConditionTerminal(byte[][] tree, boolean include_root) throws Exception {
+    public static int[] getConditionTerminal(byte[][] tree, boolean include_root, Random rand) throws Exception {
         if (tree != null) {
             ArrayList<int[]> points = FlyWeight.getInstance().getArrayListIntArray();
             Stack<Integer> levels = FlyWeight.getInstance().getStackInteger();
@@ -498,9 +499,8 @@ public class Helper {
                 }
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
-            FlyWeight.getInstance().addStackInteger(positions);
-            FlyWeight.getInstance().addStackInteger(positions);
-            int[] point = points.remove(Randomness.getInstance().getRandomIntExclusive(0, points.size()));
+            FlyWeight.getInstance().addStackInteger(positions); 
+            int[] point = points.remove( rand.nextInt(points.size() -0 )+ 0); 
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
