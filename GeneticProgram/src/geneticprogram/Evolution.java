@@ -132,7 +132,7 @@ public class Evolution {
                 for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
                     seeds[i] = Randomness.getInstance().getRandomLong();
                 }
-                if (Meta.debug) {
+                if (false && Meta.debug) {
                     System.out.println("seeds   : " + Arrays.toString(seeds));
                 }
                 int individual = 0;
@@ -148,7 +148,7 @@ public class Evolution {
                         threads.add(crossover);
                     }
                     if (individual < Parameters.getInstance().getPopulation_size() && num_mutation > 0) {
-                        if (Meta.debug) {
+                        if (false && Meta.debug) {
                             System.out.println("Mutating");
                         }
                         Program mutant = FlyWeight.getInstance().getProgram();
@@ -228,7 +228,7 @@ public class Evolution {
         System.out.format("GENERATION   #%d%n", generation);
         System.out.println("---------------------------------------");
         System.out.format("    avergage fitness     :   %f\n", curr.getAverage_fitness());
-        System.out.println("    fitnesses            :   " + Arrays.toString(curr.getFitnesses()));
+        //System.out.println("    fitnesses            :   " + Arrays.toString(curr.getFitnesses()));
         System.out.format("    best fitness         :   %f\n", curr.getBest_fitness());
         System.out.format("    worst  fitness      :   %f\n", curr.getWorst_fitness());
         //System.out.format("    best program         :   \n%s\n",Helper.toString(best_program));

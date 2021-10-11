@@ -55,7 +55,7 @@ public class GeneticOperatorThread extends Thread {
             switch (operation) {
                 case Meta.MUTATE:
                     GeneticOperators.mutate(parents[0], seed);
-                    System.out.println("mutate thread exitting");
+                    //System.out.println("mutate thread exitting");
                     latch.countDown(); 
                     break;
                 case Meta.CROSSOVER:
@@ -87,7 +87,7 @@ public class GeneticOperatorThread extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         } 
-        System.out.println("exiting thread " + operation);
+        //System.out.println("exiting thread " + operation);
     }
 
     public void start(){ 
