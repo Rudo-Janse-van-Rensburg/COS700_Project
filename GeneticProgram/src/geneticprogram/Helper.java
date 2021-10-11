@@ -7,6 +7,9 @@ import java.util.Stack;
 public class Helper {
 
     public static boolean _crossoverMain(Program a, Program b, Random rand) throws Exception {
+        if (false && Meta.debug) {
+            System.out.println("crossing over main");
+        }
         /*CROSSOVER MAIN TREE*/
         Program temp = FlyWeight.getInstance().getProgram();
         temp.copy(b);
@@ -28,10 +31,54 @@ public class Helper {
                   b_position = pos_B[1],
                   a_levels = Parameters.getInstance().getMain_max_depth() - a_level,
                   b_levels = Parameters.getInstance().getMain_max_depth() - b_level;
+        
+        /*Copy A to B */
+        for (int level_offset = 0; level_offset <  b_levels && level_offset <  a_levels; level_offset++) { 
+            int a_curr_level = a_level + level_offset, 
+                    b_curr_level = b_level + level_offset;
+            int a_start_pos = a_position << level_offset, 
+                 b_start_pos = b_position << level_offset; 
+            for (int position_offset = 0; position_offset < (1 << level_offset); position_offset++) {
+                int to_add = a.getMain()[a_curr_level][a_start_pos + position_offset];
+                if(b_curr_level == (Parameters.getInstance().getMain_max_depth()-1) || a_curr_level == (Parameters.getInstance().getMain_max_depth()-1)){
+                    if(to_add < Meta.MAINS.length){
+                        b.getMain()[b_curr_level][b_start_pos + position_offset]  = (byte) (rand.nextInt(Data.initialiseData().getNumberClasses() - 0) + 0);
+                    }else{
+                        b.getMain()[b_curr_level][b_start_pos + position_offset] = a.getMain()[a_curr_level][a_start_pos + position_offset];
+                    }  
+                }else{
+                    b.getMain()[b_curr_level][b_start_pos + position_offset] = a.getMain()[a_curr_level][a_start_pos + position_offset];
+                }
+                for (int cl = 0; cl < Parameters.getInstance().getCondition_max_depth(); cl++) {
+                    System.arraycopy(a.getConditions()[a_curr_level][a_start_pos + position_offset][cl], 0, b.getConditions()[b_curr_level][b_start_pos + position_offset][cl], 0, 1 << cl);
+                }
+            }
+        }
+        
+        /*Copy B to A*/
+        for (int level_offset = 0; level_offset <  b_levels && level_offset <  a_levels; level_offset++) { 
+            int a_curr_level = a_level + level_offset, 
+                    b_curr_level = b_level + level_offset;
+            int a_start_pos = a_position << level_offset, 
+                 b_start_pos = b_position << level_offset; 
+            for (int position_offset = 0; position_offset < (1 << level_offset); position_offset++) {
+                int to_add = temp.getMain()[b_curr_level][b_start_pos + position_offset];
+                if(b_curr_level == (Parameters.getInstance().getMain_max_depth()-1) || a_curr_level == (Parameters.getInstance().getMain_max_depth()-1)){
+                    if(to_add < Meta.MAINS.length){
+                        a.getMain()[a_curr_level][a_start_pos + position_offset]  = (byte) (rand.nextInt(Data.initialiseData().getNumberClasses() - 0) + 0);
+                    }else{
+                        a.getMain()[a_curr_level][a_start_pos + position_offset] = temp.getMain()[b_curr_level][b_start_pos + position_offset];
+                    }  
+                }else{
+                    a.getMain()[a_curr_level][a_start_pos + position_offset] = temp.getMain()[b_curr_level][b_start_pos + position_offset];
+                }
+                for (int cl = 0; cl < Parameters.getInstance().getCondition_max_depth(); cl++) {
+                    System.arraycopy(temp.getConditions()[b_curr_level][b_start_pos + position_offset][cl], 0, a.getConditions()[a_curr_level][a_start_pos + position_offset][cl], 0, 1 << cl);
+                }
+            }
+        }
 
-        /*
-            Copy A to B
-         */
+        /* 
         int level = 0;
         do {
             if (b_level + level < Parameters.getInstance().getMain_max_depth() - 1) {
@@ -42,7 +89,7 @@ public class Helper {
             } else {
                 for (int position = 0; position < (1 << level); position++) {
                     if (a.getMain()[a_level + level][(a_position << level) + position] < Meta.MAINS.length) {
-                        b.getMain()[b_level + level][(b_position << level) + position] = (byte) (Meta.MAINS.length + rand.nextInt(Data.initialiseData().getNumberClasses() + 0) - 0); 
+                        b.getMain()[b_level + level][(b_position << level) + position] = (byte) (Meta.MAINS.length + rand.nextInt(Data.initialiseData().getNumberClasses() + 0) - 0);
                     } else {
                         b.getMain()[b_level + level][(b_position << level) + position] = a.getMain()[a_level + level][(a_position << level) + position];
                     }
@@ -51,10 +98,7 @@ public class Helper {
             }
             ++level;
         } while (b_level + level < Parameters.getInstance().getMain_max_depth() && level < a_levels);
-
-        /*
-            Copy B to A
-         */
+ 
         level = 0;
         do {
             if (a_level + level < Parameters.getInstance().getMain_max_depth() - 1) {
@@ -65,7 +109,7 @@ public class Helper {
             } else {
                 for (int position = 0; position < (1 << level); position++) {
                     if (temp.getMain()[b_level + level][(b_position << level) + position] < Meta.MAINS.length) {
-                        a.getMain()[a_level + level][(a_position << level) + position] = (byte) (Meta.MAINS.length + rand.nextInt(Data.initialiseData().getNumberClasses() + 0) - 0); 
+                        a.getMain()[a_level + level][(a_position << level) + position] = (byte) (Meta.MAINS.length + rand.nextInt(Data.initialiseData().getNumberClasses() + 0) - 0);
                     } else {
                         a.getMain()[a_level + level][(a_position << level) + position] = temp.getMain()[b_level + level][(b_position << level) + position];
                     }
@@ -73,11 +117,14 @@ public class Helper {
                 }
             }
             ++level;
-        } while (a_level + level < Parameters.getInstance().getMain_max_depth() && level < b_levels);
+        } while (a_level + level < Parameters.getInstance().getMain_max_depth() && level < b_levels);*/
         return true;
     }
 
     public static boolean _crossoverCondition(Program a, Program b, Random rand) throws Exception {
+        if (Meta.debug) {
+            System.out.println("crossing over condition");
+        }
         Program temp = FlyWeight.getInstance().getProgram();
         temp.copy(b);
         /*CROSSOVER CONDITION SUB-TREES*/
@@ -116,8 +163,8 @@ public class Helper {
                 }
             } else {
                 for (int position = 0; position < (1 << level); position++) {
-                    if (tree_A[a_level + level][(a_position << level) + position] < Meta.CONDITIONS.length) { 
-                        tree_B[b_level + level][b_position + position] = (byte) (Meta.CONDITIONS.length  + rand.nextInt(Data.initialiseData().getNumberAttributes() + 0) - 0); 
+                    if (tree_A[a_level + level][(a_position << level) + position] < Meta.CONDITIONS.length) {
+                        tree_B[b_level + level][b_position + position] = (byte) (Meta.CONDITIONS.length + rand.nextInt(Data.initialiseData().getNumberAttributes() + 0) - 0);
                     } else {
                         tree_B[b_level + level][(b_position << level) + position] = tree_A[a_level + level][(a_position << level) + position];
                     }
@@ -138,7 +185,7 @@ public class Helper {
             } else {
                 for (int position = 0; position < (1 << level); position++) {
                     if (tree_temp[b_level + level][b_position + position] < Meta.CONDITIONS.length) {
-                        tree_A[a_level + level][(a_position << level) + position] = (byte)  (Meta.CONDITIONS.length  + rand.nextInt(Data.initialiseData().getNumberAttributes() + 0) - 0); 
+                        tree_A[a_level + level][(a_position << level) + position] = (byte) (Meta.CONDITIONS.length + rand.nextInt(Data.initialiseData().getNumberAttributes() + 0) - 0);
                     } else {
                         tree_A[a_level + level][(a_position << level) + position] = tree_temp[b_level + level][(b_position << level) + position];
                     }
@@ -153,7 +200,7 @@ public class Helper {
     /**
      * @param prog - program to mutate.
      * @param rand
-     * @return 
+     * @return
      * @throws Exception
      */
     public static boolean _mutateMain(Program prog, Random rand) throws Exception {
@@ -192,11 +239,11 @@ public class Helper {
             byte[][] main_tree = prog.getMain();
             for (int level_offset = 0; level_offset < max_depth - start_level; level_offset++) {
                 for (int position_offset = 0; position_offset < (1 << level_offset); position_offset++) {
-                    if (Factory.createMainPrimitive(main_tree, start_level+level_offset, (start_pos << level_offset) + position_offset, max_depth, full, rand)) {
-                        _createCondition(prog.getConditions()[start_level+level_offset][ (start_pos << level_offset) + position_offset], Parameters.getInstance().getCondition_max_depth(), 0, 0, full, rand);
+                    if (Factory.createMainPrimitive(main_tree, start_level + level_offset, (start_pos << level_offset) + position_offset, max_depth, full, rand)) {
+                        _createCondition(prog.getConditions()[start_level + level_offset][(start_pos << level_offset) + position_offset], Parameters.getInstance().getCondition_max_depth(), 0, 0, full, rand);
                     }
                 }
-            } 
+            }
         } else {
             throw new Exception("Depth of main program to create is invalid.");
         }
@@ -228,7 +275,6 @@ public class Helper {
             throw new Exception("Depth of condition to create is invalid.");
         }
     }
- 
 
     /**
      * @param tree
@@ -337,7 +383,7 @@ public class Helper {
                 int level = levels.pop();
                 int position = positions.pop();
                 int ch = tree[level][position];
-                if (ch < Meta.MAINS.length ) {
+                if (ch < Meta.MAINS.length) {
                     /*A main function*/
                     if (!include_root) {
                         if (level > 0) {
@@ -389,7 +435,7 @@ public class Helper {
                 int level = levels.pop();
                 int position = positions.pop();
                 int ch = tree[level][position];
-                if (ch < Meta.CONDITIONS.length ) {
+                if (ch < Meta.CONDITIONS.length) {
                     if (!include_root) {
                         if (level > 0) {
                             points.add(new int[]{level, position});
@@ -440,7 +486,7 @@ public class Helper {
                 int level = levels.pop();
                 int position = positions.pop();
                 int ch = tree[level][position];
-                if (ch < Meta.CONDITIONS.length ) {
+                if (ch < Meta.CONDITIONS.length) {
                     if (!include_root) {
                         if (level > 0) {
                             points.add(new int[]{level, position});
@@ -456,8 +502,8 @@ public class Helper {
                 }
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
-            FlyWeight.getInstance().addStackInteger(positions); 
-            int[] point = points.remove( rand.nextInt(points.size() -0 )+ 0); 
+            FlyWeight.getInstance().addStackInteger(positions);
+            int[] point = points.remove(rand.nextInt(points.size() - 0) + 0);
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
@@ -499,8 +545,8 @@ public class Helper {
                 }
             } while (!levels.empty() && !positions.empty());
             FlyWeight.getInstance().addStackInteger(levels);
-            FlyWeight.getInstance().addStackInteger(positions); 
-            int[] point = points.remove( rand.nextInt(points.size() -0 )+ 0); 
+            FlyWeight.getInstance().addStackInteger(positions);
+            int[] point = points.remove(rand.nextInt(points.size() - 0) + 0);
             FlyWeight.getInstance().addArrayListIntArray(points);
             return point;
         } else {
@@ -586,12 +632,12 @@ public class Helper {
                         break;
                     case Meta.LOGICAL_OR:
                         line += toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 0) + " || " + toStringCondition(prog, m_row, m_pos, row + 1, (pos << 1) + 1);
-                        break;  
+                        break;
                 }
             } else if (ch < Meta.CONDITIONS.length + Data.initialiseData().getNumberAttributes()) {
                 int attribute = ch - Meta.CONDITIONS.length;
                 line += attribute;
-            } 
+            }
             return line + ")";
         } else {
             throw new Exception("Condition row out of bounds.");

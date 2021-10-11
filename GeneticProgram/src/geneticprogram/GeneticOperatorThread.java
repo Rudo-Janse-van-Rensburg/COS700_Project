@@ -28,6 +28,10 @@ public class GeneticOperatorThread extends Thread {
         operation = op;
     }
 
+    public char getOperation() {
+        return operation;
+    }
+
     private void setParents(Program[] parents) throws Exception {
         if(this.parents != null){
             for (int i = 0; i < this.parents.length; i++) {
@@ -50,7 +54,9 @@ public class GeneticOperatorThread extends Thread {
     
     @Override
     public void run() {
-        //System.out.println("starting thread " + operation);
+        if(false && Meta.debug){
+            System.out.println("starting thread " + operation);
+        }
         try {
             switch (operation) {
                 case Meta.MUTATE:
@@ -61,6 +67,7 @@ public class GeneticOperatorThread extends Thread {
                 case Meta.CROSSOVER:
                     GeneticOperators.crossover(parents[0], parents[1], seed);
                     System.out.println("crossover thread exitting");
+                    //Thread.sleep(10);
                      latch.countDown(); 
                     break;
                 case Meta.HOIST:
@@ -87,7 +94,9 @@ public class GeneticOperatorThread extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         } 
-        //System.out.println("exiting thread " + operation);
+        if(false && Meta.debug){
+            System.out.println("exiting thread " + operation);
+        }
     }
 
     public void start(){ 
@@ -106,8 +115,8 @@ public class GeneticOperatorThread extends Thread {
 
     public void reset(CountDownLatch latch, long seed, Program[] parents, char op) throws Exception {
         this.latch = latch;
-        this.setParents(parents);
         this.operation = op;
         this.seed = seed; 
+        this.setParents(parents);
     }
 }

@@ -113,23 +113,27 @@ public class Evolution {
      */
     public boolean evolveGeneration() throws Exception {
         if (!curr.isEmpty()) {
-            if (generation + 1 < Parameters.getInstance().getMax_generation()) {
+            if ((generation + 1) < Parameters.getInstance().getMax_generation()) {
                 next.recycle();
                 int num_crossover = (int) Math.ceil(Parameters.getInstance().getCrossover_chance() * Parameters.getInstance().getPopulation_size());
                 int num_mutation = (int) Math.ceil(Parameters.getInstance().getMutation_chance() * Parameters.getInstance().getPopulation_size());
                 int num_hoist = (int) Math.ceil(Parameters.getInstance().getHoist_chance() * Parameters.getInstance().getPopulation_size());
                 int num_edit = (int) Math.ceil(Parameters.getInstance().getEdit_chance() * Parameters.getInstance().getPopulation_size());
+                
                 if (Meta.debug) {
                     System.out.format("number crossover  : %d\n", num_crossover);
                     System.out.format("number mutation   : %d\n", num_mutation);
                     System.out.format("number hoist      : %d\n", num_hoist);
                     System.out.format("number edit       : %d\n", num_edit);
+                } 
+                int num_threads = num_crossover + num_mutation + num_hoist + num_edit;
+                if(Meta.debug){
+                    System.out.format("number threads   : %d\n ",num_threads);
                 }
-                boolean has_capcity = true;
-                final CountDownLatch latch = new CountDownLatch(Parameters.getInstance().getPopulation_size());
+                final CountDownLatch latch = new CountDownLatch(num_crossover);
                 ArrayList<GeneticOperatorThread> threads = FlyWeight.getInstance().getGeneticOperatorThreads();
                 long[] seeds = new long[Parameters.getInstance().getPopulation_size()];
-                for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
+                for (int i = 0; i < num_threads; i++) {
                     seeds[i] = Randomness.getInstance().getRandomLong();
                 }
                 if (false && Meta.debug) {
@@ -137,17 +141,21 @@ public class Evolution {
                 }
                 int individual = 0;
                 do {
-                    if (individual < Parameters.getInstance().getPopulation_size() && num_crossover > 0) {
+                    if (num_threads > 0 && num_crossover > 0) {
+                        if (Meta.debug) {
+                            System.out.println("Crossover");
+                        }
                         Program a = FlyWeight.getInstance().getProgram();
                         a.copy(Selection.getInstance(Selection.tournament).select(curr));
                         Program b = FlyWeight.getInstance().getProgram();
                         b.copy(Selection.getInstance(Selection.tournament).select(curr));
                         GeneticOperatorThread crossover = FlyWeight.getInstance().getGeneticOperatorThread();
                         crossover.reset(latch, seeds[individual], new Program[]{a, b}, Meta.CROSSOVER);
-                        individual += 2;
                         threads.add(crossover);
+                        --num_crossover; 
+                        --num_threads;
                     }
-                    if (individual < Parameters.getInstance().getPopulation_size() && num_mutation > 0) {
+                    if (num_threads > 0 && num_mutation > 0) {
                         if (false && Meta.debug) {
                             System.out.println("Mutating");
                         }
@@ -155,54 +163,43 @@ public class Evolution {
                         mutant.copy(Selection.getInstance(Selection.tournament).select(curr));
                         GeneticOperatorThread mutation = FlyWeight.getInstance().getGeneticOperatorThread();
                         mutation.reset(latch, seeds[individual], new Program[]{mutant}, Meta.MUTATE);
-                        ++individual;
                         threads.add(mutation);
+                        --num_threads;
+                        --num_mutation;
                     }
-                    if (individual < Parameters.getInstance().getPopulation_size() && num_hoist > 0) {
+                    if (num_threads > 0 && num_hoist > 0) {
                         Program hoist = FlyWeight.getInstance().getProgram();
                         hoist.copy(Selection.getInstance(Selection.tournament).select(curr));
                         GeneticOperatorThread hoisted = FlyWeight.getInstance().getGeneticOperatorThread();
                         hoisted.reset(latch, seeds[individual], new Program[]{hoist}, Meta.HOIST);
-                        ++individual;
                         threads.add(hoisted);
+                        --num_threads;
+                        --num_hoist;
                     }
-                    if (individual < Parameters.getInstance().getPopulation_size() && num_edit > 0) {
+                    if (num_threads > 0 && num_edit > 0) {
                         Program edit = FlyWeight.getInstance().getProgram();
                         edit.copy(Selection.getInstance(Selection.tournament).select(curr));
                         GeneticOperatorThread edited = FlyWeight.getInstance().getGeneticOperatorThread();
                         edited.reset(latch, seeds[individual], new Program[]{edit}, Meta.EDIT);
-                        ++individual;
                         threads.add(edited);
+                        --num_threads;
+                        --num_edit;
                     }
-                } while (individual < Parameters.getInstance().getPopulation_size());
-
-                threads.forEach(thread -> {
-                    thread.start();
-                });
+                } while (num_threads > 0);
+                for (int i = 0; i < threads.size(); i++) {
+                    threads.get(i).start();
+                } 
                 latch.await();
-                for (GeneticOperatorThread thread : threads) {
-                    for (Program program : thread.getParents()) {
-                        //System.out.println(Helper.toString(program));
-                        try{
-                            next.add(program);
-                        }catch(Exception e){
-                            //e.printStackTrace();
-                             next.add(program);
-                            /*
-                            for (int md = 0; md < Parameters.getInstance().getMain_max_depth(); md++) {
-                                for (int mp = 0; mp < 1 << md; mp++) {
-                                    System.out.format("main (%d %d) : %d \n",md,mp,program.getMain()[md][mp]);
-                                    System.out.format("condition (%d %d) : \n",md,mp);
-                                    for (int cd = 0; cd < Parameters.getInstance().getCondition_max_depth(); cd++) {
-                                        System.out.println(Arrays.toString(program.getConditions()[md][mp][cd]));
-                                    }
-                                }
-                            }
-                            */
-                        }
-                        
+                System.out.println(" threads done");
+                for (int i = 0; i < threads.size(); i++) {
+                    if(threads.get(i).getOperation() == Meta.CROSSOVER){
+                        next.add(threads.get(i).getParents()[0]) ;
+                        next.add(threads.get(i).getParents()[1]) ;
+                    }else{
+                        next.add(threads.get(i).getParents()[0]) ;
                     }
-                }
+                }  
+                threads.clear();
                 FlyWeight.getInstance().addGeneticOperatorThreads(threads);
                 curr.recycle();
                 for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {

@@ -96,9 +96,10 @@ public class GeneticOperators {
         if (a != null && b != null) {
             Random rand = FlyWeight.getInstance().getRandom();
             rand.setSeed(seed);
-            if (rand.nextBoolean() || !Helper._crossoverCondition(a, b, rand)) {
+            /*if (rand.nextBoolean() || !Helper._crossoverCondition(a, b, rand)) {
                 Helper._crossoverMain(a, b, rand);
-            }
+            }*/
+            Helper._crossoverMain(a, b, rand);
             FlyWeight.getInstance().addRandom(rand);
         } else {
             throw new Exception("Cannot crossover null programs.");

@@ -34,15 +34,15 @@ public class GeneticProgram {
              */
             System.out.println("hi");
             Parameters.setParameters(
-                      50,
-                      1,
-                      5,
-                      4,
-                      50,
                       2,
-                      0,//0.6, 
+                      1,
+                      3,
+                      2,
+                      4,
+                      2,
+                      1,//0.6, 
                       0,//0.3, 
-                      1,//0.05, 
+                      0,//0.05, 
                       0//0.05
             ); 
             Evolution evolution = Evolution.getInstance();
