@@ -182,7 +182,25 @@ public class Evolution {
                 latch.await();
                 for (GeneticOperatorThread thread : threads) {
                     for (Program program : thread.getParents()) {
-                        next.add(program);
+                        //System.out.println(Helper.toString(program));
+                        try{
+                            next.add(program);
+                        }catch(Exception e){
+                            //e.printStackTrace();
+                             next.add(program);
+                            /*
+                            for (int md = 0; md < Parameters.getInstance().getMain_max_depth(); md++) {
+                                for (int mp = 0; mp < 1 << md; mp++) {
+                                    System.out.format("main (%d %d) : %d \n",md,mp,program.getMain()[md][mp]);
+                                    System.out.format("condition (%d %d) : \n",md,mp);
+                                    for (int cd = 0; cd < Parameters.getInstance().getCondition_max_depth(); cd++) {
+                                        System.out.println(Arrays.toString(program.getConditions()[md][mp][cd]));
+                                    }
+                                }
+                            }
+                            */
+                        }
+                        
                     }
                 }
                 FlyWeight.getInstance().addGeneticOperatorThreads(threads);

@@ -213,10 +213,12 @@ public class Helper {
         if (max_depth >= 2 && max_depth <= Parameters.getInstance().getCondition_max_depth()) {
             for (int depth_offset = 0; depth_offset < Parameters.getInstance().getCondition_max_depth() - (start_level); depth_offset++) {
                 for (int position_offset = 0; position_offset < (1 << depth_offset); position_offset++) {
+                    int lvl = (start_level + depth_offset);
+                    int pos = ((start_pos << depth_offset) + position_offset);
                     Factory.createConditionPrimitive(
                               condition,
-                              (start_level + depth_offset),
-                              ((start_pos << depth_offset) + position_offset),
+                              lvl,
+                              pos,
                               max_depth,
                               full,
                               rand);

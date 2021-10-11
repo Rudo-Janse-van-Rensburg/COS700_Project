@@ -11,14 +11,14 @@ public class FlyWeight {
 
     private static FlyWeight singleton = null;
     private final ArrayList<ArrayList<int[]>> al_int_arr;
-    private final ArrayList<Stack<int[]>> stack_int_arr; 
+    private final ArrayList<Stack<int[]>> stack_int_arr;
     private final ArrayList<ArrayList<Integer>> al_int;
     private final ArrayList<Stack<Integer>> stack_int;
     private final ArrayList<byte[][]> shrt_arr_2D_m;
     private final ArrayList<byte[][]> shrt_arr_2D_c;
     private final ArrayList<byte[][][][]> shrt_arr_4D;
     private final ArrayList<Program> programs;
-    private final ArrayList<Generation> generations; 
+    private final ArrayList<Generation> generations;
     private final ArrayList<ArrayList<GeneticOperatorThread>> go_arr_threads;
     private final ArrayList<Random> random_arr;
     private final ArrayList<CyclicBarrier> cb_arr;
@@ -27,7 +27,7 @@ public class FlyWeight {
         stack_int_arr = new ArrayList<>();
         go_arr_threads = new ArrayList<>();
         cb_arr = new ArrayList<>();
-        random_arr = new ArrayList<>(); 
+        random_arr = new ArrayList<>();
         al_int_arr = new ArrayList<>();
         al_int = new ArrayList<>();
         stack_int = new ArrayList<>();
@@ -62,10 +62,10 @@ public class FlyWeight {
         } else {
             return cb_arr.remove(0);
         }
-    } 
+    }
 
     public GeneticOperatorThread getGeneticOperatorThread() {
-       return new GeneticOperatorThread();
+        return new GeneticOperatorThread();
     }
 
     public void addGeneticOperatorThreads(ArrayList<GeneticOperatorThread> obj) throws Exception {
@@ -76,26 +76,28 @@ public class FlyWeight {
         }
     }
 
-    public  Stack<int[]> getStack_int_arr() {
-        if(stack_int_arr.isEmpty()){
+    public Stack<int[]> getStack_int_arr() {
+        if (stack_int_arr.isEmpty()) {
             return new Stack<int[]>();
-        }else{
+        } else {
             stack_int_arr.clear();
             return stack_int_arr.remove(0);
-        } 
+        }
     }
 
-    public void addStack_int_arr(Stack<int[]> obj) throws Exception{
-        if(obj != null){
+    public void addStack_int_arr(Stack<int[]> obj) throws Exception {
+        if (obj != null) {
             stack_int_arr.add(obj);
-        }else throw new Exception("Cannot add null Stack<int[]> obj ");
+        } else {
+            throw new Exception("Cannot add null Stack<int[]> obj ");
+        }
     }
-    
+
     public ArrayList<GeneticOperatorThread> getGeneticOperatorThreads() {
         if (go_arr_threads.isEmpty()) {
             return new ArrayList<GeneticOperatorThread>();
         } else {
-            ArrayList<GeneticOperatorThread> threads = go_arr_threads.remove(0); 
+            ArrayList<GeneticOperatorThread> threads = go_arr_threads.remove(0);
             threads.clear();
             return threads;
         }
@@ -110,7 +112,7 @@ public class FlyWeight {
     }
 
     public Random getRandom() {
-        synchronized (singleton) { 
+        synchronized (singleton) {
             if (random_arr.isEmpty()) {
                 return new Random();
             } else {
@@ -225,15 +227,15 @@ public class FlyWeight {
      * @return Stack<Integer>
      */
     public Stack<Integer> getStackInteger() {
-        Stack<Integer> obj = null;
-        if (!stack_int.isEmpty()) {
-            obj = stack_int.remove(0);
-            obj.clear();
-            obj.setSize(0);
-        } else {
-            obj = new Stack<>();
+        synchronized (singleton) {
+            if (!stack_int.isEmpty()) {
+                Stack<Integer> obj = stack_int.remove(0);
+                obj.clear();
+                return obj;
+            } else {
+                return new Stack<Integer>();
+            }
         }
-        return obj;
     }
 
     /**
@@ -241,11 +243,14 @@ public class FlyWeight {
      * @throws Exception
      */
     public void addStackInteger(Stack<Integer> obj) throws Exception {
-        if (obj != null) {
-            stack_int.add(obj);
-        } else {
-            throw new Exception("Cannot add null Stack<Integer> object to flyweight.");
+        synchronized (singleton) {
+            if (obj != null) {
+                stack_int.add(obj);
+            } else {
+                throw new Exception("Cannot add null Stack<Integer> object to flyweight.");
+            }
         }
+
     }
 
     /**
@@ -259,7 +264,7 @@ public class FlyWeight {
         } else {
             arr = new byte[Parameters.getInstance().getMain_max_depth()][2 << (Parameters.getInstance().getMain_max_depth() - 1)];
             for (int i = 0; i < Parameters.getInstance().getMain_max_depth(); i++) {
-                Arrays.fill(arr[i], (byte)-1); 
+                Arrays.fill(arr[i], (byte) -1);
             }
         }
         return arr;

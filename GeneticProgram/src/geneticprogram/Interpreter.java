@@ -55,32 +55,23 @@ public class Interpreter {
                     /*Still not at the leaf of a main sub-branch*/
                     p = pos.pop();
                     byte ch = prog.getMain()[r][p];
-                    if (ch < Meta.MAINS.length) {
-                        switch (ch) {
-                            case Meta.IF:
-                                /*Main Function*/
-                                if (_interpretCondition(
-                                          prog.getConditions()[r][p],
-                                          0,
-                                          0,
-                                          instance
-                                ) != 0) {
-                                    /*Condition Evaluated True*/
-                                    row.push(r + 1);
-                                    pos.push(p << 1);
-                                } else {
-                                    /*Condition Evaluated False*/
-                                    row.push(r + 1);
-                                    pos.push((p << 1) + 1);
-                                }
-                                break;
-                            default:
-                                /*A class*/
-                                return prog.getMain()[r][p] - Meta.MAINS.length;
-                            //return byte.getNumericValue();
+                    if (ch == Meta.IF) { 
+                        if (_interpretCondition(
+                                prog.getConditions()[r][p],
+                                0,
+                                0,
+                                instance
+                        ) != 0) {
+                            /*Condition Evaluated True*/
+                            row.push(r + 1);
+                            pos.push(p << 1);
+                        } else {
+                            /*Condition Evaluated False*/
+                            row.push(r + 1);
+                            pos.push((p << 1) + 1);
                         }
                     } else {
-                        return prog.getMain()[r][p] - Meta.MAINS.length;
+                        return ch - Meta.MAINS.length;
                     }
                 } else {
                     throw new Exception("Main program did not terminate within the maximum depth.");
@@ -96,7 +87,7 @@ public class Interpreter {
     private double _interpretCondition(byte[][] cond, int row, int pos, double[] instance) throws Exception {
         if (cond != null) {
             if (row < Parameters.getInstance().getCondition_max_depth() && pos < (1 << row)) {
-                byte ch = cond[row][pos];
+                int ch = cond[row][pos];
                 if (ch < Meta.CONDITIONS.length) {
                     switch (cond[row][pos]) {
                         case Meta.GREATER_THAN:
@@ -139,7 +130,7 @@ public class Interpreter {
                 }
 
             } else {
-                throw new Exception("Cannot interpret invalid condition.");
+                throw new Exception("Cannot interpret row " + row + " of " + Parameters.getInstance().getCondition_max_depth() + " at position " + pos + " of " + (1 << row));
             }
         } else {
             throw new Exception("Cannot interpet null condition.");

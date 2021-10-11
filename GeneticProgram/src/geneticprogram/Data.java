@@ -20,7 +20,8 @@ public class Data {
     public static Data initialiseData() throws Exception{
         if(singleton == null){
             singleton = new Data();  
-            singleton.readFile("/media/rudo/Storage/02 - Homework/Computer Science/Honours/COS 700/Project/COS700_Project/Data/dataset.csv");
+            
+            singleton.readFile("C:\\Users\\RudoJanseVanRensburg\\Desktop\\Homework\\COS700\\COS700_Project\\Data\\dataset.csv");
             singleton.shuffle();
         }
         return singleton;

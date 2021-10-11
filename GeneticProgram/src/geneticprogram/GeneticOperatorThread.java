@@ -21,14 +21,26 @@ public class GeneticOperatorThread extends Thread {
     private long seed;
 
     public GeneticOperatorThread() {
+        parents = null;
     }
 
     public void setOperation(char op) {
         operation = op;
     }
 
-    public void setParents(Program[] parents) {
-        this.parents = parents;
+    private void setParents(Program[] parents) throws Exception {
+        if(this.parents != null){
+            for (int i = 0; i < this.parents.length; i++) {
+                FlyWeight.getInstance().addProgram(this.parents[i]);
+            }
+        }
+        this.parents = new Program[parents.length];
+        for (int i = 0; i < parents.length; i++) {
+            Program prog = FlyWeight.getInstance().getProgram();
+            prog.copy(parents[i]);
+            this.parents[i] = prog;
+            
+        }
     }
 
     public Program[] getParents() {
@@ -38,13 +50,13 @@ public class GeneticOperatorThread extends Thread {
     
     @Override
     public void run() {
-        System.out.println("starting thread " + operation);
+        //System.out.println("starting thread " + operation);
         try {
             switch (operation) {
                 case Meta.MUTATE:
                     GeneticOperators.mutate(parents[0], seed);
                     System.out.println("mutate thread exitting");
-                    // latch.countDown(); 
+                    latch.countDown(); 
                     break;
                 case Meta.CROSSOVER:
                     GeneticOperators.crossover(parents[0], parents[1], seed);
@@ -84,17 +96,17 @@ public class GeneticOperatorThread extends Thread {
             t.start();
         }
     }
-    public void reset(CountDownLatch latch, long seed, char op, Program prog,int depth) {
+    public void reset(CountDownLatch latch, long seed, char op, Program prog,int depth) throws Exception {
         this.latch = latch; 
         this.operation = op;
         this.max_depth = depth;
         this.seed = seed; 
-        this.parents = new Program[]{prog};
+        this.setParents(new Program[]{prog});
     }
 
-    public void reset(CountDownLatch latch, long seed, Program[] parents, char op) {
+    public void reset(CountDownLatch latch, long seed, Program[] parents, char op) throws Exception {
         this.latch = latch;
-        this.parents = parents;
+        this.setParents(parents);
         this.operation = op;
         this.seed = seed; 
     }
