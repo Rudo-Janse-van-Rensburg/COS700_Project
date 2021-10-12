@@ -13,7 +13,7 @@ public class Parameters {
                             mutation_chance     = 30,
                             hoist_chance        = 10,
                             edit_chance         = 10;
-    private Parameters(int mg,int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) {
+    private Parameters(int mg,int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc/*, double ec*/) {
         Parameters.max_generation         = mg;
         Parameters.k_folds                = kf;
         Parameters.main_max_depth         = mmd;
@@ -23,7 +23,7 @@ public class Parameters {
         Parameters.crossover_chance       = cc;
         Parameters.mutation_chance        = mc;
         Parameters.hoist_chance           = hc;
-        Parameters.edit_chance            = ec;
+       // Parameters.edit_chance            = ec;
     } 
     
     /**
@@ -39,7 +39,7 @@ public class Parameters {
      * @return Parameters singleton.
      * @throws Exception
      */
-    public static Parameters setParameters(int mg,int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc, double ec) throws Exception{
+    public static Parameters setParameters(int mg,int kf,int mmd, int cmd, int ps, int ts, double cc, double mc, double hc/*, double ec*/) throws Exception{
         if(mmd >  1 && cmd > 1 && ps > 0 && ts > 0 && ps >=  ts){
             if(singleton != null){
                 Parameters.max_generation        = mg;
@@ -51,9 +51,9 @@ public class Parameters {
                 Parameters.crossover_chance      = cc;
                 Parameters.mutation_chance       = mc;
                 Parameters.hoist_chance          = hc;
-                Parameters.edit_chance           = ec; 
+                //Parameters.edit_chance           = ec; 
             }else
-                singleton = new Parameters(mg,kf,mmd,cmd,ps,ts,cc,mc,hc,ec);
+                singleton = new Parameters(mg,kf,mmd,cmd,ps,ts,cc,mc,hc/*,ec*/);
             return singleton;
         }else
             throw new Exception("Invalid parameter values.");

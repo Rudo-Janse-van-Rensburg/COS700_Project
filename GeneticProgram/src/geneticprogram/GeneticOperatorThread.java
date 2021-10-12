@@ -75,11 +75,13 @@ public class GeneticOperatorThread extends Thread {
                     //System.out.println("hoist thread exitting"); 
                     latch.countDown();
                     break;
+                /*    
                 case Meta.EDIT:
                     GeneticOperators.edit(parents[0], seed);
                     //System.out.println("edit thread exitting"); 
                     latch.countDown();
                     break;
+                */
                 case Meta.GROW:
                     GeneticOperators.grow(parents[0], max_depth, seed);
                     //System.out.println("grow thread exitting");

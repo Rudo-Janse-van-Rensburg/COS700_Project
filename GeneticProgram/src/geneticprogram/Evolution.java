@@ -118,21 +118,21 @@ public class Evolution {
                 int num_crossover = (int) Math.ceil(Parameters.getInstance().getCrossover_chance() * Parameters.getInstance().getPopulation_size());
                 int num_mutation = (int) Math.ceil(Parameters.getInstance().getMutation_chance() * Parameters.getInstance().getPopulation_size());
                 int num_hoist = (int) Math.ceil(Parameters.getInstance().getHoist_chance() * Parameters.getInstance().getPopulation_size());
-                int num_edit = (int) Math.ceil(Parameters.getInstance().getEdit_chance() * Parameters.getInstance().getPopulation_size());
+               // int num_edit = (int) Math.ceil(Parameters.getInstance().getEdit_chance() * Parameters.getInstance().getPopulation_size());
                 
                 if (Meta.debug) {
                     System.out.format("number crossover  : %d\n", num_crossover);
                     System.out.format("number mutation   : %d\n", num_mutation);
                     System.out.format("number hoist      : %d\n", num_hoist);
-                    System.out.format("number edit       : %d\n", num_edit);
+                    //System.out.format("number edit       : %d\n", num_edit);
                 } 
-                int num_threads = num_crossover + num_mutation + num_hoist + num_edit;
+                int num_threads = num_crossover + num_mutation + num_hoist/* + num_edit*/;
                 if(Meta.debug){
                     System.out.format("number threads   : %d\n ",num_threads);
                 }
-                final CountDownLatch latch = new CountDownLatch(num_crossover);
+                final CountDownLatch latch = new CountDownLatch(num_threads);
                 ArrayList<GeneticOperatorThread> threads = FlyWeight.getInstance().getGeneticOperatorThreads();
-                long[] seeds = new long[Parameters.getInstance().getPopulation_size()];
+                long[] seeds = new long[num_threads];
                 for (int i = 0; i < num_threads; i++) {
                     seeds[i] = Randomness.getInstance().getRandomLong();
                 }
@@ -176,7 +176,8 @@ public class Evolution {
                         --num_threads;
                         --num_hoist;
                     }
-                    if (num_threads > 0 && num_edit > 0) {
+                    
+                    /*if (num_threads > 0 && num_edit > 0) {
                         Program edit = FlyWeight.getInstance().getProgram();
                         edit.copy(Selection.getInstance(Selection.tournament).select(curr));
                         GeneticOperatorThread edited = FlyWeight.getInstance().getGeneticOperatorThread();
@@ -184,13 +185,12 @@ public class Evolution {
                         threads.add(edited);
                         --num_threads;
                         --num_edit;
-                    }
+                    }*/
                 } while (num_threads > 0);
                 for (int i = 0; i < threads.size(); i++) {
                     threads.get(i).start();
                 } 
-                latch.await();
-                System.out.println(" threads done");
+                latch.await(); 
                 for (int i = 0; i < threads.size(); i++) {
                     if(threads.get(i).getOperation() == Meta.CROSSOVER){
                         next.add(threads.get(i).getParents()[0]) ;

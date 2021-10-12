@@ -39,11 +39,11 @@ public class GeneticProgram {
                       5,
                       5,
                       500,
-                      2,
-                      1,//0.6, 
-                      0,//0.3, 
-                      0,//0.05, 
-                      0//0.05
+                      4,
+                      0.5,//0.6, 
+                      0.4,//0.3, 
+                      0.1 //0.05, 
+                      //1//5//0.05
             ); 
             Evolution evolution = Evolution.getInstance();
             do{

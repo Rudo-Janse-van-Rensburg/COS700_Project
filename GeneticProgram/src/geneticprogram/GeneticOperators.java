@@ -110,58 +110,42 @@ public class GeneticOperators {
      * @param seed
      * @throws Exception
      */
-    public static void edit(Program prog, long seed) throws Exception {
+    private static void edit(Program prog, long seed) throws Exception {
         if (prog != null) {
             Random rand = FlyWeight.getInstance().getRandom();
             rand.setSeed(seed);
-            byte[][] tree = null;
+            byte[][] tree = null, tree_copy = null;
             int[] position = null;
             int depth;
+            Program copy = FlyWeight.getInstance().getProgram();
+            copy.copy(prog);
             if (rand.nextBoolean()) {
                 /*Edit Main Tree*/
                 position = Helper.getMainFunction(prog.getMain(), true, rand);
                 tree = prog.getMain();
+                tree_copy = copy.getMain();
                 depth = Parameters.getInstance().getMain_max_depth();
             } else {
                 /*Edit Condition Sub-tree*/
-                 position = Helper.getMainFunction(prog.getMain(), true, rand);
+                position = Helper.getMainFunction(prog.getMain(), true, rand);
                 tree = prog.getConditions()[position[0]][position[1]];
+                tree_copy = copy.getConditions()[position[0]][position[1]];
                 position = Helper.getConditionFunction(tree, true,rand);
                 depth = Parameters.getInstance().getCondition_max_depth();
-            } 
-            int start_level = position[0],
-                    start_position = position[1];
-            for (int level = start_level ; level < depth; level++) {
-                int begin_pos = start_position << (level - start_level); 
-                int end_pos     = begin_pos + (1 << (level - start_level));
-                for (int pos = begin_pos; pos < end_pos; pos++) {
-                     byte temp = tree[level][pos]; 
-                     tree[level][pos] =  tree[level][pos + (end_pos-begin_pos)];
-                    tree[level][pos + (end_pos-begin_pos)]= temp;
-                }
-            }
+            }  
             
-            /*
-            for (int level_offset = 1; level_offset < depth - start_level; level_offset++) {
-                for (int position_offset = 0; position_offset < (1 << (level_offset-1)); position_offset++) {
-                    int curr_level = start_level + level_offset;
-                    int left_pos = (start_position << (1 << (level_offset-1))) + position_offset;
-                    int right_pos = left_pos + (1 << (level_offset-1));
-                    byte temp = tree[curr_level][right_pos]; 
-                     tree[curr_level][right_pos] =  tree[curr_level][left_pos];
-                      tree[curr_level][left_pos]= temp;
+            int start_level = position[0],
+                    left_start_position = position[1],
+                    right_start_position = position[1]+1; 
+            for (int level_offset = 0; level_offset < (depth - start_level); level_offset++) {
+                for (int position_offset = 0; position_offset < right_start_position; position_offset++) {
+                    tree[start_level + level_offset][left_start_position+position_offset] = tree_copy[start_level + level_offset][right_start_position+position_offset];
+                    tree[start_level + level_offset][right_start_position+position_offset] = tree_copy[start_level + level_offset][left_start_position+position_offset] ;
                 }
-            }
-            */
-            /*
-            for (int level = position[0] + 1; level < depth; level++) {
-                int pow = level - position[0] - 1;
-                for (int pos = position[1] * (1 << pow); pos < (position[1] + 1) * (1 << pow); pos++) {
-                    byte temp = tree[level][pos];
-                    tree[level][pos] = tree[level][pos + ((position[1] + 1) * (1 << pow))];
-                    tree[level][pos + pos + ((position[1] + 1) * (1 << pow))] = temp;
-                }
-            }*/
+                left_start_position = left_start_position << 1;
+                right_start_position = right_start_position << 1;
+            }  
+            FlyWeight.getInstance().addProgram(copy);
             FlyWeight.getInstance().addRandom(rand);
         } else {
             throw new Exception("Cannot edit null program.");
