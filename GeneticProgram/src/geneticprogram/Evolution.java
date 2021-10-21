@@ -103,7 +103,7 @@ public class Evolution {
         curr.recycle();
         for (GeneticOperatorThread thread : threads) {
             curr.add(thread.getParents()[0]);
-            //FlyWeight.getInstance().addGeneticOperatorThread(thread);
+            FlyWeight.getInstance().addGeneticOperatorThread(thread);
         }
         FlyWeight.getInstance().addGeneticOperatorThreads(threads);
     }
@@ -198,8 +198,11 @@ public class Evolution {
                     }else{
                         next.add(threads.get(i).getParents()[0]) ;
                     }
-                }  
-                threads.clear();
+                } 
+                for(GeneticOperatorThread thread: threads){
+                    FlyWeight.getInstance().addGeneticOperatorThread(thread);
+                } 
+                //threads.clear();
                 FlyWeight.getInstance().addGeneticOperatorThreads(threads);
                 curr.recycle();
                 for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {

@@ -13,7 +13,7 @@ import java.util.concurrent.CountDownLatch;
 public class GeneticOperatorThread extends Thread {
 
     private CountDownLatch latch;
-    private Thread t;
+    private volatile Thread t;
     private Program[] parents;
     private char operation;
     private boolean full;
@@ -33,7 +33,7 @@ public class GeneticOperatorThread extends Thread {
     }
 
     private void setParents(Program[] parents) throws Exception {
-        if(this.parents != null){
+        if (this.parents != null) {
             for (int i = 0; i < this.parents.length; i++) {
                 FlyWeight.getInstance().addProgram(this.parents[i]);
             }
@@ -43,7 +43,7 @@ public class GeneticOperatorThread extends Thread {
             Program prog = FlyWeight.getInstance().getProgram();
             prog.copy(parents[i]);
             this.parents[i] = prog;
-            
+
         }
     }
 
@@ -51,24 +51,25 @@ public class GeneticOperatorThread extends Thread {
         return parents;
     }
 
-    
     @Override
     public void run() {
-        if(false && Meta.debug){
+
+        if (false && Meta.debug) {
             System.out.println("starting thread " + operation);
         }
+        Thread thisthread = Thread.currentThread();
         try {
             switch (operation) {
                 case Meta.MUTATE:
                     GeneticOperators.mutate(parents[0], seed);
                     //System.out.println("mutate thread exitting");
-                    latch.countDown(); 
+                    latch.countDown();
                     break;
                 case Meta.CROSSOVER:
                     GeneticOperators.crossover(parents[0], parents[1], seed);
                     //System.out.println("crossover thread exitting");
                     //Thread.sleep(10);
-                     latch.countDown(); 
+                    latch.countDown();
                     break;
                 case Meta.HOIST:
                     GeneticOperators.hoist(parents[0], seed);
@@ -81,44 +82,45 @@ public class GeneticOperatorThread extends Thread {
                     //System.out.println("edit thread exitting"); 
                     latch.countDown();
                     break;
-                */
+                 */
                 case Meta.GROW:
                     GeneticOperators.grow(parents[0], max_depth, seed);
                     //System.out.println("grow thread exitting");
                     latch.countDown();
                     break;
                 case Meta.FULL:
-                    GeneticOperators.full(parents[0], max_depth, seed); 
+                    GeneticOperators.full(parents[0], max_depth, seed);
                     latch.countDown();
                     break;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-        } 
-        if(false && Meta.debug){
+        }
+        if (false && Meta.debug) {
             System.out.println("exiting thread " + operation);
         }
+
     }
 
-    public void start(){ 
-        if (t == null) {
-            t = new Thread(this);
-            t.start();
-        }
+    @Override
+    public void start() {
+        t = null;
+        t = new Thread(this);
+        t.start();
     }
-    public void reset(CountDownLatch latch, long seed, char op, Program prog,int depth) throws Exception {
-        this.latch = latch; 
+
+    public void reset(CountDownLatch latch, long seed, char op, Program prog, int depth) throws Exception {
+        this.latch = latch;
         this.operation = op;
         this.max_depth = depth;
-        this.seed = seed; 
+        this.seed = seed;
         this.setParents(new Program[]{prog});
     }
 
     public void reset(CountDownLatch latch, long seed, Program[] parents, char op) throws Exception {
         this.latch = latch;
         this.operation = op;
-        this.seed = seed; 
+        this.seed = seed;
         this.setParents(parents);
     }
 }

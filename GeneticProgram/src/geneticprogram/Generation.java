@@ -32,7 +32,7 @@ public class Generation {
     public boolean add(Program individual) throws Exception {
         synchronized (this) {
             if (capacity < Parameters.getInstance().getPopulation_size()) {
-                double fitness = Fitness.getInstance(Fitness.f1).evaluate(individual);
+                double fitness = Fitness.getInstance(Fitness.hyflex).evaluate(individual);
                 return add(individual, fitness);
 
             } else {
