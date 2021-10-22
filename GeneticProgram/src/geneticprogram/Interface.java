@@ -1,14 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package geneticprogram;
 
-/**
- *
- * @author rudo
- */
-public class Interface{
+public class Interface {
           
+          public Interface() {
+
+          }
+
+          public void run() throws Exception{
+                    for (int run = 0; run < 10; run++) {
+                              runExperiment(run);
+                    }
+          }
+          
+          private void runExperiment(int run) throws Exception {
+                    Evolution evolution = Evolution.getInstance();
+                    do {
+                              evolution.print();
+                    } while (evolution.evolveGeneration());
+                    
+                    Program prog = evolution.getBest_program();
+                    
+                    CompetitionRunner competitionRunner = CompetitionRunner.getInstance(run);
+                    
+                    
+          }
+
 }

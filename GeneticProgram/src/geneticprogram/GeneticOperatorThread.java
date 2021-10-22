@@ -57,7 +57,7 @@ public class GeneticOperatorThread extends Thread {
         if (false && Meta.debug) {
             System.out.println("starting thread " + operation);
         }
-        Thread thisthread = Thread.currentThread();
+        //Thread thisthread = Thread.currentThread();
         try {
             switch (operation) {
                 case Meta.MUTATE:

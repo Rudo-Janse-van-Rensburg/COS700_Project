@@ -1,97 +1,101 @@
-package geneticprogram; 
+package geneticprogram;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.Arrays;
 
 public class Data {
-    private static Data singleton = null;
-    private final ArrayList<double[]> data; 
-    private int number_classes;
-    private int number_attributes;
-    private int number_instances;
-    private Data(){
-        data    = new ArrayList<>();
-    }
-    
-    public static Data initialiseData() throws Exception{
-        if(singleton == null){
-            singleton = new Data();  
-            
-            singleton.readFile("/media/rudo/Storage/02 - Homework/Computer Science/Honours/COS 700/Project/COS700_Project/Data/dataset.csv");
-            singleton.shuffle();
-        }
-        return singleton;
-    }
 
-    
-    public List<double[]> getFold(int fold) throws Exception{
-        int sample_size =  (int) Math.floor(number_instances/Parameters.getInstance().getK_folds()*1.0);
-        return data.subList(fold * sample_size, (fold * sample_size) + sample_size);
-    }
-    /**
-     * 
-     * @param file
-     * @throws FileNotFoundException 
-     */
-    private void readFile(String file) throws Exception{
-        number_instances    = 0; 
-        number_classes      = 0;
-        Scanner sc          = new Scanner(new File(file));
-        String[] line       = sc.nextLine().split(",");
-        number_attributes   = line.length - 1;
-        double [] instance;
-        int cls;
-        while(sc.hasNextLine()){
-            instance = new double[number_attributes + 1];
-            line = sc.nextLine().split(",");
-            for (int i = 0; i < number_attributes + 1; i++) {
-                instance[i] = Double.parseDouble(line[i]);
-            } 
-            data.add(instance); 
-            cls = (int) instance[number_attributes];
-            if(cls + 1 > number_classes){
-                number_classes = cls + 1;
-            }
-            ++number_instances;
-        }
-        sc.close(); 
-    }
-    
-        
-    /**
-     * @return 
-     */
-    public int getNumber_instances() {
-        return number_instances;
-    }
-    
-    /**
-     * 
-     */
-    public void shuffle(){
-        Randomness.getInstance().reseed();
-        Randomness.getInstance().shuffle(data);
-    }
+          private static Data singleton = null;
+          private final double[] data_instance;                                 //
+          private final ArrayList<double[]> data_instances;          // going to hold the instances of the  
+          private final int number_classes = 4, // mutation, crossover, ruin-create, local-search 
+                    number_attributes;
 
-    /**
-     * @return number of classes
-     */
-    public int getNumberClasses() {
-        return number_classes;
-    }
-    
-    /**
-     * @return number of attributes
-     */
-    public int getNumberAttributes() {
-        return number_attributes;
-    }
-    
-    
-    
-    
+          private Data() throws Exception {
+                    data_instances = new ArrayList<>();
+                    number_attributes = 2 * Parameters.getInstance().getWindow_size();
+                    data_instance = new double[number_attributes];
+                    Arrays.fill(data_instance, 0);
+          }
+
+          /**
+           * @return @throws Exception
+           */
+          public static Data initialiseData() throws Exception {
+                    if (singleton == null) {
+                              singleton = new Data();
+                    }
+                    return singleton;
+          }
+
+          /**
+           * @return
+           */
+          public double[] getData_instance() {
+                    return data_instance;
+          }
+
+          /**
+           * @param last_low_level_heuristic
+           * @param delta
+           * @throws java.lang.Exception
+           */
+          public void add(int last_low_level_heuristic, double delta) throws Exception {
+                    double[] copy = new double[number_attributes];
+                    System.arraycopy(data_instance, 0, copy, 0, number_attributes);
+                    data_instances.add(copy);
+                    for (int i = Parameters.getInstance().getWindow_size() - 1; i > 0; i--) {
+                              data_instance[i] = data_instance[i - 1];
+                              data_instance[i + Parameters.getInstance().getWindow_size()] = data_instance[i + Parameters.getInstance().getWindow_size() - 1];
+                    }
+                    data_instance[Parameters.getInstance().getWindow_size() - 1] = last_low_level_heuristic;
+                    data_instance[2 * Parameters.getInstance().getWindow_size() - 1] = delta;
+          }
+
+          /**
+           * @return number of classes
+           */
+          public int getNumberClasses() {
+                    return number_classes;
+          }
+
+          /**
+           * @return number of attributes
+           */
+          public int getNumberAttributes() {
+                    return number_attributes;
+          }
+
+          public void saveFile() throws IOException {
+                    File file = new File("data.csv");
+                    try (FileWriter fw = new FileWriter(file); BufferedWriter bw = new BufferedWriter(fw)) {
+                              for (int i = 0; i < number_attributes; i++) {
+                                        bw.write("hh_(" + (0 - i) + "),");
+                              }
+                              
+                              for (int i = 0; i < number_attributes; i++) {
+                                        bw.write("d_(" + (0 - i) + ")");
+                                        if (i < number_attributes - 1) {
+                                                  bw.write(",");
+                                        }
+                              }
+                              bw.newLine();
+                              
+                              for (double[] ins : data_instances) {
+                                        for (int i = 0; i < 2 * number_attributes; i++) {
+                                                  bw.write(""+ins[i]);
+                                                  if (i < (2 * number_attributes) - 1) {
+                                                            bw.write(",");
+                                                  }
+                                        }
+                                        bw.newLine();
+                              }
+                    }
+          }
+
 }

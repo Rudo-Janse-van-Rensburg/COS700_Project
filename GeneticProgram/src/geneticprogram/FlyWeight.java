@@ -20,12 +20,14 @@ public class FlyWeight {
           private final ArrayList<Program> programs;
           private final ArrayList<Generation> generations;
           private final ArrayList<ArrayList<GeneticOperatorThread>> go_arr_threads;
+          private final ArrayList<ArrayList<RunnerThread>> run_arr_threads;
           private final ArrayList<GeneticOperatorThread> go_threads;
+          private final ArrayList<RunnerThread> run_threads;
           private final ArrayList<Random> random_arr;
           private final ArrayList<CyclicBarrier> cb_arr;
-
           private final ArrayList<int[]> instance_arrays;
           private final ArrayList<double[]> score_arrays;
+          private final ArrayList<double[]> attribute_arrays;
           private final ArrayList<double[][]> problem_score_arrays;
 
           private final ArrayList<ArrayList<Score>> al_scores;
@@ -33,11 +35,14 @@ public class FlyWeight {
           private FlyWeight() {
                     al_scores = new ArrayList<>();
                     score_arrays = new ArrayList<>();
+                    attribute_arrays = new ArrayList<>();
                     instance_arrays = new ArrayList<>();
                     problem_score_arrays = new ArrayList<>();
                     stack_int_arr = new ArrayList<>();
                     go_threads = new ArrayList<>();
+                    run_threads = new ArrayList<>();
                     go_arr_threads = new ArrayList<>();
+                    run_arr_threads = new ArrayList<>();
                     cb_arr = new ArrayList<>();
                     random_arr = new ArrayList<>();
                     al_int_arr = new ArrayList<>();
@@ -75,7 +80,24 @@ public class FlyWeight {
                               return cb_arr.remove(0);
                     }
           }
+          
+          public synchronized RunnerThread getRunnerThread() {
+                    if (run_threads.isEmpty()) {
+                              return new RunnerThread();
+                    } else {
+                              return run_threads.remove(0);
+                    }
 
+          }
+
+          public synchronized void addRunnerThread(RunnerThread thread) throws Exception {
+                    if (thread != null) {
+                              run_threads.add(thread);
+                    } else {
+                              throw new Exception("Cannot add null GeneticOperatorThread thread");
+                    }
+
+          }
           public synchronized GeneticOperatorThread getGeneticOperatorThread() {
                     if (go_threads.isEmpty()) {
                               return new GeneticOperatorThread();
@@ -97,6 +119,14 @@ public class FlyWeight {
           public synchronized void addGeneticOperatorThreads(ArrayList<GeneticOperatorThread> obj) throws Exception {
                     if (obj != null) {
                               go_arr_threads.add(obj);
+                    } else {
+                              throw new Exception("Cannot add null ArrayList<GeneticOperatorThread> obj ");
+                    }
+          } 
+
+          public synchronized void addRunnerThreads(ArrayList<RunnerThread> obj) throws Exception {
+                    if (obj != null) {
+                              run_arr_threads.add(obj);
                     } else {
                               throw new Exception("Cannot add null ArrayList<GeneticOperatorThread> obj ");
                     }
@@ -138,6 +168,24 @@ public class FlyWeight {
                     }
           }
 
+          public synchronized double[] getAttributeArray() {
+                    if (attribute_arrays.isEmpty()) {
+                              return new double[9];
+                    } else {
+                              double[] arr = attribute_arrays.remove(0);
+                              Arrays.fill(arr, 0);
+                              return arr;
+                    }
+          }
+
+          public synchronized void addAttributeArray(double[] attributes) throws Exception {
+                    if (attributes != null) {
+                              attribute_arrays.add(attributes);
+                    } else {
+                              throw new Exception("Cannot add null double[] to attributes array.");
+                    }
+          }
+          
           public synchronized double[] getScoreArray() {
                     if (score_arrays.isEmpty()) {
                               return new double[9];
@@ -183,6 +231,16 @@ public class FlyWeight {
                     }
           }
 
+          public synchronized ArrayList<RunnerThread> getRunnerThreads() {
+                    if (run_arr_threads.isEmpty()) {
+                              return new ArrayList<RunnerThread>();
+                    } else {
+                              ArrayList<RunnerThread> threads = run_arr_threads.remove(0);
+                              threads.clear();
+                              return threads;
+                    }
+          }
+          
           public synchronized void addRandom(Random obj) throws Exception {
                     synchronized (singleton) {
                               if (obj != null) {

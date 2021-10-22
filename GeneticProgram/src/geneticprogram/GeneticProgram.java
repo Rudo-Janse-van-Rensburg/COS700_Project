@@ -11,49 +11,53 @@ package geneticprogram;
  */
 public class GeneticProgram {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-        try {
+          /**
+           * @param args the command line arguments
+           */
+          public static void main(String[] args) {
+                    // TODO code application logic here
+                    int number_training_instances = 5;
+                    double acceptance_threshold = 0.5;
+                    int window_size = 4;
+                    long run_time = 600000;
 
-            /**
-             * @param mg - max generation
-             * @param kf - number of folds in k-cross-validation
-             * @param mmd - main max depth
-             * @param cmd - condition max depth
-             * @param ps - population size
-             * @param ts - tournament size
-             * @param cc - crossover chance
-             * @param mc - mutation chance
-             * @param hc - hoist chance
-             * @param ec - edit chance
-             * @return Parameters singleton.
-             * @throws Exception
-             */
-            System.out.println("hi");
-            Parameters.setParameters(
-                      50,
-                      1,
-                      5,
-                      5,
-                      500,
-                      4,
-                      0.5,//0.6, 
-                      0.4,//0.3, 
-                      0.1 //0.05, 
-                      //1//5//0.05
-            ); 
-            Evolution evolution = Evolution.getInstance();
-            do{
-                evolution.print();
-            }while(evolution.evolveGeneration()); 
-             
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                    int max_generation = 50;
+                    int k_folds = 10;
+                    int main_max_depth = 5;
+                    int condition_max_depth = 5;
+                    int population_size = 500;
+                    int tournament_size = 2;
+                    double crossover_chance = 0.5;
+                    double mutation_chance = 0.4;
+                    double hoist_chance = 0.1;
 
-    }
+                    try {
+                              Parameters.setParameters(
+                                        number_training_instances,
+                                        window_size,
+                                        run_time,
+                                        acceptance_threshold,
+                                        max_generation,
+                                        k_folds,
+                                        main_max_depth,
+                                        condition_max_depth,
+                                        population_size,
+                                        tournament_size,
+                                        crossover_chance,
+                                        mutation_chance,
+                                        hoist_chance
+                              );
+                              
+                              
+                              Evolution evolution = Evolution.getInstance();
+                              do {
+                                        evolution.print();
+                              } while (evolution.evolveGeneration());
+
+                    } catch (Exception e) {
+                              e.printStackTrace();
+                    }
+
+          }
 
 }
