@@ -59,7 +59,7 @@ public class CompetitionRunner {
                     }
           }
 
-          public CompetitionRunner getInstance(int run) {
+          public static CompetitionRunner getInstance(int run) {
                     if (singleton == null) {
                               singleton = new CompetitionRunner();
                     }
@@ -96,25 +96,26 @@ public class CompetitionRunner {
                                         printer.println("    RUN " + r);
 
                                         RunnerThread thread = FlyWeight.getInstance().getRunnerThread();
-                                        thread.reset(latch, prog, instance_seed, problem, instances_to_use[problem][instance]);
+                                        
 
                                         System.out.print("      HYPER HEURISTIC " + thread.toString());
 
-                                        thread.run();
+                                        thread.reset(latch, prog, instance_seed, problem, instances_to_use[problem][instance]);
                                         threads.add(thread);
+                                        thread.run();
 
                               }
                               latch.await();
                               for (int r = 0; r < number_of_runs; r++) {
                                         RunnerThread thread = threads.remove(0);
 
-                                        System.out.println("\t" + thread.getBestSolutionValue() + "\t" + (thread.getElapsedTime() / 1000.0) + "\t" + (thread.getRunTime()) / 1000.0 + "\t" + thread.getTotalHeuristicCalls());
-                                        printer.println("\t" + thread.getBestSolutionValue() + "\t" + (thread.getElapsedTime() / 1000.0) + "\t" + (thread.getRunTime()) / 1000.0 + "\t" + thread.getTotalHeuristicCalls());
-                                        buffprint.print(thread.getBestSolutionValue() + " ");
+                                        System.out.println("\t" + thread.getRunner().getBestSolutionValue() + "\t" + (thread.getRunner().getElapsedTime() / 1000.0) + "\t" + (thread.getRunner().getRunTime()) / 1000.0 + "\t" + thread.getRunner().getTotalHeuristicCalls());
+                                        printer.println("\t" + thread.getRunner().getBestSolutionValue() + "\t" + (thread.getRunner().getElapsedTime() / 1000.0) + "\t" + (thread.getRunner().getRunTime()) / 1000.0 + "\t" + thread.getRunner().getTotalHeuristicCalls());
+                                        buffprint.print(thread.getRunner().getBestSolutionValue() + " ");
 
                                         FileWriter f1 = new FileWriter("run_" + (run + 1) + "/results/" + problem_domains[problem] + "/time" + instance + ".txt", true);
                                         PrintWriter buffprint1 = new PrintWriter(f1);
-                                        double[] u = thread.getFitnessTrace();
+                                        double[] u = thread.getRunner().getFitnessTrace();
                                         for (double y : u) {
                                                   buffprint1.print(y + " ");
                                         }

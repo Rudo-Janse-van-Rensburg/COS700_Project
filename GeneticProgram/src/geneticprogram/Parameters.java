@@ -42,19 +42,19 @@ public class Parameters {
            * @param hc
            */
           private Parameters(int ti,int window_size, long run_time, double acceptance_threshold, int mg, int kf, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) {
-                    singleton.training_instances = ti;
-                    singleton.window_size = window_size;
-                    singleton.run_time = run_time;
-                    singleton.acceptance_threshold = acceptance_threshold;
-                    singleton.max_generation = mg;
-                    singleton.k_folds = kf;
-                    singleton.main_max_depth = mmd;
-                    singleton.condition_max_depth = cmd;
-                    singleton.population_size = ps;
-                    singleton.tournament_size = ts;
-                    singleton.crossover_chance = cc;
-                    singleton.mutation_chance = mc;
-                    singleton.hoist_chance = hc;
+                    this.training_instances = ti;
+                    this.window_size = window_size;
+                    this.run_time = run_time;
+                    this.acceptance_threshold = acceptance_threshold;
+                    this.max_generation = mg;
+                    this.k_folds = kf;
+                    this.main_max_depth = mmd;
+                    this.condition_max_depth = cmd;
+                    this.population_size = ps;
+                    this.tournament_size = ts;
+                    this.crossover_chance = cc;
+                    this.mutation_chance = mc;
+                    this.hoist_chance = hc;
           }
 
           /**
@@ -129,8 +129,6 @@ public class Parameters {
           public int getWindow_size() {
                     return window_size;
           }
-
-          
           
           /**
            * @return max generation

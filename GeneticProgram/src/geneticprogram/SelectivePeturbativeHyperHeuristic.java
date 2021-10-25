@@ -5,13 +5,13 @@ import AbstractClasses.ProblemDomain;
 
 public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
 
-          private Program prog;
+          private final Program prog;
 
           public SelectivePeturbativeHyperHeuristic(Program prog, long seed) {
                     super(seed);
                     this.prog = prog;
           }
-
+ 
           @Override
           protected void solve(ProblemDomain problem) {
                     try {
@@ -50,18 +50,14 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
                               }
                     } catch (Exception ex) {
                               ex.printStackTrace();
+                              System.exit(-1);
                     }
 
           }
-
+ 
           @Override
-          public String toString() {
-                    try {
-                              return Helper.toString(prog);
-                    } catch (Exception e) {
-                              System.exit(-1);
-                    }
-                    return "error";
+          public String toString() { 
+                    return "Selective Perturbative Hyper Heuristic";
 
           }
 

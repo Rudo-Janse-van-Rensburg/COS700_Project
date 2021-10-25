@@ -1,5 +1,6 @@
 package geneticprogram;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Generation {
@@ -13,6 +14,7 @@ public class Generation {
                     best_fitness,
                     worst_fitness;
           private int capacity;
+          private final int[][] training_instaces;
 
           public Generation() throws Exception {
                     generation_seed = Randomness.getInstance().getRandomLong();
@@ -24,6 +26,26 @@ public class Generation {
                     worst_program = FlyWeight.getInstance().getProgram();
                     population = new Program[Parameters.getInstance().getPopulation_size()];
                     fitnesses = new double[Parameters.getInstance().getPopulation_size()];
+                    training_instaces = new int[4][Parameters.getInstance().getTraining_instances()];
+
+                    chooseInstances();
+          }
+
+          private void chooseInstances() throws Exception {
+                    Random rand = FlyWeight.getInstance().getRandom();
+                    rand.setSeed(generation_seed);
+                    for (int d = 0; d < 4; d++) { 
+                              ArrayList<Integer> instances = FlyWeight.getInstance().getArrayListInt();
+                              for (int i = 0; i < Parameters.getInstance().getTraining_instances(); i++) {
+                                        instances.add(i);
+                              }
+
+                              for (int i = 0; i < Parameters.getInstance().getTraining_instances(); i++) {
+                                        training_instaces[d][i] = instances.remove(rand.nextInt(instances.size()));
+                              }
+                              FlyWeight.getInstance().addArrayListInt(instances);
+                    }
+                    FlyWeight.getInstance().addRandom(rand);
           }
 
           /**
@@ -34,10 +56,7 @@ public class Generation {
           public boolean add(Program individual) throws Exception {
                     synchronized (this) {
                               if (capacity < Parameters.getInstance().getPopulation_size()) {
-                                        Random rand = FlyWeight.getInstance().getRandom();
-                                        rand.setSeed(generation_seed);
-                                        double fitness = Fitness.getInstance().evaluate(individual, rand);
-                                        FlyWeight.getInstance().addRandom(rand);
+                                        double fitness = Fitness.getInstance().evaluate(individual, training_instaces, generation_seed);
                                         return add(individual, fitness);
 
                               } else {
@@ -175,6 +194,7 @@ public class Generation {
                     best_fitness = -1;
                     //population  = new Program[Parameters.getInstance().getPopulation_size()];
                     //fitnesses   = new double[Parameters.getInstance().getPopulation_size()];
+                    chooseInstances();
           }
 
 }
