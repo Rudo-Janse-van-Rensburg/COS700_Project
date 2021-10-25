@@ -5,71 +5,12 @@
  */
 package geneticprogram;
 
-import AbstractClasses.HyperHeuristic;
-import AbstractClasses.ProblemDomain;
-import BinPacking.BinPacking;
-import FlowShop.FlowShop;
-import PersonnelScheduling.PersonnelScheduling;
-import SAT.SAT;
-import java.util.Random;
-
 /**
  *
  * @author rudo
  */
 public class GeneticProgram {
-
-          /**
-           * This method creates the relevant HyperHeuristic object from the
-           * index given as a parameter. after the HyperHeuristic object is
-           * created, its time limit is set.
-           */
-          private static HyperHeuristic loadHyperHeuristic(int index, long timeLimit, Random rng) throws Exception {
-                    HyperHeuristic h = null;
-                    switch (index) {
-                              case 0:
-                                        Program prog = FlyWeight.getInstance().getProgram();
-                                        GeneticOperators.full(prog, 3, rng.nextLong());
-                                        h = new ExampleHyperHeuristic1(rng.nextLong(), prog);
-                                        h.setTimeLimit(timeLimit);
-                                        break;
-                              case 1:
-                                        h = new ExampleHyperHeuristic2(rng.nextLong());
-                                        h.setTimeLimit(timeLimit);
-                                        break;
-                              default:
-                                        System.err.println("there is no hyper heuristic with this index");
-                                        System.exit(1);
-                    }
-                    return h;
-          }
-
-          /**
-           * this method creates the relevant ProblemDomain object from the
-           * index given as a parameter. for each instance, the ProblemDomain is
-           * initialised with an identical seed for each hyper-heuristic. this
-           * is so that each hyper-heuristic starts its search from the same
-           * initial solution.
-           */
-          private static ProblemDomain loadProblemDomain(int index, long instanceseed) {
-                    ProblemDomain p = null;
-                    switch (index) {
-                              case 0:
-                                        p = new SAT(instanceseed);
-                                        break;
-                              case 1:
-                                        p = new BinPacking(instanceseed);
-                                        break;
-                              case 2:
-                                        p = new PersonnelScheduling(instanceseed);
-                                        break;
-                              case 3:
-                                        p = new FlowShop(instanceseed);
-                                        break;
-                              default:
-                    }//end switch
-                    return p;
-          }
+ 
 
           /**
            * @param args the command line arguments

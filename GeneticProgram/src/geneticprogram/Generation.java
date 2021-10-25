@@ -1,9 +1,19 @@
 package geneticprogram;
 
+import AbstractClasses.ProblemDomain;
+import BinPacking.BinPacking;
+import FlowShop.FlowShop;
+import PersonnelScheduling.PersonnelScheduling;
+import SAT.SAT;
+import VRP.VRP;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import travelingSalesmanProblem.TSP;
 
 public class Generation {
+          
+          
 
           private long generation_seed;
           private final Program[] population;
@@ -16,7 +26,7 @@ public class Generation {
           private int capacity;
           private final int[][] training_instaces;
 
-          public Generation() throws Exception {
+          public Generation() throws Exception { 
                     generation_seed = Randomness.getInstance().getRandomLong();
                     capacity = 0;
                     total_fitness = 0;
@@ -34,12 +44,37 @@ public class Generation {
           private void chooseInstances() throws Exception {
                     Random rand = FlyWeight.getInstance().getRandom();
                     rand.setSeed(generation_seed);
-                    for (int d = 0; d < 4; d++) { 
+                    for (int d = 0; d < 4; d++) {
                               ArrayList<Integer> instances = FlyWeight.getInstance().getArrayListInt();
-                              for (int i = 0; i < Parameters.getInstance().getTraining_instances(); i++) {
+                              ProblemDomain p = null;
+                              switch (d) {
+                                        case 0:
+                                                  p = new SAT(1);
+                                                  break;
+                                        case 1:
+                                                  p = new BinPacking(1);
+                                                  break;
+                                        case 2:
+                                                  p = new PersonnelScheduling(1);
+                                                  break;
+                                        case 3:
+                                                  p = new FlowShop(1);
+                                                  break;
+                                        case 4:
+                                                  p = new TSP(1);
+                                                  break;
+                                        case 5:
+                                                  p = new VRP(1);
+                                                  break;
+                                        default:
+                                                  System.err.println("there is no problem domain with this index");
+                                                  System.exit(1);
+                              }//end switch
+                              
+                              for (int i = 0; i < p.getNumberOfInstances(); i++) {
                                         instances.add(i);
                               }
-
+                              
                               for (int i = 0; i < Parameters.getInstance().getTraining_instances(); i++) {
                                         training_instaces[d][i] = instances.remove(rand.nextInt(instances.size()));
                               }
@@ -79,6 +114,7 @@ public class Generation {
                     return best_fitness;
           }
 
+          
           public double getWorst_fitness() {
                     return worst_fitness;
           }
@@ -96,6 +132,7 @@ public class Generation {
 
           /**
            *
+           * @param position
            * @param individual
            * @param fitness
            * @return

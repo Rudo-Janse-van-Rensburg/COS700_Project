@@ -13,15 +13,14 @@ import travelingSalesmanProblem.TSP;
 public class Runner {
 
           private long startTime, endTime;
-          private ProblemDomain problem_domain;
-          private HyperHeuristic hyperheuristic;
+          private final ProblemDomain problem_domain;
+          private final HyperHeuristic hyperheuristic;
 
           public Runner(Program program, int problem_index, int instance_to_use, long seed) throws Exception {
-                     this.problem_domain = loadProblemDomain(problem_index, seed);
-                    this.hyperheuristic = loadHyperHeuristic(program,Parameters.getInstance().getRun_time() , seed);
+                    this.problem_domain = loadProblemDomain(problem_index, seed);
+                    this.hyperheuristic = loadHyperHeuristic(program, Parameters.getInstance().getRun_time(), seed);
                     this.problem_domain.loadInstance(instance_to_use);
                     this.hyperheuristic.loadProblemDomain(problem_domain);
-
           }
 
           public void execute() {
@@ -30,9 +29,10 @@ public class Runner {
                     endTime = System.currentTimeMillis();
           }
 
-          public int[] getHeuristicCallRecord(){
+          public int[] getHeuristicCallRecord() {
                     return this.problem_domain.getHeuristicCallRecord();
           }
+
           public double getBestSolutionValue() {
                     return hyperheuristic.getBestSolutionValue();
           }
@@ -67,8 +67,8 @@ public class Runner {
            * created, its time limit is set.
            */
           private static HyperHeuristic loadHyperHeuristic(Program prog, long timeLimit, long seed) {
-                    HyperHeuristic h =new SelectivePeturbativeHyperHeuristic(prog, seed);
-                    h.setTimeLimit(timeLimit); 
+                    HyperHeuristic h = new SelectivePeturbativeHyperHeuristic(prog, seed);
+                    h.setTimeLimit(timeLimit);
                     return h;
           }
 
@@ -95,11 +95,11 @@ public class Runner {
                                         p = new FlowShop(instanceseed);
                                         break;
                               case 4:
-                                        p = new TSP(instanceseed); 
+                                        p = new TSP(instanceseed);
                                         break;
                               case 5:
                                         p = new VRP(instanceseed);
-                                        break; 
+                                        break;
                               default:
                                         System.err.println("there is no problem domain with this index");
                                         System.exit(1);
@@ -107,11 +107,9 @@ public class Runner {
                     return p;
           }
 
-          
-
           public static void main(String[] args) throws Exception {
-                    
-                                        // TODO code application logic here
+
+                    // TODO code application logic here
                     int number_training_instances = 5;
                     double acceptance_threshold = 0.5;
                     int window_size = 4;
@@ -142,9 +140,7 @@ public class Runner {
                               mutation_chance,
                               hoist_chance
                     );
-                    
-                    
-                    
+
                     //we first initialise the random number generator for this class
                     //it is useful to generate all of the random numbers from one seed, so that the experiments can be easily replicated
                     Random random_number_generator = new Random(12345);
@@ -181,7 +177,7 @@ public class Runner {
                                         GeneticOperators.full(prog, 5, instance_seed);
 
                                         Runner runner = new Runner(prog, problem_domain_index, instancetouse, instance_seed);
-                                         runner.execute();
+                                        runner.execute();
                                         //for this example, we use the record within each problem domain of the number of times each low level heuristic was called.
                                         //we sum the results to obtain the total number of times that a low level heuristic was called
                                         int[] i = runner.getHeuristicCallRecord();

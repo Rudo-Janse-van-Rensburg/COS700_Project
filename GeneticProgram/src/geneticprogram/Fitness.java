@@ -40,7 +40,9 @@ public class Fitness {
                                                   thread.run();
                                         }
                               }
+                              
                               latch.await();
+                              
                               double fitness = 0;
                               for (int d = 0; d < number_domains; d++) {
                                         for (int i = 0; i < Parameters.getInstance().getTraining_instances(); i++) {
