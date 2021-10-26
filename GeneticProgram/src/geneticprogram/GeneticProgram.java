@@ -53,7 +53,8 @@ public class GeneticProgram {
                     do{
                              evolution.print();
                     }while( evolution.evolveGeneration());
-
+                    Program best = evolution.getBest_program();
+                    CompetitionRunner.getInstance(0).run(best);
           }
 
 }

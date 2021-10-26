@@ -92,10 +92,7 @@ public class Evolution {
                                         // int num_edit = (int) Math.ceil(Parameters.getInstance().getEdit_chance() * Parameters.getInstance().getPopulation_size());
                                         
                                         int num_threads = num_crossover + num_mutation + num_hoist/* + num_edit*/;
-                                        ExecutorService go_service = Executors.newFixedThreadPool(num_threads);
-                                        if (Meta.debug) {
-                                                  System.out.format("number threads   : %d\n ", num_threads);
-                                        }
+                                        ExecutorService go_service = Executors.newFixedThreadPool(num_threads); 
                                         CountDownLatch latch = new CountDownLatch(num_threads);
                                         List<GeneticOperatorThread> go_tasks = new ArrayList<>();
                                         //ArrayList<GeneticOperatorThread> threads = FlyWeight.getInstance().getGeneticOperatorThreads();

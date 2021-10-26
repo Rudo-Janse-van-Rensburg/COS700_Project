@@ -29,8 +29,8 @@ public class Generation {
                     generation_seed = Randomness.getInstance().getRandomLong();
                     capacity = 0;
                     total_fitness = 0;
-                    best_fitness = -1;
-                    worst_fitness = 1;
+                    best_fitness = Double.POSITIVE_INFINITY;
+                    worst_fitness = -1;
                     best_program = FlyWeight.getInstance().getProgram();
                     worst_program = FlyWeight.getInstance().getProgram();
                     population = new Program[Parameters.getInstance().getPopulation_size()];
@@ -97,11 +97,11 @@ public class Generation {
           public synchronized boolean add(Program individual) throws Exception {
                     double fitness = individual.getFitness();
                     if (capacity < population.length) {
-                              if (fitness > best_fitness) {
+                              if (fitness < best_fitness) {
                                         best_fitness = fitness;
                                         best_program.copy(individual);
                               }
-                              if (fitness < worst_fitness) {
+                              if (fitness > worst_fitness) {
                                         worst_fitness = fitness;
                                         worst_program.copy(individual);
                               }
@@ -218,8 +218,7 @@ public class Generation {
           public void clear() throws Exception {
                     generation_seed = Randomness.getInstance().getRandomLong();
                     total_fitness = 0;
-                    capacity = 0;
-                    best_fitness = -1;
+                    capacity = 0; 
                     //population  = new Program[Parameters.getInstance().getPopulation_size()];
                     //fitnesses   = new double[Parameters.getInstance().getPopulation_size()];
                     chooseInstances();
