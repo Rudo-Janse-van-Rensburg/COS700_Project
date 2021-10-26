@@ -8,7 +8,6 @@ import SAT.SAT;
 import VRP.VRP;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
 import travelingSalesmanProblem.TSP;
 
 public class Generation {
@@ -83,22 +82,42 @@ public class Generation {
                     FlyWeight.getInstance().addRandom(rand);
           }
 
+          public int[][] getTraining_instaces() {
+                    return training_instaces;
+          }
+
+          
+           
+          
           /**
-           * @param individual to add to the population.
+           * @param individual
            * @return
            * @throws Exception
            */
-          public boolean add(Program individual) throws Exception {
-                    synchronized (this) {
-                              if (capacity < Parameters.getInstance().getPopulation_size()) {
-                                        double fitness = Fitness.getInstance().evaluate(individual, training_instaces, generation_seed);
-                                        return add(individual, fitness);
-
-                              } else {
-                                        return false;
+          public synchronized boolean add(Program individual) throws Exception {
+                    double fitness = individual.getFitness();
+                    if (capacity < population.length) {
+                              if (fitness > best_fitness) {
+                                        best_fitness = fitness;
+                                        best_program.copy(individual);
                               }
+                              if (fitness < worst_fitness) {
+                                        worst_fitness = fitness;
+                                        worst_program.copy(individual);
+                              }
+                              population[capacity] = individual;
+                              fitnesses[capacity] = fitness;
+                              total_fitness += fitnesses[capacity];
+                              ++capacity;
+                              return true;
+                    } else {
+                              FlyWeight.getInstance().addProgram(individual);
+                              return false;
                     }
           }
+          
+           
+          
 
           /**
            * @return
@@ -130,34 +149,6 @@ public class Generation {
                     return worst_program;
           }
 
-          /**
-           *
-           * @param position
-           * @param individual
-           * @param fitness
-           * @return
-           * @throws Exception
-           */
-          public boolean add(Program individual, double fitness) throws Exception {
-                    if (capacity < population.length) {
-                              if (fitness > best_fitness) {
-                                        best_fitness = fitness;
-                                        best_program.copy(individual);
-                              }
-                              if (fitness < worst_fitness) {
-                                        worst_fitness = fitness;
-                                        worst_program.copy(individual);
-                              }
-                              population[capacity] = individual;
-                              fitnesses[capacity] = fitness;
-                              total_fitness += fitnesses[capacity];
-                              ++capacity;
-                              return true;
-                    } else {
-                              FlyWeight.getInstance().addProgram(individual);
-                              return false;
-                    }
-          }
 
           /**
            *

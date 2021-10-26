@@ -83,14 +83,13 @@ public class Selection {
         int pos                 = 0 ;
         do{
             Program prog    = generation.getIndividual(pos % generation.getCapacity());
-            double fitness  = generation.getFitness(pos % generation.getCapacity()); 
             int i = 0;
             while(
                 has_capacity 
                 && 
-                i++ < Math.round((1.0*fitness/1.0*total_fitness)*Parameters.getInstance().getPopulation_size())
+                i++ < Math.round((1.0*prog.getFitness() /1.0*total_fitness)*Parameters.getInstance().getPopulation_size())
             ){
-                has_capacity = has_capacity && gen.add(prog, fitness);
+                has_capacity = has_capacity && gen.add(prog);
             }
             ++pos;
             
@@ -106,14 +105,13 @@ public class Selection {
         int pos                 = 0 ;
         do{
             Program prog    = generation.getIndividual(pos % generation.getCapacity());
-            double fitness  = generation.getFitness(pos % generation.getCapacity()); 
             int i = 0;
             while(
                 has_capacity 
                 && 
-                i++ < Math.round((1 - (1.0*fitness/1.0*total_fitness))*Parameters.getInstance().getPopulation_size())
+                i++ < Math.round((1 - (1.0*prog.getFitness()/1.0*total_fitness))*Parameters.getInstance().getPopulation_size())
             ){
-                has_capacity = has_capacity && gen.add(prog, fitness);
+                has_capacity = has_capacity && gen.add(prog);
             }
             ++pos;
             

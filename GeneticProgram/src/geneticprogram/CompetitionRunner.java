@@ -95,12 +95,11 @@ public class CompetitionRunner {
                                         System.out.println("    RUN " + r + " " + instance_seed);
                                         printer.println("    RUN " + r);
 
-                                        RunnerThread thread = FlyWeight.getInstance().getRunnerThread();
-                                        
+                                        RunnerThread thread = ThreadFactory.instance().getRunnerThread(latch, prog, instance_seed, problem, instances_to_use[problem][instance]);
 
                                         System.out.print("      HYPER HEURISTIC " + thread.toString());
 
-                                        thread.reset(latch, prog, instance_seed, problem, instances_to_use[problem][instance]);
+                                        //thread.reset(latch, prog, instance_seed, problem, instances_to_use[problem][instance]);
                                         threads.add(thread);
                                         thread.run();
 

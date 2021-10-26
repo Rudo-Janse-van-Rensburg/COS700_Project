@@ -2,13 +2,13 @@ package geneticprogram;
 
 import java.util.concurrent.CountDownLatch;
 
-public class RunnerThread extends Thread {
+public class RunnerThreadOld extends Thread {
           private CountDownLatch latch;
           private Runner runner;
           private volatile Thread t;
 
 
-          public RunnerThread() {
+          public RunnerThreadOld() {
                     runner = null;
           }
  

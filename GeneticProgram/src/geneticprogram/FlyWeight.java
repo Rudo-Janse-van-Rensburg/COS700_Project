@@ -18,10 +18,8 @@ public class FlyWeight {
           private final ArrayList<byte[][]> shrt_arr_2D_c;
           private final ArrayList<byte[][][][]> shrt_arr_4D;
           private final ArrayList<Program> programs;
-          private final ArrayList<Generation> generations;
-          private final ArrayList<ArrayList<GeneticOperatorThread>> go_arr_threads;
+          private final ArrayList<Generation> generations; 
           private final ArrayList<ArrayList<RunnerThread>> run_arr_threads;
-          private final ArrayList<GeneticOperatorThread> go_threads;
           private final ArrayList<RunnerThread> run_threads;
           private final ArrayList<Random> random_arr;
           private final ArrayList<CyclicBarrier> cb_arr;
@@ -39,9 +37,7 @@ public class FlyWeight {
                     instance_arrays = new ArrayList<>();
                     problem_score_arrays = new ArrayList<>();
                     stack_int_arr = new ArrayList<>();
-                    go_threads = new ArrayList<>();
                     run_threads = new ArrayList<>();
-                    go_arr_threads = new ArrayList<>();
                     run_arr_threads = new ArrayList<>();
                     cb_arr = new ArrayList<>();
                     random_arr = new ArrayList<>();
@@ -80,15 +76,7 @@ public class FlyWeight {
                               return cb_arr.remove(0);
                     }
           }
-          
-          public synchronized RunnerThread getRunnerThread() {
-                    if (run_threads.isEmpty()) {
-                              return new RunnerThread();
-                    } else {
-                              return run_threads.remove(0);
-                    }
-
-          }
+           
 
           public synchronized void addRunnerThread(RunnerThread thread) throws Exception {
                     if (thread != null) {
@@ -97,32 +85,9 @@ public class FlyWeight {
                               throw new Exception("Cannot add null GeneticOperatorThread thread");
                     }
 
-          }
-          public synchronized GeneticOperatorThread getGeneticOperatorThread() {
-                    if (go_threads.isEmpty()) {
-                              return new GeneticOperatorThread();
-                    } else {
-                              return go_threads.remove(0);
-                    }
-
-          }
-
-          public synchronized void addGeneticOperatorThread(GeneticOperatorThread thread) throws Exception {
-                    if (thread != null) {
-                              go_threads.add(thread);
-                    } else {
-                              throw new Exception("Cannot add null GeneticOperatorThread thread");
-                    }
-
-          }
-
-          public synchronized void addGeneticOperatorThreads(ArrayList<GeneticOperatorThread> obj) throws Exception {
-                    if (obj != null) {
-                              go_arr_threads.add(obj);
-                    } else {
-                              throw new Exception("Cannot add null ArrayList<GeneticOperatorThread> obj ");
-                    }
           } 
+ 
+ 
 
           public synchronized void addRunnerThreads(ArrayList<RunnerThread> obj) throws Exception {
                     if (obj != null) {
@@ -220,16 +185,7 @@ public class FlyWeight {
                               throw new Exception("Cannot add null Stack<int[]> obj ");
                     }
           }
-
-          public synchronized ArrayList<GeneticOperatorThread> getGeneticOperatorThreads() {
-                    if (go_arr_threads.isEmpty()) {
-                              return new ArrayList<GeneticOperatorThread>();
-                    } else {
-                              ArrayList<GeneticOperatorThread> threads = go_arr_threads.remove(0);
-                              threads.clear();
-                              return threads;
-                    }
-          }
+ 
 
           public synchronized ArrayList<RunnerThread> getRunnerThreads() {
                     if (run_arr_threads.isEmpty()) {

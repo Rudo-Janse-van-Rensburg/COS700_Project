@@ -1,17 +1,15 @@
 package geneticprogram;
 
+import geneticprogram.ThreadFactory;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import geneticprogram.Callables;
-import java.util.concurrent.Callable;
+import java.util.List;
 
 public class Evolution {
 
-          private ExecutorService go_service;
+          private final ExecutorService go_service;
 
           private static Evolution instance = null;
           private static Generation curr = null,
@@ -24,7 +22,7 @@ public class Evolution {
                     Randomness.getInstance();
                     curr = FlyWeight.getInstance().getGeneration();
                     next = FlyWeight.getInstance().getGeneration();
-                    best_program = new Program();
+                    best_program = new Program(); 
                     go_service = Executors.newFixedThreadPool(Parameters.getInstance().getPopulation_size());
                     createInitialPopulation();
           }
@@ -44,6 +42,7 @@ public class Evolution {
            * @throws Exception initial population
            */
           private void createInitialPopulation() throws Exception {
+                    Randomness.getInstance().reseed();
                     curr.recycle();
                     next.recycle();
                     generation = 0;
@@ -51,29 +50,33 @@ public class Evolution {
                     int ipg = (int) Math.ceil(Parameters.getInstance().getPopulation_size() / ((depths - 2) * 1.0));   //individuals per generation 
                     boolean has_capacity = true; 
                     int position = 0;
-                    long[] seeds = new long[Parameters.getInstance().getPopulation_size()];
-                    for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
-                              seeds[i] = Randomness.getInstance().getRandomLong();
-                    }
-                    Program[] parents;
-                    ArrayList<Callable<Program[]>> tasks = new ArrayList<>();
+                    List<GeneticOperatorThread>go_tasks = new ArrayList<>();
+                    CountDownLatch latch = new CountDownLatch(Parameters.getInstance().getPopulation_size());
                     for (int depth = depths - 1; has_capacity && depth >= 2; depth--) {
                               int individual = 0;
                               for (; position < Parameters.getInstance().getPopulation_size() && has_capacity && individual < ipg;) {
-                                        tasks.add(Callables.getGeneticOperatorTask(new Program[]{FlyWeight.getInstance().getProgram()}, Meta.FULL, depth, seeds[position % seeds.length]));
-                                        tasks.add(Callables.getGeneticOperatorTask(new Program[]{FlyWeight.getInstance().getProgram()}, Meta.GROW, depth, seeds[position % seeds.length]));
-                                        has_capacity = tasks.size() < Parameters.getInstance().getPopulation_size();
+                                        go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch,new Program[]{FlyWeight.getInstance().getProgram()}, Meta.FULL, depth,  Randomness.getInstance().getRandomLong(),curr.getTraining_instaces()));
+                                        
+                                        go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch,new Program[]{FlyWeight.getInstance().getProgram()}, Meta.GROW, depth,  Randomness.getInstance().getRandomLong(),curr.getTraining_instaces()));
+                                        
+                                        has_capacity = go_tasks.size() < Parameters.getInstance().getPopulation_size();
                               }
                     }
-                    while (has_capacity) {
-                              tasks.add(Callables.getGeneticOperatorTask(new Program[]{FlyWeight.getInstance().getProgram()}, Meta.FULL, Parameters.getInstance().getMain_max_depth() , seeds[position % seeds.length])); 
-                              has_capacity = tasks.size() < Parameters.getInstance().getPopulation_size(); 
+                    while (has_capacity) { 
+                              go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch,new Program[]{FlyWeight.getInstance().getProgram()}, Meta.FULL, Parameters.getInstance().getMain_max_depth(),Randomness.getInstance().getRandomLong(),curr.getTraining_instaces()));
+                              has_capacity = go_tasks.size() < Parameters.getInstance().getPopulation_size(); 
                     } 
+                   
                     for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
-                              Future<Program[]> future = go_service.submit(tasks.get(i));
-                              curr.add(future.get()[0]);
-                    }  
+                              go_service.execute(go_tasks.get(i));
+                    } 
+                    latch.await();
                     go_service.shutdown();
+                     
+                    for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
+                              curr.add(go_tasks.get(i).getParents()[0]);
+                    }
+                    
           }
 
           /**
@@ -98,7 +101,7 @@ public class Evolution {
                                         if (Meta.debug) {
                                                   System.out.format("number threads   : %d\n ", num_threads);
                                         }
-                                        final CountDownLatch latch = new CountDownLatch(num_threads);
+                                       /* final CountDownLatch latch = new CountDownLatch(num_threads);
                                         ArrayList<GeneticOperatorThread> threads = FlyWeight.getInstance().getGeneticOperatorThreads();
                                         long[] seeds = new long[num_threads];
                                         for (int i = 0; i < num_threads; i++) {
@@ -144,16 +147,7 @@ public class Evolution {
                                                             --num_threads;
                                                             --num_hoist;
                                                   }
-
-                                                  /*if (num_threads > 0 && num_edit > 0) {
-                        Program edit = FlyWeight.getInstance().getProgram();
-                        edit.copy(Selection.getInstance(Selection.tournament).select(curr));
-                        GeneticOperatorThread edited = FlyWeight.getInstance().getGeneticOperatorThread();
-                        edited.reset(latch, seeds[individual], new Program[]{edit}, Meta.EDIT);
-                        threads.add(edited);
-                        --num_threads;
-                        --num_edit;
-                    }*/
+ 
                                         } while (num_threads > 0);
                                         for (int i = 0; i < threads.size(); i++) {
                                                   threads.get(i).start();
@@ -177,7 +171,7 @@ public class Evolution {
                                                   curr.add(next.getIndividual(i), next.getFitness(i));
                                         }
                                         next.clear();
-                                        ++generation;
+                                        ++generation;*/
                                         return true;
                               } else {
                                         return false;

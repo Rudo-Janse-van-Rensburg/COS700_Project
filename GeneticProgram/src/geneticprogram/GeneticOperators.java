@@ -9,6 +9,7 @@ public class GeneticOperators {
     /**
      * @param prog - program to full
      * @param depth - depth to grow to
+           * @param seed
      * @throws Exception
      */
     public static void grow(Program prog, int depth, long seed) throws Exception {
@@ -25,6 +26,7 @@ public class GeneticOperators {
     /**
      * @param prog - program to full
      * @param depth - depth to grow to
+           * @param seed
      * @throws Exception
      */
     public static void full(Program prog, int depth, long seed) throws Exception {
@@ -40,6 +42,7 @@ public class GeneticOperators {
 
     /**
      * @param prog - program to mutate.
+           * @param seed
      * @throws Exception
      */
     public static void mutate(Program prog, long seed) throws Exception {
@@ -58,6 +61,7 @@ public class GeneticOperators {
 
     /**
      * @param prog
+           * @param seed
      * @throws Exception
      */
     public static void hoist(Program prog, long seed) throws Exception {
