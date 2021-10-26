@@ -6,8 +6,6 @@
 package geneticprogram;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -28,7 +26,9 @@ public class ThreadFactory {
           public  GeneticOperatorThread getGeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, int max_depth, long seed,int [][] training_instances) throws Exception {
                     return new GeneticOperatorThread(latch, parents, operation, max_depth, seed,training_instances);
           }
-          
+          public  GeneticOperatorThread getGeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation,  long seed,int [][] training_instances) throws Exception {
+                    return new GeneticOperatorThread(latch, parents, operation,  seed,training_instances);
+          }
           public RunnerThread getRunnerThread(CountDownLatch latch, Program prog, long seed, int domain, int instance) throws Exception{
                     return new RunnerThread(latch, prog, seed, domain, instance);
           }
@@ -84,6 +84,16 @@ class GeneticOperatorThread extends Thread {
                               this.latch = latch;
                               this.training_instances = training_instances;
                     }
+                    
+                    public GeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation,  long seed,int [][] training_instances) throws Exception {
+                              this.parents = new Program[parents.length];
+                              setParents(parents);
+                              this.operation = operation;
+                              this.max_depth = Parameters.getInstance().getMain_max_depth();
+                              this.seed = seed;
+                              this.latch = latch;
+                              this.training_instances = training_instances;
+                    }
 
                     @Override
                     public void run() { 
@@ -98,7 +108,7 @@ class GeneticOperatorThread extends Thread {
                                                             GeneticOperators.crossover(parents[0], parents[1], seed);
                                                             parents[0].setFitness(Fitness.getInstance().evaluate(parents[0], training_instances, seed));
                                                             parents[1].setFitness(Fitness.getInstance().evaluate(parents[1], training_instances, seed));
-                                                            latch.countDown();
+                                                            latch.countDown(); 
                                                             break;
                                                   case Meta.HOIST:
                                                             GeneticOperators.hoist(parents[0], seed);

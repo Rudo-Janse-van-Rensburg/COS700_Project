@@ -23,11 +23,11 @@ public class GeneticProgram {
                     int window_size = 4;
                     long run_time = 100;
 
-                    int max_generation = 1;
+                    int max_generation = 2;
                     int k_folds = 10;
                     int main_max_depth = 5;
                     int condition_max_depth = 5;
-                    int population_size = 2;
+                    int population_size = 10;
                     int tournament_size = 2;
                     double crossover_chance = 0.5;
                     double mutation_chance = 0.4;
