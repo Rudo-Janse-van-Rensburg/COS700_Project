@@ -49,6 +49,7 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
                                         //one iteration has been completed, so we return to the start of the main loop and check if the time has expired
                               }
                     } catch (Exception ex) {
+                              ex.printStackTrace();
                               System.exit(-1);
                     }
 

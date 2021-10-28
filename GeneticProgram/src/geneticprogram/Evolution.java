@@ -76,7 +76,7 @@ public class Evolution {
                     for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
                               curr.add(go_tasks.get(i).getParents()[0]);
                     }
-
+                    best_program.copy(curr.getBest_program());
           }
 
           /**
@@ -154,6 +154,7 @@ public class Evolution {
                                         }
                                         next.clear();
                                         ++generation;
+                                        best_program.copy(curr.getBest_program());
                                         return true;
                               } else {
                                         return false;

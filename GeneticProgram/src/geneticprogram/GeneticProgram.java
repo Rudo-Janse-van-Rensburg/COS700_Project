@@ -24,8 +24,8 @@ public class GeneticProgram {
 
                     int max_generation = 1;
                     int k_folds = 10;
-                    int main_max_depth = 5;
-                    int condition_max_depth = 5;
+                    int main_max_depth = 2;
+                    int condition_max_depth =2;
                     int population_size = 2;
                     int tournament_size = 2;
                     double crossover_chance = 0.5;
@@ -53,8 +53,7 @@ public class GeneticProgram {
                               evolution.print();
                     } while (evolution.evolveGeneration());
                     Program best = evolution.getBest_program();
- 
-
+                    System.out.println(Helper.toString(best));
                     CompetitionRunner r = new CompetitionRunner(best);
                     r.start();
                     try {
