@@ -210,7 +210,7 @@ public class CompetitionRunner extends Thread {
                                         Files.createDirectories(pathtofile.getParent());
                                         Files.createFile(pathtofile);
                               }
-                              Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE); 
+                              Files.write(pathtofile, buffer_printer_content.toString().getBytes(), StandardOpenOption.CREATE); 
                                
                     } catch (Exception e) {
                               e.printStackTrace();
