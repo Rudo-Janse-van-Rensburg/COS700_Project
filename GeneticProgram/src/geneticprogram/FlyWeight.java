@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
 public class FlyWeight {
@@ -27,11 +26,9 @@ public class FlyWeight {
           private final ArrayList<double[]> score_arrays;
           private final ArrayList<double[]> attribute_arrays;
           private final ArrayList<double[][]> problem_score_arrays;
-
-          private final ArrayList<ArrayList<Score>> al_scores;
+ 
 
           private FlyWeight() {
-                    al_scores = new ArrayList<>();
                     score_arrays = new ArrayList<>();
                     attribute_arrays = new ArrayList<>();
                     instance_arrays = new ArrayList<>();
@@ -114,24 +111,7 @@ public class FlyWeight {
                               throw new Exception("Cannot add null int[] to instances array.");
                     }
           }
-
-          public synchronized ArrayList<Score> getScoreArrayList() {
-                    if (al_scores.isEmpty()) {
-                              return new ArrayList<>();
-                    } else {
-                              ArrayList<Score> al = al_scores.remove(0);
-                              al.clear();
-                              return al;
-                    }
-          }
-
-          public synchronized void addScoreArrayList(ArrayList<Score> scores) throws Exception {
-                    if (scores != null) {
-                              al_scores.add(scores);
-                    } else {
-                              throw new Exception("Cannot add null int[] to instances array.");
-                    }
-          }
+ 
 
           public synchronized double[] getAttributeArray() {
                     if (attribute_arrays.isEmpty()) {

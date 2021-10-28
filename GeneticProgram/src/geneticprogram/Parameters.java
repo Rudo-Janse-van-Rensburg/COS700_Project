@@ -192,4 +192,23 @@ public class Parameters {
           public int getMain_max_depth() {
                     return main_max_depth;
           }
+
+          @Override
+          public String toString() { 
+                    return  
+                              this.window_size + "," +
+                              this.run_time + "," + 
+                              this.acceptance_threshold + "," + 
+                              this.max_generation + "," + 
+                              this.main_max_depth + "," +
+                              this.condition_max_depth  + "," +
+                              this.population_size + "," + 
+                              this.tournament_size + "," + 
+                              this.crossover_chance + "," +
+                              this.mutation_chance+ "," +
+                              this.hoist_chance + "";
+          }
+          
+          
+          
 }

@@ -12,12 +12,12 @@ public class Data {
 
           private static Data singleton = null;
           private final double[] data_instance;                                 //
-          private final ArrayList<double[]> data_instances;          // going to hold the instances of the  
+          //private final ArrayList<double[]> data_instances;          // going to hold the instances of the  
           private final int number_classes = 4, // mutation, crossover, ruin-create, local-search 
                     number_attributes;
 
           private Data() throws Exception {
-                    data_instances = new ArrayList<>();
+                    //data_instances = new ArrayList<>();
                     number_attributes = 2 * Parameters.getInstance().getWindow_size();
                     data_instance = new double[number_attributes];
                     Arrays.fill(data_instance, 0);
@@ -48,7 +48,7 @@ public class Data {
           public void add(int last_low_level_heuristic, double delta) throws Exception {
                     double[] copy = new double[number_attributes];
                     System.arraycopy(data_instance, 0, copy, 0, number_attributes);
-                    data_instances.add(copy);
+                    //data_instances.add(copy);
                     for (int i = Parameters.getInstance().getWindow_size() - 1; i > 0; i--) {
                               data_instance[i] = data_instance[i - 1];
                               data_instance[i + Parameters.getInstance().getWindow_size()] = data_instance[i + Parameters.getInstance().getWindow_size() - 1];
@@ -71,7 +71,7 @@ public class Data {
                     return number_attributes;
           }
 
-          public void saveFile() throws IOException {
+          /*private  void saveFile() throws IOException {
                     File file = new File("data.csv");
                     try (FileWriter fw = new FileWriter(file); BufferedWriter bw = new BufferedWriter(fw)) {
                               for (int i = 0; i < number_attributes; i++) {
@@ -96,6 +96,6 @@ public class Data {
                                         bw.newLine();
                               }
                     }
-          }
+          }*/
 
 }

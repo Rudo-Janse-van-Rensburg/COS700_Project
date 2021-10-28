@@ -10,7 +10,6 @@ package geneticprogram;
  * @author rudo
  */
 public class GeneticProgram {
- 
 
           /**
            * @param args the command line arguments
@@ -23,11 +22,11 @@ public class GeneticProgram {
                     int window_size = 4;
                     long run_time = 100;
 
-                    int max_generation = 2;
+                    int max_generation = 1;
                     int k_folds = 10;
                     int main_max_depth = 5;
                     int condition_max_depth = 5;
-                    int population_size = 10;
+                    int population_size = 2;
                     int tournament_size = 2;
                     double crossover_chance = 0.5;
                     double mutation_chance = 0.4;
@@ -48,13 +47,23 @@ public class GeneticProgram {
                               mutation_chance,
                               hoist_chance
                     );
-                    
-                    Evolution evolution =Evolution.getInstance();
-                    do{
-                             evolution.print();
-                    }while( evolution.evolveGeneration());
+
+                    Evolution evolution = Evolution.getInstance();
+                    do {
+                              evolution.print();
+                    } while (evolution.evolveGeneration());
                     Program best = evolution.getBest_program();
-                    CompetitionRunner.getInstance(0).run(best);
+ 
+
+                    CompetitionRunner r = new CompetitionRunner(best);
+                    r.start();
+                    try {
+                              r.join();
+                    } catch (InterruptedException e) {
+                              System.out.println();
+                              System.out.println();
+                              System.exit(0);
+                    }
           }
 
 }

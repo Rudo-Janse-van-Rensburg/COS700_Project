@@ -14,9 +14,13 @@ public class Runner {
 
           private long startTime, endTime;
           private final ProblemDomain problem_domain;
+          private final int problem;
+          private final int instance;
           private final HyperHeuristic hyperheuristic;
 
           public Runner(Program program, int problem_index, int instance_to_use, long seed) throws Exception {
+                    this.problem = problem_index;
+                    this.instance = instance_to_use;
                     this.problem_domain = loadProblemDomain(problem_index, seed);
                     this.hyperheuristic = loadHyperHeuristic(program, Parameters.getInstance().getRun_time(), seed);
                     this.problem_domain.loadInstance(instance_to_use);
@@ -60,7 +64,10 @@ public class Runner {
                     }
                     return counter;
           }
-
+          @Override
+          public String toString() {
+                    return  problem+","+instance+","+this.getTotalHeuristicCalls()+","+this.getBestSolutionValue()+","+this.getElapsedTime()+","+this.getRunTime()+"";
+          }
           /**
            * This method creates the relevant HyperHeuristic object from the
            * index given as a parameter. after the HyperHeuristic object is
