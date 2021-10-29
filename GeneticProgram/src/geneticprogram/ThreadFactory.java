@@ -5,7 +5,22 @@
  */
 package geneticprogram;
 
+import AbstractClasses.HyperHeuristic;
+import AbstractClasses.ProblemDomain;
+import BinPacking.BinPacking;
+import FlowShop.FlowShop;
+import PersonnelScheduling.PersonnelScheduling;
+import SAT.SAT;
+import VRP.VRP;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import travelingSalesmanProblem.TSP;
 
 /**
  *
@@ -34,47 +49,178 @@ public class ThreadFactory {
           }
 
           public RunnerThread getRunnerThread(CountDownLatch latch, Program prog, long seed, int domain, int instance) throws Exception {
-                    return new RunnerThread(latch, prog, seed, domain, instance);
+                    return new RunnerThread(latch, prog, domain, instance, Parameters.getInstance().getRun_time(), seed);
           }
 
-          public CompetitionRunnerThread getCompetitionRunnerThread(CountDownLatch latch, Program prog, long seed, int domain, int instance) throws Exception {
-                    return new CompetitionRunnerThread(latch, prog, seed, domain, instance);
+          public CompetitionRunnerThread getCompetitionRunnerThread(CountDownLatch latch,
+                    Program prog,
+                    int domain,
+                    int instance,
+                    long time_limit,
+                    long[] seeds,
+                    int runs) throws Exception {
+                    return new CompetitionRunnerThread(latch, prog, domain, instance, time_limit, seeds,runs);
           }
 
 }
 
 class CompetitionRunnerThread extends Thread {
 
-          private  final String[] problem_domains = {
-                    "sat",
-                    "bp",
-                    "ps",
-                    "fs",
-                    "tsp",
-                    "vrp"
-          };
-          private final CountDownLatch latch; 
-          private final Runner runner;
-          private final int problem_domain;
-          private final int problem_instance;
-         
-          
-          
+          private static HyperHeuristic loadHyperHeuristic(Program prog, long timeLimit, long seed) {
+                    HyperHeuristic h;
+                    h = new SelectivePeturbativeHyperHeuristic(prog, seed);
+                    h.setTimeLimit(timeLimit);
+                    return h;
+          }
+
+          private static ProblemDomain loadProblemDomain(int problem, long instanceseed ) {
+                    ProblemDomain p;
+                    switch (problem) {
+                              case 0:
+                                        p = new SAT(instanceseed);
+                                        break;
+                              case 1:
+                                        p = new BinPacking(instanceseed);
+                                        break;
+                              case 2:
+                                        p = new PersonnelScheduling(instanceseed);
+                                        break;
+                              case 3:
+                                        p = new FlowShop(instanceseed);
+                                        break;
+                              case 4:
+                                        p = new TSP(instanceseed);
+                                        break;
+                              case 5:
+                                        p = new VRP(instanceseed);
+                                        break;
+                              default:
+                                        System.err.println("there is no problem domain with this index"); 
+                                        System.exit(0);
+                                        p = null;
+                    }
+                    return p;
+          }
+
+          private final CountDownLatch latch;
+          private final List<String> printer_content;
+          private final StringBuilder buffer_printer_content;
+          private final String resultsfolder;
+          private final int problem, instance;
+          private final int runs;
+          private final long[] seeds;
+          private final Program prog;
+          private final long time;
+          private final Random rng;
+
           @Override
           public void run() {
-                    runner.execute(); 
+                    printer_content.add("PROBLEM DOMAIN " + resultsfolder + "\n");
+                    printer_content.add("  instance " + instance + " " + "\n");
+
+                    for (int run = 0; run < this.runs; run++) {
+                              long instanceseed = seeds[run];
+                              printer_content.add("    RUN " + run);
+                              ProblemDomain p = loadProblemDomain(problem, instanceseed);
+                              HyperHeuristic h = loadHyperHeuristic(this.prog, time,  rng.nextLong());
+                              p.loadInstance(instance);
+                              h.loadProblemDomain(p);
+                              long initialTime2 = System.currentTimeMillis();
+                              h.run();
+                              int[] i = p.getHeuristicCallRecord();
+                              int counter = 0;
+                              for (int y : i) {
+                                        counter += y;
+                              }
+                              printer_content.add("\t" + h.getBestSolutionValue() + "\t" + (h.getElapsedTime() / 1000.0) + "\t" + (System.currentTimeMillis() - initialTime2) / 1000.0 + "\t" + counter + "\n");
+
+                              buffer_printer_content.append(h.getBestSolutionValue()).append(" ");
+                              StringBuilder buffer_printer_content_1 = new StringBuilder();
+                              double[] u = h.getFitnessTrace();
+                              for (double y : u) {
+                                        buffer_printer_content_1.append(y).append(" ");
+                              }
+                              buffer_printer_content_1.append("\n");
+                              try {
+                                        Path pathtofile = Paths.get("./"+ Parameters.getInstance().toString() + "/results/" + resultsfolder + "/time" + instance + ".txt");
+                                        if (!Files.exists(pathtofile)) {
+                                                  Files.createDirectories(pathtofile.getParent());
+                                                  Files.createFile(pathtofile);
+                                        }
+                                        Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                              } catch (Exception e) {
+                                        e.printStackTrace();
+                              }
+                              buffer_printer_content.append("\n");
+                    }
+                    try {
+                              Path pathtofile = Paths.get("./"+ Parameters.getInstance().toString() + "/results/" + problem + "-" + instance + ".txt");
+                              if (!Files.exists(pathtofile)) {
+                                        Files.createDirectories(pathtofile.getParent());
+                                        Files.createFile(pathtofile);
+                              }
+                              Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE);
+                              pathtofile = Paths.get("./"+ Parameters.getInstance().toString() + "/results/" + resultsfolder + "/instance" + instance + ".txt");
+                              if (!Files.exists(pathtofile)) {
+                                        Files.createDirectories(pathtofile.getParent());
+                                        Files.createFile(pathtofile);
+                              }
+                              Files.write(pathtofile, buffer_printer_content.toString().getBytes(), StandardOpenOption.CREATE);
+
+                    } catch (Exception e) {
+                              e.printStackTrace();
+                    }
                     latch.countDown();
-          } 
-          public CompetitionRunnerThread(CountDownLatch latch, Program prog, long seed, int domain, int instance) throws Exception {
-                    this.runner = new Runner(prog, domain, instance, seed);
+          }
+
+          public CompetitionRunnerThread(
+                    CountDownLatch latch,
+                    Program prog,
+                    int domain,
+                    int instance,
+                    long time_limit,
+                    long[] seeds,
+                    int runs
+          ) throws Exception {
+                    this.rng = new Random();
+                    this.time = time_limit;
+                    this.runs = runs;
+                    this.seeds = seeds;
+                    this.prog = prog;
                     this.latch = latch;
-                    this.problem_domain = domain;
-                    this.problem_instance = instance;
+                    this.instance = instance;
+                    this.problem = domain;
+                    this.printer_content = new ArrayList<>();
+                    this.buffer_printer_content = new StringBuilder();
+                    switch (domain) {
+                              case 0:
+                                        resultsfolder = "SAT";
+                                        break;
+                              case 1:
+                                        resultsfolder = "BinPacking";
+                                        break;
+                              case 2:
+                                        resultsfolder = "PersonnelScheduling";
+                                        break;
+                              case 3:
+                                        resultsfolder = "FlowShop";
+                                        break;
+                              case 4:
+                                        resultsfolder = "TSP";
+                                        break;
+                              case 5:
+                                        resultsfolder = "VRP";
+                                        break;
+                              default:
+                                        resultsfolder = "not worked";
+                                        System.err.println("wrong input for the problem domain");
+                                        System.exit(-1);
+                    }
           }
 
           @Override
           public String toString() {
-                    return  problem_domains[problem_domain]+","+problem_instance+","+runner.getTotalHeuristicCalls()+","+runner.getBestSolutionValue()+","+runner.getElapsedTime()+","+runner.getRunTime()+"";
+                    return "SPHH";
           }
 }
 
@@ -93,8 +239,8 @@ class RunnerThread extends Thread {
                     return runner;
           }
 
-          public RunnerThread(CountDownLatch latch, Program prog, long seed, int domain, int instance) throws Exception {
-                    this.runner = new Runner(prog, domain, instance, seed);
+          public RunnerThread(CountDownLatch latch, Program prog, int domain, int instance, long time_limit, long seed) throws Exception {
+                    this.runner = new Runner(prog, domain, instance, time_limit, seed);
                     this.latch = latch;
 
           }

@@ -18,11 +18,11 @@ public class Runner {
           private final int instance;
           private final HyperHeuristic hyperheuristic;
 
-          public Runner(Program program, int problem_index, int instance_to_use, long seed) throws Exception {
+          public Runner(Program program, int problem_index,int instance_to_use, long time_limit, long seed) throws Exception {
                     this.problem = problem_index;
                     this.instance = instance_to_use;
                     this.problem_domain = loadProblemDomain(problem_index, seed);
-                    this.hyperheuristic = loadHyperHeuristic(program, Parameters.getInstance().getRun_time(), seed);
+                    this.hyperheuristic = loadHyperHeuristic(program, time_limit, seed);
                     this.problem_domain.loadInstance(instance_to_use);
                     this.hyperheuristic.loadProblemDomain(problem_domain);
           }
@@ -117,7 +117,7 @@ public class Runner {
           public static void main(String[] args) throws Exception {
 
                     // TODO code application logic here
-                    int number_training_instances = 5;
+                  /*  int number_training_instances = 5;
                     double acceptance_threshold = 0.5;
                     int window_size = 4;
                     long run_time = 100;
@@ -209,6 +209,6 @@ public class Runner {
                                         }
                                         System.out.println();
                               }
-                    }
+                    }*/
           }
 }
