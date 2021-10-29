@@ -1,7 +1,12 @@
 package geneticprogram;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -10,6 +15,7 @@ import java.util.concurrent.Executors;
 public class CompetitionRunner extends Thread {
 
           private final Program prog;
+          private double score;
 
           public CompetitionRunner(Program prog) {
                     this.prog = prog;
@@ -17,6 +23,80 @@ public class CompetitionRunner extends Thread {
 
           @Override
           public void run() {
+                    score = 0;
+                    double[][] arr_scores = new double[CompetitionParameters.instance().domains][CompetitionParameters.instance().instances];
+                    List<Double>[][] list_run_scores = new ArrayList[CompetitionParameters.instance().domains][CompetitionParameters.instance().instances];
+
+                    CountDownLatch latch = new CountDownLatch(CompetitionParameters.instance().domains * CompetitionParameters.instance().instances * CompetitionParameters.instance().numberofruns);
+                    ExecutorService comp_service = Executors.newFixedThreadPool(CompetitionParameters.instance().domains * CompetitionParameters.instance().instances * CompetitionParameters.instance().numberofruns);
+                    try {
+                              List<RunnerThread> threads = new ArrayList<>();
+                              for (int problem = 0; problem < CompetitionParameters.instance().domains; problem++) {
+                                        for (int i = 0; i < CompetitionParameters.instance().instances; i++) {
+                                                  for (int run = 0; run < CompetitionParameters.instance().numberofruns; run++) {
+                                                            list_run_scores[problem][i] = new ArrayList<>();
+
+                                                            RunnerThread thread = ThreadFactory.instance().getRunnerThread(
+                                                                      latch,
+                                                                      prog,
+                                                                      problem,
+                                                                      i,
+                                                                      CompetitionParameters.instance().time,
+                                                                      CompetitionParameters.instance().instanceseeds[problem][i][run]
+                                                            );
+                                                            comp_service.execute(thread);
+                                                            threads.add(thread);
+                                                  }
+
+                                        }
+                              }
+                              latch.await();
+                              comp_service.shutdown();
+                              StringBuilder content = new StringBuilder();
+                              content.append("problem, instance, best_solution_value, elapsed_time, run_time, total_heuristic_call \n");
+                              for (RunnerThread thread : threads) {
+                                        String problem = "";
+                                        switch (thread.domain) {
+                                                  case 0:
+                                                            problem = "SAT";
+                                                            break;
+                                                  case 1:
+                                                            problem = "BinPacking";
+                                                            break;
+                                                  case 2:
+                                                            problem = "PersonnelScheduling";
+                                                            break;
+                                                  case 3:
+                                                            problem = "FlowShop";
+                                                            break;
+                                                  case 4:
+                                                            problem = "TSP";
+                                                            break;
+                                                  case 5:
+                                                            problem = "VRP";
+                                                            break;
+                                                  default: 
+                                                            System.exit(-1);
+                                        }
+                                        content
+                                                  .append(problem).append(" ,")
+                                                  .append(thread.instance).append(" ,")
+                                                  .append(thread.getRunner().getBestSolutionValue()).append(" ,")
+                                                  .append(thread.getRunner().getElapsedTime() / 1000.0).append(" ,")
+                                                  .append(thread.getRunner().getRunTime() / 1000.0).append(" ,")
+                                                  .append(thread.getRunner().getTotalHeuristicCalls()).append(" \n");
+                              }
+                              threads.clear();
+                              Path pathtofile = Paths.get("./result - " + Parameters.getInstance().toString()+".csv");
+                              Files.write(pathtofile, content.toString().getBytes(), StandardOpenOption.CREATE);
+                    } catch (Exception ex) {
+                              ex.printStackTrace();
+                    }
+
+          }
+
+          private void oldrun() {
+
                     String resultsfolder;
                     CountDownLatch latch = new CountDownLatch(CompetitionParameters.instance().domains * CompetitionParameters.instance().instances);
                     ExecutorService comp_service = Executors.newFixedThreadPool(CompetitionParameters.instance().domains * CompetitionParameters.instance().instances);
@@ -54,75 +134,28 @@ public class CompetitionRunner extends Thread {
                               ex.printStackTrace();
                     }
                     comp_service.shutdown();
-                    /*
-                    System.out.println("PROBLEM DOMAIN " + resultsfolder);
-                    printer_content.add("PROBLEM DOMAIN " + resultsfolder);
-                    int instancetouse = instances_to_use[problem][instance];
-                    System.out.println("  instance " + instancetouse + " ");
-                    printer_content.add("  instance " + instancetouse + " ");
-                    //FileWriter f = new FileWriter("results/" + resultsfolder + "/instance" + instance + ".txt");
-                    //PrintWriter buffprint = new PrintWriter(f);
-                    for (int run = 0; run < numberofruns; run++) {
-                              instanceseed = instanceseeds[problem][instance][run];
-                              System.out.println("    RUN " + run + " " + instanceseed);
-                              printer_content.add("    RUN " + run);
-                              for (int hyperheuristic = 0; hyperheuristic < 1; hyperheuristic++) {
+          }
 
-                                        ProblemDomain p = loadProblemDomain(problem);
-                                        HyperHeuristic h = loadHyperHeuristic(this.prog, time, rng);
-                                        System.out.print("      HYPER HEURISTIC " + h.toString());
-                                        p.loadInstance(instancetouse);
-                                        h.loadProblemDomain(p);
-                                        long initialTime2 = System.currentTimeMillis();
-                                        h.run();
-                                        int[] i = p.getHeuristicCallRecord();
-                                        int counter = 0;
-                                        for (int y : i) {
-                                                  counter += y;
-                                        }
-                                        System.out.println("\t" + h.getBestSolutionValue() + "\t" + (h.getElapsedTime() / 1000.0) + "\t" + (System.currentTimeMillis() - initialTime2) / 1000.0 + "\t" + counter);
-                                        printer_content.add("\t" + h.getBestSolutionValue() + "\t" + (h.getElapsedTime() / 1000.0) + "\t" + (System.currentTimeMillis() - initialTime2) / 1000.0 + "\t" + counter);
+          public static class Score implements Comparable<Score> {
 
-                                        buffer_printer_content.append(h.getBestSolutionValue()).append(" ");
+                    int num;
+                    double score;
 
-                                        StringBuilder buffer_printer_content_1 = new StringBuilder();
-                                        double[] u = h.getFitnessTrace();
-                                        for (double y : u) {
-                                                  buffer_printer_content_1.append(y).append(" ");
-                                        }
-                                        buffer_printer_content_1.append("\n");
-                                        try {
-                                                  Path pathtofile = Paths.get("./results/" + resultsfolder + "/time" + instance + ".txt");
-                                                  if (!Files.exists(pathtofile)) {
-                                                            Files.createDirectories(pathtofile.getParent());
-                                                            Files.createFile(pathtofile);
-                                                  }
-                                                  Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-                                        } catch (Exception e) {
-                                                  e.printStackTrace();
-                                        }
-
-                              }
-                              buffer_printer_content.append("\n");
+                    public Score(int n, double s) {
+                              num = n;
+                              score = s;
                     }
-                    try {
-                              Path pathtofile = Paths.get("./results/" + problem + "-" + instance + ".txt");
-                              if (!Files.exists(pathtofile)) {
-                                        Files.createDirectories(pathtofile.getParent());
-                                        Files.createFile(pathtofile);
-                              }
-                              Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE);
-                              pathtofile = Paths.get("./results/" + resultsfolder + "/instance" + instance + ".txt");
-                              if (!Files.exists(pathtofile)) {
-                                        Files.createDirectories(pathtofile.getParent());
-                                        Files.createFile(pathtofile);
-                              }
-                              Files.write(pathtofile, buffer_printer_content.toString().getBytes(), StandardOpenOption.CREATE);
 
-                    } catch (Exception e) {
-                              e.printStackTrace();
+                    public int compareTo(Score o) {
+                              Score obj = (Score) o;
+                              if (this.score < obj.score) {
+                                        return -1;
+                              } else if (this.score == obj.score) {
+                                        return 0;
+                              } else {
+                                        return 1;
+                              }
                     }
-                     */
           }
 
 }
@@ -136,7 +169,7 @@ class CompetitionParameters {
 	 * instance - the selected instance of the problem domain. This should be between 0-4 inclusive
 	 * rng - select a random seed
            */
-          public final long time = 100;//600000;  
+          public final long time = 600000;//600000;  
           public final Random rng;
 
           /* These are parameters were used for the competition, so if they are changed then the results may not be comparable to those of the competition

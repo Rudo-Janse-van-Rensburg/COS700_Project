@@ -1,6 +1,10 @@
 package geneticprogram;
 
 import geneticprogram.ThreadFactory;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -8,21 +12,22 @@ import java.util.concurrent.Executors;
 import java.util.List;
 
 public class Evolution {
- 
 
           private static Evolution instance = null;
           private static Generation curr = null,
                     next = null;
           private final Program best_program;
-          private int generation; 
-          private Evolution() throws Exception { 
+          private int generation;
+          private double[] average_fitnesses;
+
+          private Evolution() throws Exception {
                     Data.initialiseData();
                     Randomness.getInstance();
                     curr = FlyWeight.getInstance().getGeneration();
                     next = FlyWeight.getInstance().getGeneration();
-
+                    average_fitnesses = new double[Parameters.getInstance().getMax_generation()];
                     best_program = new Program();
-                   
+
                     createInitialPopulation();
           }
 
@@ -41,7 +46,7 @@ public class Evolution {
            * @throws Exception initial population
            */
           private void createInitialPopulation() throws Exception {
-                     ExecutorService go_service = Executors.newFixedThreadPool(Parameters.getInstance().getPopulation_size());
+                    ExecutorService go_service = Executors.newFixedThreadPool(Parameters.getInstance().getPopulation_size());
                     Randomness.getInstance().reseed();
                     curr.recycle();
                     next.recycle();
@@ -77,6 +82,7 @@ public class Evolution {
                               curr.add(go_tasks.get(i).getParents()[0]);
                     }
                     best_program.copy(curr.getBest_program());
+                    average_fitnesses[generation] = curr.getAverage_fitness();
           }
 
           /**
@@ -90,9 +96,9 @@ public class Evolution {
                                         int num_mutation = (int) Math.ceil(Parameters.getInstance().getMutation_chance() * Parameters.getInstance().getPopulation_size());
                                         int num_hoist = (int) Math.ceil(Parameters.getInstance().getHoist_chance() * Parameters.getInstance().getPopulation_size());
                                         // int num_edit = (int) Math.ceil(Parameters.getInstance().getEdit_chance() * Parameters.getInstance().getPopulation_size());
-                                        
+
                                         int num_threads = num_crossover + num_mutation + num_hoist/* + num_edit*/;
-                                        ExecutorService go_service = Executors.newFixedThreadPool(num_threads); 
+                                        ExecutorService go_service = Executors.newFixedThreadPool(num_threads);
                                         CountDownLatch latch = new CountDownLatch(num_threads);
                                         List<GeneticOperatorThread> go_tasks = new ArrayList<>();
                                         //ArrayList<GeneticOperatorThread> threads = FlyWeight.getInstance().getGeneticOperatorThreads();
@@ -138,23 +144,24 @@ public class Evolution {
                                         }
                                         latch.await();
                                         go_service.shutdown();
-                                        
-                                        for (int i = 0; i < go_tasks.size(); i++) { 
-                                                   if (go_tasks.get(i).getOperation() == Meta.CROSSOVER) {
+
+                                        for (int i = 0; i < go_tasks.size(); i++) {
+                                                  if (go_tasks.get(i).getOperation() == Meta.CROSSOVER) {
                                                             next.add(go_tasks.get(i).getParents()[0]);
                                                             next.add(go_tasks.get(i).getParents()[1]);
                                                   } else {
                                                             next.add(go_tasks.get(i).getParents()[0]);
                                                   }
-                                        } 
+                                        }
                                         curr.recycle();
-                                       
-                                        for (int  i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
+
+                                        for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
                                                   curr.add(next.getIndividual(i));
                                         }
                                         next.clear();
                                         ++generation;
                                         best_program.copy(curr.getBest_program());
+                                        average_fitnesses[generation] = curr.getAverage_fitness();
                                         return true;
                               } else {
                                         return false;
@@ -179,6 +186,16 @@ public class Evolution {
                     System.out.format("    worst  fitness      :   %f\n", curr.getWorst_fitness());
                     //System.out.format("    best program         :   \n%s\n",Helper.toString(best_program));
                     System.out.println("=======================================");
+          }
+
+          public void writeToCSV() throws Exception {
+                    StringBuilder content = new StringBuilder();
+                    content.append("generation,  average_fitness \n");
+                    for (int i = 0; i < Parameters.getInstance().getMax_generation(); i++) {
+                              content.append(i).append(",").append(average_fitnesses[i]).append("\n");
+                    }
+                    Path pathtofile = Paths.get("./fitness - " + Parameters.getInstance().toString() + ".csv");
+                    Files.write(pathtofile, content.toString().getBytes(), StandardOpenOption.CREATE);
           }
 
 }

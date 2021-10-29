@@ -54,6 +54,15 @@ public class ThreadFactory {
                     return new RunnerThread(latch, prog, domain, instance, Parameters.getInstance().getRun_time(), seed);
           }
 
+          public RunnerThread getRunnerThread(CountDownLatch latch,
+                    Program prog,
+                    int domain,
+                    int instance,
+                    long time_limit,
+                    long seed) throws Exception {
+                    return new RunnerThread(latch, prog, domain, instance, time_limit, seed);
+          }
+
           public CompetitionRunnerThread getCompetitionRunnerThread(CountDownLatch latch,
                     Program prog,
                     int domain,
@@ -108,7 +117,7 @@ class CompetitionRunnerThread extends Thread {
           private final List<String> printer_content;
           private final StringBuilder buffer_printer_content;
           private final String resultsfolder;
-          private final int problem, instance;
+          public final int problem, instance;
           private final int runs;
           private final long[] seeds;
           private final Program prog;
@@ -176,7 +185,7 @@ class CompetitionRunnerThread extends Thread {
                               latch.countDown();
                     } catch (Exception e) {
                               e.printStackTrace();
-                    } 
+                    }
           }
 
           public CompetitionRunnerThread(
@@ -234,7 +243,8 @@ class RunnerThread extends Thread {
 
           private final CountDownLatch latch;
           private final Runner runner;
-
+          public final int domain;
+          public final int instance;
           @Override
           public void run() {
                     runner.execute();
@@ -248,7 +258,8 @@ class RunnerThread extends Thread {
           public RunnerThread(CountDownLatch latch, Program prog, int domain, int instance, long time_limit, long seed) throws Exception {
                     this.runner = new Runner(prog, domain, instance, time_limit, seed);
                     this.latch = latch;
-
+                    this.domain = domain;
+                    this.instance = instance;
           }
 
           @Override
