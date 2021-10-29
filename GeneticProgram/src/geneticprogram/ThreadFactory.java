@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import travelingSalesmanProblem.TSP;
 
 /**
@@ -59,7 +61,7 @@ public class ThreadFactory {
                     long time_limit,
                     long[] seeds,
                     int runs) throws Exception {
-                    return new CompetitionRunnerThread(latch, prog, domain, instance, time_limit, seeds,runs);
+                    return new CompetitionRunnerThread(latch, prog, domain, instance, time_limit, seeds, runs);
           }
 
 }
@@ -73,7 +75,7 @@ class CompetitionRunnerThread extends Thread {
                     return h;
           }
 
-          private static ProblemDomain loadProblemDomain(int problem, long instanceseed ) {
+          private static ProblemDomain loadProblemDomain(int problem, long instanceseed) {
                     ProblemDomain p;
                     switch (problem) {
                               case 0:
@@ -95,7 +97,7 @@ class CompetitionRunnerThread extends Thread {
                                         p = new VRP(instanceseed);
                                         break;
                               default:
-                                        System.err.println("there is no problem domain with this index"); 
+                                        System.err.println("there is no problem domain with this index");
                                         System.exit(0);
                                         p = null;
                     }
@@ -117,60 +119,64 @@ class CompetitionRunnerThread extends Thread {
           public void run() {
                     printer_content.add("PROBLEM DOMAIN " + resultsfolder + "\n");
                     printer_content.add("  instance " + instance + " " + "\n");
-
-                    for (int run = 0; run < this.runs; run++) {
-                              long instanceseed = seeds[run];
-                              printer_content.add("    RUN " + run);
-                              ProblemDomain p = loadProblemDomain(problem, instanceseed);
-                              HyperHeuristic h = loadHyperHeuristic(this.prog, time,  rng.nextLong());
-                              p.loadInstance(instance);
-                              h.loadProblemDomain(p);
-                              long initialTime2 = System.currentTimeMillis();
-                              h.run();
-                              int[] i = p.getHeuristicCallRecord();
-                              int counter = 0;
-                              for (int y : i) {
-                                        counter += y;
+                    CountDownLatch runner_latch = new CountDownLatch(this.runs);
+                    ExecutorService runner_service = Executors.newFixedThreadPool(this.runs);
+                    List<RunnerThread> threads = new ArrayList<>();
+                    try {
+                              for (int run = 0; run < this.runs; run++) {
+                                        long instanceseed = seeds[run];
+                                        RunnerThread thread = ThreadFactory.instance().getRunnerThread(runner_latch, this.prog, instanceseed, problem, instance);
+                                        runner_service.execute(thread);
+                                        threads.add(thread);
                               }
-                              printer_content.add("\t" + h.getBestSolutionValue() + "\t" + (h.getElapsedTime() / 1000.0) + "\t" + (System.currentTimeMillis() - initialTime2) / 1000.0 + "\t" + counter + "\n");
-
-                              buffer_printer_content.append(h.getBestSolutionValue()).append(" ");
-                              StringBuilder buffer_printer_content_1 = new StringBuilder();
-                              double[] u = h.getFitnessTrace();
-                              for (double y : u) {
-                                        buffer_printer_content_1.append(y).append(" ");
+                              runner_latch.await();
+                              runner_service.shutdown();
+                              for (int run = 0; run < this.runs; run++) {
+                                        printer_content.add("    RUN " + run);
+                                        printer_content.add("\t" + threads.get(run).getRunner().getBestSolutionValue()
+                                                  + "\t" + (threads.get(run).getRunner().getElapsedTime() / 1000.0)
+                                                  + "\t" + (threads.get(run).getRunner().getRunTime()) / 1000.0
+                                                  + "\t" + threads.get(run).getRunner().getTotalHeuristicCalls() + "\n");
+                                        buffer_printer_content.append(threads.get(run).getRunner().getBestSolutionValue()).append(" ");
+                                        StringBuilder buffer_printer_content_1 = new StringBuilder();
+                                        double[] u = threads.get(run).getRunner().getFitnessTrace();
+                                        for (double y : u) {
+                                                  buffer_printer_content_1.append(y).append(" ");
+                                        }
+                                        buffer_printer_content_1.append("\n");
+                                        try {
+                                                  Path pathtofile = Paths.get("./" + Parameters.getInstance().toString() + "/results/" + resultsfolder + "/time" + instance + ".txt");
+                                                  if (!Files.exists(pathtofile)) {
+                                                            Files.createDirectories(pathtofile.getParent());
+                                                            Files.createFile(pathtofile);
+                                                  }
+                                                  Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                                        } catch (Exception e) {
+                                                  e.printStackTrace();
+                                        }
+                                        buffer_printer_content.append("\n");
                               }
-                              buffer_printer_content_1.append("\n");
                               try {
-                                        Path pathtofile = Paths.get("./"+ Parameters.getInstance().toString() + "/results/" + resultsfolder + "/time" + instance + ".txt");
+                                        Path pathtofile = Paths.get("./" + Parameters.getInstance().toString() + "/results/" + problem + "-" + instance + ".txt");
                                         if (!Files.exists(pathtofile)) {
                                                   Files.createDirectories(pathtofile.getParent());
                                                   Files.createFile(pathtofile);
                                         }
-                                        Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                                        Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE);
+                                        pathtofile = Paths.get("./" + Parameters.getInstance().toString() + "/results/" + resultsfolder + "/instance" + instance + ".txt");
+                                        if (!Files.exists(pathtofile)) {
+                                                  Files.createDirectories(pathtofile.getParent());
+                                                  Files.createFile(pathtofile);
+                                        }
+                                        Files.write(pathtofile, buffer_printer_content.toString().getBytes(), StandardOpenOption.CREATE);
+
                               } catch (Exception e) {
                                         e.printStackTrace();
                               }
-                              buffer_printer_content.append("\n");
-                    }
-                    try {
-                              Path pathtofile = Paths.get("./"+ Parameters.getInstance().toString() + "/results/" + problem + "-" + instance + ".txt");
-                              if (!Files.exists(pathtofile)) {
-                                        Files.createDirectories(pathtofile.getParent());
-                                        Files.createFile(pathtofile);
-                              }
-                              Files.write(pathtofile, printer_content.toString().getBytes(), StandardOpenOption.CREATE);
-                              pathtofile = Paths.get("./"+ Parameters.getInstance().toString() + "/results/" + resultsfolder + "/instance" + instance + ".txt");
-                              if (!Files.exists(pathtofile)) {
-                                        Files.createDirectories(pathtofile.getParent());
-                                        Files.createFile(pathtofile);
-                              }
-                              Files.write(pathtofile, buffer_printer_content.toString().getBytes(), StandardOpenOption.CREATE);
-
+                              latch.countDown();
                     } catch (Exception e) {
                               e.printStackTrace();
-                    }
-                    latch.countDown();
+                    } 
           }
 
           public CompetitionRunnerThread(
