@@ -1,6 +1,6 @@
-package geneticprogram;
+package COS700_Project;
 
-import geneticprogram.ThreadFactory;
+import COS700_Project.ThreadFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

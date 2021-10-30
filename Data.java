@@ -1,11 +1,5 @@
-package geneticprogram;
+package COS700_Project;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.Buffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Data {

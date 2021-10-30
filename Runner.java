@@ -1,4 +1,4 @@
-package geneticprogram;
+package COS700_Project;
 
 import AbstractClasses.HyperHeuristic;
 import AbstractClasses.ProblemDomain;

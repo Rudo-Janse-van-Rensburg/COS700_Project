@@ -1,4 +1,4 @@
-package geneticprogram;
+package COS700_Project;
 
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
