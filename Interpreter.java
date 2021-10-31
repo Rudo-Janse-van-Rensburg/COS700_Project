@@ -22,7 +22,7 @@ public class Interpreter {
      * @return
      * @throws Exception
      */
-    public double Interpret(Program p, double[] instance) throws Exception {
+    public synchronized  double Interpret(Program p, double[] instance) throws Exception {
         byte result = 0;
         if (p != null) {
             Stack<Integer> row = FlyWeight.getInstance().getStackInteger();

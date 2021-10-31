@@ -1,15 +1,5 @@
 package COS700_Project;
 
-import AbstractClasses.ProblemDomain;
-import BinPacking.BinPacking;
-import FlowShop.FlowShop;
-import PersonnelScheduling.PersonnelScheduling;
-import SAT.SAT;
-import VRP.VRP;
-import java.util.ArrayList;
-import java.util.Random;
-import travelingSalesmanProblem.TSP;
-
 public class Generation {
           
           
@@ -22,69 +12,20 @@ public class Generation {
           private double total_fitness,
                     best_fitness,
                     worst_fitness;
-          private int capacity;
-          private final int[][] training_instaces;
+          private int capacity; 
 
           public Generation() throws Exception { 
                     generation_seed = Randomness.getInstance().getRandomLong();
                     capacity = 0;
                     total_fitness = 0;
-                    best_fitness = Double.POSITIVE_INFINITY;
-                    worst_fitness = -1;
+                    best_fitness = -1;
+                    worst_fitness = Double.POSITIVE_INFINITY;
                     best_program = FlyWeight.getInstance().getProgram();
                     worst_program = FlyWeight.getInstance().getProgram();
                     population = new Program[Parameters.getInstance().getPopulation_size()];
-                    fitnesses = new double[Parameters.getInstance().getPopulation_size()];
-                    training_instaces = new int[4][Parameters.getInstance().getTraining_instances()];
-
-                    chooseInstances();
+                    fitnesses = new double[Parameters.getInstance().getPopulation_size()];  
           }
-
-          private void chooseInstances() throws Exception {
-                    Random rand = FlyWeight.getInstance().getRandom();
-                    rand.setSeed(generation_seed);
-                    for (int d = 0; d < 4; d++) {
-                              ArrayList<Integer> instances = FlyWeight.getInstance().getArrayListInt();
-                              ProblemDomain p = null;
-                              switch (d) {
-                                        case 0:
-                                                  p = new SAT(1);
-                                                  break;
-                                        case 1:
-                                                  p = new BinPacking(1);
-                                                  break;
-                                        case 2:
-                                                  p = new PersonnelScheduling(1);
-                                                  break;
-                                        case 3:
-                                                  p = new FlowShop(1);
-                                                  break;
-                                        case 4:
-                                                  p = new TSP(1);
-                                                  break;
-                                        case 5:
-                                                  p = new VRP(1);
-                                                  break;
-                                        default:
-                                                  System.err.println("there is no problem domain with this index");
-                                                  System.exit(1);
-                              }//end switch
-                              
-                              for (int i = 0; i < p.getNumberOfInstances(); i++) {
-                                        instances.add(i);
-                              }
-                              
-                              for (int i = 0; i < Parameters.getInstance().getTraining_instances(); i++) {
-                                        training_instaces[d][i] = instances.remove(rand.nextInt(instances.size()));
-                              }
-                              FlyWeight.getInstance().addArrayListInt(instances);
-                    }
-                    FlyWeight.getInstance().addRandom(rand);
-          }
-
-          public int[][] getTraining_instaces() {
-                    return training_instaces;
-          }
+ 
 
           
            
@@ -97,11 +38,11 @@ public class Generation {
           public synchronized boolean add(Program individual) throws Exception {
                     double fitness = individual.getFitness();
                     if (capacity < population.length) {
-                              if (fitness < best_fitness) {
+                              if (fitness > best_fitness) {
                                         best_fitness = fitness;
                                         best_program.copy(individual);
                               }
-                              if (fitness > worst_fitness) {
+                              if (fitness < worst_fitness) {
                                         worst_fitness = fitness;
                                         worst_program.copy(individual);
                               }
@@ -218,10 +159,7 @@ public class Generation {
           public void clear() throws Exception {
                     generation_seed = Randomness.getInstance().getRandomLong();
                     total_fitness = 0;
-                    capacity = 0; 
-                    //population  = new Program[Parameters.getInstance().getPopulation_size()];
-                    //fitnesses   = new double[Parameters.getInstance().getPopulation_size()];
-                    chooseInstances();
+                    capacity = 0;  
           }
 
 }

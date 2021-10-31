@@ -1,6 +1,7 @@
 package COS700_Project;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,37 +25,31 @@ public class Fitness {
 
           /**
            * @param prog
-           * @param training_instances
-           * @param seed
            * @return
            * @throws Exception
            */
-          public double evaluate(Program prog, int[][] training_instances, long seed) throws Exception {
+          public double evaluate(Program prog) throws Exception {
                     if (prog != null) {
-                              int number_domains = 4; 
-                              CountDownLatch latch = new CountDownLatch(number_domains * Parameters.getInstance().getTraining_instances());
-                              ArrayList<RunnerThread> tasks = FlyWeight.getInstance().getRunnerThreads();
-                              ExecutorService run_service = Executors.newFixedThreadPool(number_domains * Parameters.getInstance().getTraining_instances());
-                              for (int d = 0; d < number_domains; d++) {
-                                        for (int i = 0; i < Parameters.getInstance().getTraining_instances(); i++) {
-                                                  RunnerThread thread = ThreadFactory.instance().getRunnerThread(latch, prog, seed, d, training_instances[d][i]);
-                                                  tasks.add(thread); 
-                                                  run_service.execute(thread);
-                                        }
-                              }
-                              
-                              latch.await();
-                              run_service.shutdown();
-                              
-                              double fitness = 0;
-                              for (int d = 0; d < number_domains *  Parameters.getInstance().getTraining_instances(); d++) {
-                                        fitness +=  tasks.get(d).getRunner().getBestSolutionValue();
+                              double f1 = 0;
+                              CountDownLatch latch = new CountDownLatch(Parameters.getInstance().getK_folds());
+                              ExecutorService  service = Executors.newFixedThreadPool(Parameters.getInstance().getK_folds());
+                              ArrayList<F1Thread> threads = new ArrayList<>();
+                              for (int k = 0; k < Parameters.getInstance().getK_folds(); k++) {
+                                        F1Thread thread = ThreadFactory.instance().getF1Thread(latch, prog, k);
+                                        threads.add(thread);
+                                        service.execute(thread);
                               } 
-                              
-                              return fitness / (1.0 * Math.max(1, number_domains * Parameters.getInstance().getTraining_instances()));
+                              latch.await();
+                              for (F1Thread thread: threads) {
+                                        f1 += thread.getF1();
+                              }
+                              service.shutdown();
+                              f1 /= Parameters.getInstance().getK_folds() * 1.0;
+                              return f1;
                     } else {
                               throw new Exception("Cannot evaluate null program.");
                     }
           }
+ 
 
 }

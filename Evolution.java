@@ -26,8 +26,7 @@ public class Evolution {
                     curr = FlyWeight.getInstance().getGeneration();
                     next = FlyWeight.getInstance().getGeneration();
                     average_fitnesses = new double[Parameters.getInstance().getMax_generation()];
-                    best_program = new Program();
-
+                    best_program = new Program(); 
                     createInitialPopulation();
           }
 
@@ -46,10 +45,10 @@ public class Evolution {
            * @throws Exception initial population
            */
           private void createInitialPopulation() throws Exception {
-                    ExecutorService go_service = Executors.newFixedThreadPool(Parameters.getInstance().getPopulation_size());
-                    Randomness.getInstance().reseed();
                     curr.recycle();
                     next.recycle();
+                    ExecutorService go_service = Executors.newFixedThreadPool(Parameters.getInstance().getPopulation_size());
+                    Randomness.getInstance().reseed();
                     generation = 0;
                     int depths = Parameters.getInstance().getMain_max_depth();
                     int ipg = (int) Math.ceil(Parameters.getInstance().getPopulation_size() / ((depths - 2) * 1.0));   //individuals per generation 
@@ -60,15 +59,19 @@ public class Evolution {
                     for (int depth = depths - 1; has_capacity && depth >= 2; depth--) {
                               int individual = 0;
                               for (; position < Parameters.getInstance().getPopulation_size() && has_capacity && individual < ipg;) {
-                                        go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{FlyWeight.getInstance().getProgram()}, Meta.FULL, depth, Randomness.getInstance().getRandomLong(), curr.getTraining_instaces()));
-
-                                        go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{FlyWeight.getInstance().getProgram()}, Meta.GROW, depth, Randomness.getInstance().getRandomLong(), curr.getTraining_instaces()));
-
+                                        go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{FlyWeight.getInstance().getProgram()}, Meta.FULL, depth, Randomness.getInstance().getRandomLong() ));
                                         has_capacity = go_tasks.size() < Parameters.getInstance().getPopulation_size();
+                                        individual++;
+                                        position++;
+                                        
+                                        go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{FlyWeight.getInstance().getProgram()}, Meta.GROW, depth, Randomness.getInstance().getRandomLong() ));
+                                        has_capacity = go_tasks.size() < Parameters.getInstance().getPopulation_size();
+                                        individual++;
+                                        position++;
                               }
                     }
                     while (has_capacity) {
-                              go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{FlyWeight.getInstance().getProgram()}, Meta.FULL, Parameters.getInstance().getMain_max_depth(), Randomness.getInstance().getRandomLong(), curr.getTraining_instaces()));
+                              go_tasks.add(ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{FlyWeight.getInstance().getProgram()}, Meta.FULL, Parameters.getInstance().getMain_max_depth(), Randomness.getInstance().getRandomLong()));
                               has_capacity = go_tasks.size() < Parameters.getInstance().getPopulation_size();
                     }
 
@@ -82,14 +85,16 @@ public class Evolution {
                               curr.add(go_tasks.get(i).getParents()[0]);
                     }
                     best_program.copy(curr.getBest_program());
-                    average_fitnesses[generation] = curr.getAverage_fitness();
+                    average_fitnesses[generation] = curr.getAverage_fitness(); 
           }
 
           /**
            * @return @throws Exception
            */
           public boolean evolveGeneration() throws Exception {
+                     
                     if (!curr.isEmpty()) {
+                             
                               if ((generation + 1) < Parameters.getInstance().getMax_generation()) {
                                         next.recycle();
                                         int num_crossover = (int) Math.ceil(Parameters.getInstance().getCrossover_chance() * Parameters.getInstance().getPopulation_size());
@@ -97,11 +102,10 @@ public class Evolution {
                                         int num_hoist = (int) Math.ceil(Parameters.getInstance().getHoist_chance() * Parameters.getInstance().getPopulation_size());
                                         // int num_edit = (int) Math.ceil(Parameters.getInstance().getEdit_chance() * Parameters.getInstance().getPopulation_size());
 
-                                        int num_threads = num_crossover + num_mutation + num_hoist/* + num_edit*/;
+                                        int num_threads = num_crossover + num_mutation + num_hoist;
                                         ExecutorService go_service = Executors.newFixedThreadPool(num_threads);
                                         CountDownLatch latch = new CountDownLatch(num_threads);
-                                        List<GeneticOperatorThread> go_tasks = new ArrayList<>();
-                                        //ArrayList<GeneticOperatorThread> threads = FlyWeight.getInstance().getGeneticOperatorThreads();
+                                        List<GeneticOperatorThread> go_tasks = new ArrayList<>(); 
                                         long[] seeds = new long[num_threads];
                                         for (int i = 0; i < num_threads; i++) {
                                                   seeds[i] = Randomness.getInstance().getRandomLong();
@@ -111,28 +115,22 @@ public class Evolution {
                                                   if (num_threads > 0 && num_crossover > 0) {
                                                             Program a = Selection.getInstance(Selection.tournament).select(curr);
                                                             Program b = Selection.getInstance(Selection.tournament).select(curr);
-                                                            GeneticOperatorThread crossover = ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{a, b}, Meta.CROSSOVER, seeds[individual], curr.getTraining_instaces());
-                                                            go_tasks.add(crossover);
-                                                            /*crossover.reset(latch, seeds[individual], new Program[]{a, b}, Meta.CROSSOVER);
-                                                            threads.add(crossover);*/
+                                                            GeneticOperatorThread crossover = ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{a, b}, Meta.CROSSOVER, seeds[individual]);
+                                                            go_tasks.add(crossover); 
                                                             --num_crossover;
                                                             --num_threads;
                                                   }
                                                   if (num_threads > 0 && num_mutation > 0) {
                                                             Program mutant = Selection.getInstance(Selection.tournament).select(curr);
-                                                            GeneticOperatorThread mutation = ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{mutant}, Meta.MUTATE, seeds[individual], curr.getTraining_instaces());
-                                                            go_tasks.add(mutation);
-                                                            /*mutation.reset(latch, seeds[individual], new Program[]{mutant}, Meta.MUTATE);
-                                                            threads.add(mutation);*/
+                                                            GeneticOperatorThread mutation = ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{mutant}, Meta.MUTATE, seeds[individual]);
+                                                            go_tasks.add(mutation); 
                                                             --num_threads;
                                                             --num_mutation;
                                                   }
                                                   if (num_threads > 0 && num_hoist > 0) {
                                                             Program hoist = Selection.getInstance(Selection.tournament).select(curr);
-                                                            GeneticOperatorThread hoisted = ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{hoist}, Meta.HOIST, seeds[individual], curr.getTraining_instaces());
-                                                            go_tasks.add(hoisted);
-                                                            /*hoisted.reset(latch, seeds[individual], new Program[]{hoist}, Meta.HOIST);
-                                                            threads.add(hoisted);*/
+                                                            GeneticOperatorThread hoisted = ThreadFactory.instance().getGeneticOperatorThread(latch, new Program[]{hoist}, Meta.HOIST, seeds[individual]);
+                                                            go_tasks.add(hoisted); 
                                                             --num_threads;
                                                             --num_hoist;
                                                   }
@@ -168,7 +166,7 @@ public class Evolution {
                               }
                     } else {
                               throw new Exception("Cannot evolve empty generation.");
-                    }
+                    } 
           }
 
           public Program getBest_program() {

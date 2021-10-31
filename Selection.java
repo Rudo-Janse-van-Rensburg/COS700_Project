@@ -42,7 +42,7 @@ public class Selection {
             throw new Exception("Cannot perform selection from a null or empty generation.");
     }
     
-    private static Program  _inverseTournament(Generation generation) throws Exception{
+    private static Program _tournament(Generation generation) throws Exception{
         ArrayList<Integer> competitors  = FlyWeight.getInstance().getArrayListInt();
         ArrayList<Integer> positions    = FlyWeight.getInstance().getArrayListInt();
         for (int i = 0; i < generation.getCapacity(); i++) {
@@ -60,7 +60,7 @@ public class Selection {
         return prog;
     }
     
-    private static Program _tournament(Generation generation) throws Exception{
+    private static Program   _inverseTournament(Generation generation) throws Exception{
         ArrayList<Integer> competitors = new ArrayList<>();
         do{
             Integer pos = Randomness.getInstance().getRandomIntExclusive(0,generation.getCapacity());

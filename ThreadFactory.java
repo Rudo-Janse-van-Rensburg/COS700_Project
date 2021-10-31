@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -42,16 +43,20 @@ public class ThreadFactory {
                     return factory;
           }
 
-          public GeneticOperatorThread getGeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, int max_depth, long seed, int[][] training_instances) throws Exception {
-                    return new GeneticOperatorThread(latch, parents, operation, max_depth, seed, training_instances);
+          public F1Thread getF1Thread(CountDownLatch latch, Program prog, int fold){
+                    return new  F1Thread(latch,prog, fold);
+          }
+          
+          public GeneticOperatorThread getGeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, int max_depth, long seed) throws Exception {
+                    return new GeneticOperatorThread(latch, parents, operation, max_depth, seed);
           }
 
-          public GeneticOperatorThread getGeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, long seed, int[][] training_instances) throws Exception {
-                    return new GeneticOperatorThread(latch, parents, operation, seed, training_instances);
+          public GeneticOperatorThread getGeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, long seed) throws Exception {
+                    return new GeneticOperatorThread(latch, parents, operation, seed);
           }
 
           public RunnerThread getRunnerThread(CountDownLatch latch, Program prog, long seed, int domain, int instance) throws Exception {
-                    return new RunnerThread(latch, prog, domain, instance, Parameters.getInstance().getRun_time(), seed);
+                    return new RunnerThread(latch, prog, domain, instance, 60000, seed);
           }
 
           public RunnerThread getRunnerThread(CountDownLatch latch,
@@ -73,6 +78,67 @@ public class ThreadFactory {
                     return new CompetitionRunnerThread(latch, prog, domain, instance, time_limit, seeds, runs);
           }
 
+}
+
+class F1Thread extends Thread {
+
+          private final int fold;  
+          private double f1;
+          Program prog;
+          private final CountDownLatch latch;
+          public F1Thread(CountDownLatch latch,Program prog,int fold) {
+                    this.prog = prog;
+                    this.fold = fold; 
+                    this.latch = latch;
+          }
+ 
+
+          @Override
+          public synchronized void run() {
+                    try {
+                              double[] tp = new double[Data.initialiseData().getNumberClasses()];
+                              double[] fp = new double[Data.initialiseData().getNumberClasses()];
+                              double[] fn = new double[Data.initialiseData().getNumberClasses()];
+                              for (int i = 0; i < Data.initialiseData().getNumberClasses(); i++) {
+                                        tp[i] = 0;
+                                        fp[i] = 0;
+                                        fn[i] = 0;
+                              }
+                              for (double[] instance : Data.initialiseData().getKthFold(fold)) {
+                                        int target = (int) instance[Data.initialiseData().getNumberAttributes() - 1];
+                                        int output = (int) Interpreter.getInstance().Interpret(prog, instance);
+                                        if (target == output) {
+                                                  tp[target] += 1;
+
+                                        } else {
+                                                  fp[output] += 1;
+                                                  fn[target] += 1;
+                                        }
+                              }
+                              double precision = 0;
+                              double recall = 0; 
+                              for (int i = 0; i < Data.initialiseData().getNumberClasses(); i++) {
+                                        precision += tp[i] + fp[i] > 0 ? (tp[i] / (tp[i] + fp[i])) : 0;
+                                        recall  += tp[i] + fn[i] > 0 ? (tp[i] / (tp[i] + fn[i])) : 0;
+                              }
+                              /*
+                              System.out.println("pecision  :" + Arrays.toString(precision));
+                              System.out.println("recall  :" + Arrays.toString(recall));
+                              return 0; */
+                              precision = precision / Data.initialiseData().getNumberClasses();
+                              recall = recall / Data.initialiseData().getNumberClasses();
+                              f1 = (2.0 * (precision * recall) / (precision + recall));
+                              latch.countDown();
+                    } catch (Exception e) {
+                              e.printStackTrace(); 
+                    }
+
+          }
+
+          public double getF1() {
+                    return f1;
+          }
+          
 }
 
 class CompetitionRunnerThread extends Thread {
@@ -245,6 +311,7 @@ class RunnerThread extends Thread {
           private final Runner runner;
           public final int domain;
           public final int instance;
+
           @Override
           public void run() {
                     runner.execute();
@@ -275,26 +342,23 @@ class GeneticOperatorThread extends Thread {
           private final int max_depth;
           private final long seed;
           private final CountDownLatch latch;
-          private final int[][] training_instances;
 
-          public GeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, int max_depth, long seed, int[][] training_instances) throws Exception {
+          public GeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, int max_depth, long seed) throws Exception {
                     this.parents = new Program[parents.length];
                     setParents(parents);
                     this.operation = operation;
                     this.max_depth = max_depth;
                     this.seed = seed;
                     this.latch = latch;
-                    this.training_instances = training_instances;
           }
 
-          public GeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, long seed, int[][] training_instances) throws Exception {
+          public GeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, long seed) throws Exception {
                     this.parents = new Program[parents.length];
                     setParents(parents);
                     this.operation = operation;
                     this.max_depth = Parameters.getInstance().getMain_max_depth();
                     this.seed = seed;
                     this.latch = latch;
-                    this.training_instances = training_instances;
           }
 
           @Override
@@ -303,28 +367,28 @@ class GeneticOperatorThread extends Thread {
                               switch (operation) {
                                         case Meta.MUTATE:
                                                   GeneticOperators.mutate(parents[0], seed);
-                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0], training_instances, seed));
+                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0]));
                                                   latch.countDown();
                                                   break;
                                         case Meta.CROSSOVER:
                                                   GeneticOperators.crossover(parents[0], parents[1], seed);
-                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0], training_instances, seed));
-                                                  parents[1].setFitness(Fitness.getInstance().evaluate(parents[1], training_instances, seed));
+                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0]));
+                                                  parents[1].setFitness(Fitness.getInstance().evaluate(parents[1]));
                                                   latch.countDown();
                                                   break;
                                         case Meta.HOIST:
                                                   GeneticOperators.hoist(parents[0], seed);
-                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0], training_instances, seed));
+                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0]));
                                                   latch.countDown();
                                                   break;
                                         case Meta.GROW:
                                                   GeneticOperators.grow(parents[0], max_depth, seed);
-                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0], training_instances, seed));
+                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0]));
                                                   latch.countDown();
                                                   break;
                                         case Meta.FULL:
                                                   GeneticOperators.full(parents[0], max_depth, seed);
-                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0], training_instances, seed));
+                                                  parents[0].setFitness(Fitness.getInstance().evaluate(parents[0]));
                                                   latch.countDown();
                                                   break;
                               }

@@ -5,8 +5,8 @@ import AbstractClasses.ProblemDomain;
 
 public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
 
-          private final Program prog;
-
+          private final Program prog; 
+          
           public SelectivePeturbativeHyperHeuristic(Program prog, long seed) {
                     super(seed);
                     this.prog = prog;
@@ -14,6 +14,7 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
  
           @Override
           protected void solve(ProblemDomain problem) {
+                     /*
                     try {
                               //initialise the variable which keeps track of the current objective function value
                               double current_obj_function_value = Double.POSITIVE_INFINITY;
@@ -26,9 +27,23 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
                               //the main loop of any hyper-heuristic, which checks if the time limit has been reached
                               while (!hasTimeExpired()) {
                                         int heuristic_to_apply = (int) Interpreter.getInstance().Interpret(prog, attributes);
-
-                                        double new_obj_function_value = problem.applyHeuristic(heuristic_to_apply, 0, 1);
-                                        problem.get
+                                        ProblemDomain.HeuristicType type; 
+                                        switch(heuristic_to_apply){
+                                                  case 0:
+                                                           type = ProblemDomain.HeuristicType.MUTATION;
+                                                           break;
+                                                  case 1:
+                                                            type = ProblemDomain.HeuristicType.RUIN_RECREATE;
+                                                           break;
+                                                  case 2:
+                                                            type = ProblemDomain.HeuristicType.LOCAL_SEARCH;
+                                                           break;
+                                                  default:
+                                                            type = ProblemDomain.HeuristicType.CROSSOVER;
+                                                           break;
+                                        }
+                                        int[] applicable_heuristics = problem.getHeuristicsOfType(type);
+                                        double new_obj_function_value = problem.applyHeuristic(applicable_heuristics[rng.nextInt(applicable_heuristics.length)], 0, 1);
                                         double delta = current_obj_function_value - new_obj_function_value;
                                         Data.initialiseData().add(heuristic_to_apply, delta);
                                         //all of the problem domains are implemented as minimisation problems. A lower fitness means a better solution.
@@ -52,7 +67,7 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
                               ex.printStackTrace();
                               System.exit(-1);
                     }
-
+                    */
           }
  
           @Override

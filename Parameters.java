@@ -17,17 +17,7 @@ public class Parameters {
           private  double crossover_chance = 50,
                     mutation_chance = 30,
                     hoist_chance = 10;
-
-          /*
-          =================================
-          HyFlex parameters
-          =================================
-           */
-          private  long run_time = 600000;
-          private  double acceptance_threshold = 0.5;
-          private  int window_size = 4;
-          private  int training_instances = 5;
-
+ 
           private static Parameters singleton = null;         //
 
           /**
@@ -41,11 +31,7 @@ public class Parameters {
            * @param mc
            * @param hc
            */
-          private Parameters(int ti,int window_size, long run_time, double acceptance_threshold, int mg, int kf, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) {
-                    this.training_instances = ti;
-                    this.window_size = window_size;
-                    this.run_time = run_time;
-                    this.acceptance_threshold = acceptance_threshold;
+          private Parameters( int mg, int kf, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) {
                     this.max_generation = mg;
                     this.k_folds = kf;
                     this.main_max_depth = mmd;
@@ -58,10 +44,6 @@ public class Parameters {
           }
 
           /**
-           * @param ti
-           * @param window_size
-           * @param run_time
-           * @param acceptance_threshold
            * @param mg
            * @param kf
            * @param mmd - main max depth
@@ -74,13 +56,9 @@ public class Parameters {
            * @return Parameters singleton.
            * @throws Exception
            */
-          public static Parameters setParameters(int ti, int window_size, long run_time, double acceptance_threshold, int mg, int kf, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) throws Exception {
+          public static Parameters setParameters(int mg, int kf, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) throws Exception {
                     if (mmd > 1 && cmd > 1 && ps > 0 && ts > 0 && ps >= ts) {
                               if (singleton != null) {
-                                        singleton.training_instances = ti;
-                                        singleton.window_size = window_size;
-                                        singleton.run_time = run_time;
-                                        singleton.acceptance_threshold = acceptance_threshold;
                                         singleton.max_generation = mg;
                                         singleton.k_folds = kf;
                                         singleton.main_max_depth = mmd;
@@ -92,20 +70,14 @@ public class Parameters {
                                         singleton.hoist_chance = hc;
                                         //singleton.edit_chance           = ec; 
                               } else {
-                                        singleton = new Parameters(ti,window_size, run_time, acceptance_threshold, mg, kf, mmd, cmd, ps, ts, cc, mc, hc/*,ec*/);
+                                        singleton = new Parameters( mg, kf, mmd, cmd, ps, ts, cc, mc, hc/*,ec*/);
                               }
                               return singleton;
                     } else {
                               throw new Exception("Invalid parameter values.");
                     }
           }
-
-          public int getTraining_instances() {
-                    return training_instances;
-          }
-
-          
-          
+ 
           /**
            * @return Parameters singleton.
            * @throws Exception
@@ -117,18 +89,7 @@ public class Parameters {
                               throw new Exception("Parameters have not been set.");
                     }
           }
-
-          public   double getAcceptance_threshold() {
-                    return acceptance_threshold;
-          }
-
-          public long getRun_time() {
-                    return run_time;
-          }
-
-          public int getWindow_size() {
-                    return window_size;
-          }
+ 
           
           /**
            * @return max generation
@@ -195,11 +156,7 @@ public class Parameters {
 
           @Override
           public String toString() { 
-                    return  
-                              this.window_size + "," +
-                              this.run_time + "," + 
-                              this.acceptance_threshold + "," + 
-                              this.max_generation + "," + 
+                    return  this.max_generation + "," + 
                               this.main_max_depth + "," +
                               this.condition_max_depth  + "," +
                               this.population_size + "," + 

@@ -113,9 +113,9 @@ public class FlyWeight {
           }
  
 
-          public synchronized double[] getAttributeArray() {
+          public synchronized double[] getAttributeArray() throws Exception {
                     if (attribute_arrays.isEmpty()) {
-                              return new double[9];
+                              return new double[Data.initialiseData().getNumberAttributes()];
                     } else {
                               double[] arr = attribute_arrays.remove(0);
                               Arrays.fill(arr, 0);
