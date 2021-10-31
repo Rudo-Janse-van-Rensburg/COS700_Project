@@ -28,7 +28,7 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
                                         int heuristic_to_apply = (int) Interpreter.getInstance().Interpret(prog, attributes);
 
                                         double new_obj_function_value = problem.applyHeuristic(heuristic_to_apply, 0, 1);
-
+                                        problem.get
                                         double delta = current_obj_function_value - new_obj_function_value;
                                         Data.initialiseData().add(heuristic_to_apply, delta);
                                         //all of the problem domains are implemented as minimisation problems. A lower fitness means a better solution.

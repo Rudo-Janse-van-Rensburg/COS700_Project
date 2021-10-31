@@ -5,7 +5,7 @@
  */
 package COS700_Project;
 
-public class GeneticProgram {
+public class Main {
 
           public static void runExperiment() throws Exception {
                     Randomness.getInstance().setSeed(42069);
