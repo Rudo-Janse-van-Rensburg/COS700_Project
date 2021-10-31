@@ -20,7 +20,7 @@ public class Main {
                               kf = 10,
                               mmd = 8,
                               cmd = 8,
-                              ps = 10,
+                              ps = 500,
                               ts = 2;
                     double cc = 0.5,
                               mc = 0.4,
@@ -37,14 +37,14 @@ public class Main {
                    evolution.writeToCSV();
                    
                     Program best = evolution.getBest_program();
-                    /*CompetitionRunner competitionRunner = new CompetitionRunner(best);
+                    CompetitionRunner competitionRunner = new CompetitionRunner(best);
                     
                     competitionRunner.run();
                     try{
                               competitionRunner.join();
                     }catch(Exception e){
                               e.printStackTrace();
-                    }*/
+                    }
           }
 
 }
