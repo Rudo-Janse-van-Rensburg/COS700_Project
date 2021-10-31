@@ -45,7 +45,8 @@ public class Fitness {
                               }
                               service.shutdown();
                               f1 /= Parameters.getInstance().getK_folds() * 1.0;
-                              return f1;
+                               
+                              return f1 >= 0 ? f1: 0;
                     } else {
                               throw new Exception("Cannot evaluate null program.");
                     }

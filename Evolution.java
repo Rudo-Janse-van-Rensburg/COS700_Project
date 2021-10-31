@@ -173,6 +173,16 @@ public class Evolution {
                     return best_program;
           }
 
+          public double getAverageFitness() {
+                    return curr.getAverage_fitness();
+          }
+          
+          public Generation getCurrentGeneration(){
+                    return curr;
+          }
+          
+          
+
           public void print() throws Exception {
                     System.out.println("=======================================");
                     System.out.format("GENERATION   #%d%n", generation);

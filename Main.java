@@ -30,6 +30,9 @@ public class Main {
                     Evolution evolution = Evolution.getInstance();
                     do {
                               evolution.print();
+                              if(evolution.getAverageFitness() == 0.0){
+                                        System.out.println(Arrays.toString(evolution.getCurrentGeneration().getFitnesses()));
+                              }
                     } while (evolution.evolveGeneration());  
                    evolution.writeToCSV();
                    
