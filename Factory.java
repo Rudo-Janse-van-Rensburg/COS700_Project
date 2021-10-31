@@ -59,12 +59,12 @@ public class Factory {
                                                             tree[current_depth][current_pos] = (byte)  Meta.CONDITIONS[ rand.nextInt(Meta.CONDITIONS.length - 0) + 0];
                                                             return true;
                                                 }else{ 
-                                                            tree[current_depth][current_pos] =   (byte) (Meta.CONDITIONS.length + rand.nextInt(Data.initialiseData().getNumberAttributes() - 0) + 0);
+                                                            tree[current_depth][current_pos] =   (byte) (Meta.CONDITIONS.length + rand.nextInt(Data.initialiseData().getNumberAttributes() -1 - 0) + 0);
                                                             return false;
                                                 }
                                     }
                         }else if( current_depth == max_depth - 1){
-                                    tree[current_depth][current_pos] =  (byte)  (Meta.CONDITIONS.length + rand.nextInt(Data.initialiseData().getNumberAttributes() - 0) + 0);
+                                    tree[current_depth][current_pos] =  (byte)  (Meta.CONDITIONS.length + rand.nextInt(Data.initialiseData().getNumberAttributes() -1 - 0) + 0);
                                     return false;
                         }else{
                             return false;

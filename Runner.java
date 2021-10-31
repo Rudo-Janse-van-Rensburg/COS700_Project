@@ -13,16 +13,44 @@ import travelingSalesmanProblem.TSP;
 public class Runner {
 
           private long startTime, endTime;
-          private final ProblemDomain problem_domain;
+          private ProblemDomain problem_domain;
           private final int problem;
           private final int instance;
           private final HyperHeuristic hyperheuristic;
 
-          public Runner(Program program, int problem_index,int instance_to_use, long time_limit, long seed) throws Exception {
+          public Runner(Program program, int problem_index, int instance_to_use, long time_limit, long seed) throws Exception {
                     this.problem = problem_index;
                     this.instance = instance_to_use;
-                    this.problem_domain = loadProblemDomain(problem_index, seed);
-                    this.hyperheuristic = loadHyperHeuristic(program, time_limit, seed);
+                    switch (problem_index) {
+                              case 0:
+                                        this.problem_domain = new SAT(seed);
+                                        break;
+                              case 1:
+                                        this.problem_domain = new BinPacking(seed);
+                                        break;
+                              case 2:
+                                        this.problem_domain = new PersonnelScheduling(seed);
+                                        break;
+                              case 3:
+                                        this.problem_domain = new FlowShop(seed);
+                                        break;
+                              case 4:
+                                        this.problem_domain = new TSP(seed);
+                                        break;
+                              case 5:
+                                        this.problem_domain = new VRP(seed);
+                                        break;
+                              default:
+                                        System.err.println("there is no problem domain with this index");
+                                        System.exit(1);
+                    }//end switch
+                    this.hyperheuristic = new SelectivePeturbativeHyperHeuristic(program, seed);
+                    if(this.hyperheuristic.getTimeLimit() != time_limit){
+                              synchronized(this.hyperheuristic){
+                                        this.hyperheuristic.setTimeLimit(time_limit);
+                              }
+                              
+                    }
                     this.problem_domain.loadInstance(instance_to_use);
                     this.hyperheuristic.loadProblemDomain(problem_domain);
           }
@@ -64,16 +92,18 @@ public class Runner {
                     }
                     return counter;
           }
+
           @Override
           public String toString() {
-                    return  problem+","+instance+","+this.getTotalHeuristicCalls()+","+this.getBestSolutionValue()+","+this.getElapsedTime()+","+this.getRunTime()+"";
+                    return problem + "," + instance + "," + this.getTotalHeuristicCalls() + "," + this.getBestSolutionValue() + "," + this.getElapsedTime() + "," + this.getRunTime() + "";
           }
+
           /**
            * This method creates the relevant HyperHeuristic object from the
            * index given as a parameter. after the HyperHeuristic object is
            * created, its time limit is set.
            */
-          private static HyperHeuristic loadHyperHeuristic(Program prog, long timeLimit, long seed) {
+          private static HyperHeuristic loadHyperHeuristic(Program prog, long timeLimit, long seed) throws Exception {
                     HyperHeuristic h = new SelectivePeturbativeHyperHeuristic(prog, seed);
                     h.setTimeLimit(timeLimit);
                     return h;
@@ -117,7 +147,7 @@ public class Runner {
           public static void main(String[] args) throws Exception {
 
                     // TODO code application logic here
-                  /*  int number_training_instances = 5;
+                    /*  int number_training_instances = 5;
                     double acceptance_threshold = 0.5;
                     int window_size = 4;
                     long run_time = 100;

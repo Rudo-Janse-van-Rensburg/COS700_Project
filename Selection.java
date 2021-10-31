@@ -51,11 +51,17 @@ public class Selection {
         for (int i = 0; i < Parameters.getInstance().getTournament_size(); i++) {
             competitors.add(positions.remove(Randomness.getInstance().getRandomIntExclusive(0,positions.size())));
         } 
-        double fitness  = -1;
-        Program prog    = null;
-        for(int competitor: competitors) 
-            if(generation.getFitness(competitor) > fitness)
-                prog = generation.getIndividual(competitor);
+        double fitness  = Double.NEGATIVE_INFINITY;
+        Program prog    = null;//generation.getIndividual(competitors.remove(0));
+        for(int competitor: competitors){
+                  if(generation.getFitness(competitor) >fitness){
+                            prog = generation.getIndividual(competitor);
+                            fitness =prog.getFitness();
+                  }
+                
+        }
+            
+        
         FlyWeight.getInstance().addArrayListInt(competitors);
         return prog;
     }

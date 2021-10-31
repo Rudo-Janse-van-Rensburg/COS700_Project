@@ -5,16 +5,34 @@ import AbstractClasses.ProblemDomain;
 
 public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
 
-          private final Program prog; 
-          
-          public SelectivePeturbativeHyperHeuristic(Program prog, long seed) {
+          private final Program prog;
+          private double attributes[];
+
+          public SelectivePeturbativeHyperHeuristic(Program prog, long seed) throws Exception {
                     super(seed);
                     this.prog = prog;
+                    this.attributes = new double[Data.initialiseData().getNumberAttributes() - 1];
+                    for (int i = 0; i < Data.initialiseData().getNumberAttributes()-1; i++) {
+                              this.attributes[i] = 0;
+                    }
           }
- 
+
+          private void add(double delta, int last_action) throws Exception {
+                    int i = 0;
+                    for (; i < 7; i++) {
+                              this.attributes[i] = this.attributes[i + 1];
+                    }
+                    this.attributes[i] = delta;
+                    i ++;
+                    for (; i < attributes.length - 1; i++) {
+                              this.attributes[i] = this.attributes[i + 1];
+                    }
+                    this.attributes[i] = last_action;
+          }
+
           @Override
           protected void solve(ProblemDomain problem) {
-                     /*
+
                     try {
                               //initialise the variable which keeps track of the current objective function value
                               double current_obj_function_value = Double.POSITIVE_INFINITY;
@@ -22,56 +40,49 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
                               //initialise the solution at index 0 in the solution memory array
                               problem.initialiseSolution(0);
 
-                              double[] attributes = Data.initialiseData().getData_instance();
+                              int num_applied = 0;
 
                               //the main loop of any hyper-heuristic, which checks if the time limit has been reached
                               while (!hasTimeExpired()) {
-                                        int heuristic_to_apply = (int) Interpreter.getInstance().Interpret(prog, attributes);
-                                        ProblemDomain.HeuristicType type; 
-                                        switch(heuristic_to_apply){
+                                        ProblemDomain.HeuristicType type;
+                                        int heuristic_to_apply;
+                                        if (num_applied > 8) {
+                                                   heuristic_to_apply = (int) Interpreter.getInstance().Interpret(prog, attributes);
+
+                                        } else {
+                                                  heuristic_to_apply = rng.nextInt(Data.initialiseData().getNumberClasses());
+                                        }
+                                        switch (heuristic_to_apply) {
                                                   case 0:
-                                                           type = ProblemDomain.HeuristicType.MUTATION;
-                                                           break;
+                                                            type = ProblemDomain.HeuristicType.MUTATION;
+                                                            break;
                                                   case 1:
                                                             type = ProblemDomain.HeuristicType.RUIN_RECREATE;
-                                                           break;
+                                                            break;
                                                   case 2:
                                                             type = ProblemDomain.HeuristicType.LOCAL_SEARCH;
-                                                           break;
+                                                            break;
                                                   default:
                                                             type = ProblemDomain.HeuristicType.CROSSOVER;
-                                                           break;
+                                                            break;
                                         }
                                         int[] applicable_heuristics = problem.getHeuristicsOfType(type);
                                         double new_obj_function_value = problem.applyHeuristic(applicable_heuristics[rng.nextInt(applicable_heuristics.length)], 0, 1);
+                                        ++num_applied;
                                         double delta = current_obj_function_value - new_obj_function_value;
-                                        Data.initialiseData().add(heuristic_to_apply, delta);
-                                        //all of the problem domains are implemented as minimisation problems. A lower fitness means a better solution.
-                                        if (delta > 0) {
-                                                  //if there is an improvement then we 'accept' the solution by copying the new solution into memory index 0
-                                                  problem.copySolution(1, 0);
-                                                  //we also set the current objective function value to the new function value, as the new solution is now the current solution
-                                                  current_obj_function_value = new_obj_function_value;
-                                        } else {
-                                                  //if there is not an improvement in solution quality then we accept the solution probabilistically
-                                                  //if (rng.nextBoolean()) {
-                                                  if (rng.nextDouble() > Parameters.getInstance().getAcceptance_threshold()) {
-                                                            //the process for 'accepting' a solution is the same as above
-                                                            problem.copySolution(1, 0);
-                                                            current_obj_function_value = new_obj_function_value;
-                                                  }
-                                        }
-                                        //one iteration has been completed, so we return to the start of the main loop and check if the time has expired
+                                        add(delta, heuristic_to_apply);
+                                        problem.copySolution(1, 0);
+                                        current_obj_function_value = new_obj_function_value;
                               }
                     } catch (Exception ex) {
                               ex.printStackTrace();
                               System.exit(-1);
                     }
-                    */
+
           }
- 
+
           @Override
-          public String toString() { 
+          public String toString() {
                     return "Selective Perturbative Hyper Heuristic";
 
           }

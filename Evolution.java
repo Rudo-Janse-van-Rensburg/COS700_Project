@@ -94,7 +94,7 @@ public class Evolution {
           public boolean evolveGeneration() throws Exception {
                      
                     if (!curr.isEmpty()) {
-                             
+                             Data.initialiseData().shuffle();
                               if ((generation + 1) < Parameters.getInstance().getMax_generation()) {
                                         next.recycle();
                                         int num_crossover = (int) Math.ceil(Parameters.getInstance().getCrossover_chance() * Parameters.getInstance().getPopulation_size());
@@ -178,6 +178,7 @@ public class Evolution {
                     System.out.format("GENERATION   #%d%n", generation);
                     System.out.println("---------------------------------------");
                     System.out.format("    occupancy     :   %d\n", curr.getCapacity());
+                    System.out.format("    nulls               :   %d\n", curr.getNumberNulls());
                     System.out.format("    avergage fitness     :   %f\n", curr.getAverage_fitness());
                     //System.out.println("    fitnesses            :   " + Arrays.toString(curr.getFitnesses()));
                     System.out.format("    best fitness         :   %f\n", curr.getBest_fitness());

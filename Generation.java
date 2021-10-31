@@ -1,8 +1,6 @@
 package COS700_Project;
 
-public class Generation {
-          
-          
+public final class Generation {
 
           private long generation_seed;
           private final Program[] population;
@@ -12,24 +10,27 @@ public class Generation {
           private double total_fitness,
                     best_fitness,
                     worst_fitness;
-          private int capacity; 
+          private int capacity;
 
-          public Generation() throws Exception { 
+          public Generation() throws Exception {
                     generation_seed = Randomness.getInstance().getRandomLong();
-                    capacity = 0;
-                    total_fitness = 0;
-                    best_fitness = -1;
-                    worst_fitness = Double.POSITIVE_INFINITY;
+                    recycle();  
                     best_program = FlyWeight.getInstance().getProgram();
                     worst_program = FlyWeight.getInstance().getProgram();
                     population = new Program[Parameters.getInstance().getPopulation_size()];
-                    fitnesses = new double[Parameters.getInstance().getPopulation_size()];  
+                    fitnesses = new double[Parameters.getInstance().getPopulation_size()];
           }
- 
 
-          
-           
-          
+          public int getNumberNulls() throws Exception {
+                    int nulls = 0;
+                    for (int i = 0; i < Parameters.getInstance().getPopulation_size(); i++) {
+                              if (population[i] == null) {
+                                        nulls++;
+                              }
+                    }
+                    return nulls;
+          }
+
           /**
            * @param individual
            * @return
@@ -56,9 +57,6 @@ public class Generation {
                               return false;
                     }
           }
-          
-           
-          
 
           /**
            * @return
@@ -74,7 +72,6 @@ public class Generation {
                     return best_fitness;
           }
 
-          
           public double getWorst_fitness() {
                     return worst_fitness;
           }
@@ -90,13 +87,12 @@ public class Generation {
                     return worst_program;
           }
 
-
           /**
            *
            * @return
            */
           public double getAverage_fitness() {
-                    return total_fitness > 0 ? total_fitness / (1.0 * capacity) : 0;
+                    return total_fitness > 0 && capacity > 0 ? total_fitness / (1.0 * capacity) : 0;
           }
 
           /**
@@ -147,9 +143,10 @@ public class Generation {
           public void recycle() throws Exception {
                     generation_seed = Randomness.getInstance().getRandomLong();
                     for (int i = 0; i < capacity; i++) {
-                              Program prog = population[i];
-                              FlyWeight.getInstance().addProgram(prog);
+                              FlyWeight.getInstance().addProgram(population[i]);
+                              population[i] = null;
                     }
+
                     clear();
           }
 
@@ -159,7 +156,9 @@ public class Generation {
           public void clear() throws Exception {
                     generation_seed = Randomness.getInstance().getRandomLong();
                     total_fitness = 0;
-                    capacity = 0;  
+                    capacity = 0;
+                    best_fitness = Double.NEGATIVE_INFINITY;
+                    worst_fitness = Double.POSITIVE_INFINITY;
           }
 
 }

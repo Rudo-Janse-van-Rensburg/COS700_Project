@@ -143,7 +143,7 @@ class F1Thread extends Thread {
 
 class CompetitionRunnerThread extends Thread {
 
-          private static HyperHeuristic loadHyperHeuristic(Program prog, long timeLimit, long seed) {
+          private static HyperHeuristic loadHyperHeuristic(Program prog, long timeLimit, long seed) throws Exception {
                     HyperHeuristic h;
                     h = new SelectivePeturbativeHyperHeuristic(prog, seed);
                     h.setTimeLimit(timeLimit);
