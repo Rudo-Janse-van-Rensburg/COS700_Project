@@ -1003,8 +1003,8 @@
                     \end{center}
                     \caption{Graph showing the average score of each generation}
                 \end{figure} 
-                \noindent From the graph, it is clear that the algorithm converged as after about generation 40 the graph plateaus. 
-                
+                \noindent From the graph, it is clear that the algorithm converged approximately half-way to the maximum generation, made apparent by the
+                plateau of the line around the $50^{th}$ generation. 
             } 
         \subsubsection*{Parameter Values}
             \par{
@@ -1033,8 +1033,168 @@
                 % \end{center}
                 \end{table} 
             }
-       
+            \subsubsection*{Hardware Specification}
+                \par{
+                    \begin{table}[h!]
+                        \centering
+                        %\begin{center}
+                            \small 
+                            \begin{tabular}{ | c | c | } 
+                                \hline
+                                \textbf{Component} & \textbf{Specification} \\
+                                \hline  
+                                Processor & Xeon 16 core CPU \\ 
+                                Memory & 64 Gigabytes\\  
+                                \hline 
+                            \end{tabular}
+                            \caption{Harware Specification} 
+                    % \end{center}
+                    \end{table}
+                    \noindent To facilitate the large number of individuals, it was important to have a sufficiently large amount of memory to 
+                    hold them. Furthermore, a powerful processor is necessary to keep run-times shorter. 
+                }
+\section{Results and Discussion} \label{sec:results}  
+    \par{
+        The following resuls were obtained by running each the HyFlex framework 31 times for 5 instance of each problem domain.
+        \begin{table}[ht] 
+            %\begin{center}
+                \small 
+                \begin{tabular}{| c | c | c | c |} 
+                    \hline
+                    \textbf{Domain} & \textbf{Best} & \textbf{Average} & \textbf{Standard Deviation} \\
+                    \hline
+                    BinPacking & 0.027 & 0.047 & 0.017\\
+                    \hline
+                    TSP & 9048.267 & 43203.798 & 37136.583\\
+                    \hline
+                    VRP & 6872.66 & 14119.364 & 7339.98\\
+                    \hline
+                    PersonnelScheduling & 906.0  & 1492.97  & 1350.18\\
+                    \hline
+                    FlowShop &  6307.0 & 6387.006 & 45.153 \\
+                    \hline
+                    SAT & 159.0  & 247.297& 56.8846 \\
+                    \hline  
+                \end{tabular}
+                \caption{Summary of GPHH on the various Problem Domains} 
+            % \end{center}
+        \end{table}
+        \newline
+        The following comparative summarised results were presented by Sabar et al. \cite{gehh}. 
+        \begin{table}[ht] 
+            %\begin{center}
+                \small 
+                \centering
+                \begin{tabular}{| c | c | c | c | c| c| c|} 
+                    \hline   
+                    &\textbf{GP-HH} & \textbf{GEP-HH} & \textbf{IO-HH} & \textbf{SA-HH} & \textbf{GD-HH} & \textbf{TS-HH} \\
+                    \hline
+                    \textbf{Best} & 159.0 & 4 & 6.4 & 4.6 & 6.8 & 5.8\\
+                    \hline
+                    \textbf{Average} & 247.297 & 11.474& 18.376& 17.166& 20.368&18.54\\
+                    \hline
+                    \textbf{Std} & 56.88 & 8.546& 11.562& 10.118& 9.454&9.938\\
+                    \hline
+                \end{tabular}
+                \caption{Comparison of SAT.} 
+            % \end{center}
+        \end{table}
+        \newline 
+        It is clear that for Maximum Satisfiability domain, \textbf{GP-HH} performs poorly when compared to the other state of the art
+        algorithms.
+        \begin{table}[ht] 
+            %\begin{center}
+                \small 
+                \centering
+                \begin{tabular}{| c | c | c | c | c| c| c|} 
+                    \hline   
+                    &\textbf{GP-HH} & \textbf{GEP-HH} & \textbf{IO-HH} & \textbf{SA-HH} & \textbf{GD-HH} & \textbf{TS-HH} \\
+                    \hline
+                    \textbf{Best}  & 0.027 &0.03662 & 0.046248& 0.0384& 0.03734&0.03968\\
+                    \hline
+                    \textbf{Average} & 0.047 & 0.05362& 0.07248& 0.06984& 0.06184&0.06372\\
+                    \hline
+                    \textbf{Std} & 0.0174 & 0.0206& 0.02998& 0.02716& 0.02124&0.023\\
+                    \hline
+                \end{tabular}
+                \caption{Comparison of BinPacking.} 
+            % \end{center}
+        \end{table}
+        \begin{table}[ht] 
+            %\begin{center}
+                \small 
+                \centering
+                \begin{tabular}{| c | c | c | c | c| c| c|} 
+                    \hline   
+                    &\textbf{GP-HH} & \textbf{GEP-HH} & \textbf{IO-HH} & \textbf{SA-HH} & \textbf{GD-HH} & \textbf{TS-HH} \\
+                    \hline
+                    \textbf{Best} &  6307.0 &15422.8& 15482.4& 15450.6& 15482& 15466.8\\
+                    \hline
+                    \textbf{Average} & 6387.006 & 15513.94& 15782.98& 15557.4& 15571.88& 15561.2\\
+                    \hline
+                    \textbf{Std} & 45.15 & 89.318& 294.02& 115.974& 113.692& 122.83\\
+                    \hline
+                \end{tabular}
+                \caption{Comparison of FlowShop.} 
+            % \end{center}
+        \end{table}
+        \begin{table}[ht] 
+            %\begin{center}
+                \small 
+                \centering
+                \begin{tabular}{| c | c | c | c | c| c| c|} 
+                    \hline   
+                    &\textbf{GP-HH} & \textbf{GEP-HH} & \textbf{IO-HH} & \textbf{SA-HH} & \textbf{GD-HH} & \textbf{TS-HH} \\
+                    \hline
+                    \textbf{Best} & 906.0 & 2916.4& 2982& 2970.6& 2949.8&2961.8\\
+                    \hline
+                    \textbf{Average} & 1492.97 & 3188.11& 3493.81& 3626.49& 3653.022&3606.182\\
+                    \hline
+                    \textbf{Std} & 1350.18 & 410.868& 608.774& 704.01& 687.44& 695.35\\
+                    \hline
+                \end{tabular}
+                \caption{Comparison of PersonnelScheduling.} 
+            % \end{center}
+        \end{table}
+        \begin{table}[ht] 
+            %\begin{center}
+                \small 
+                \centering
+                \begin{tabular}{| c | c | c | c | c| c| c|} 
+                    \hline   
+                    &\textbf{GP-HH} & \textbf{GEP-HH} & \textbf{IO-HH} & \textbf{SA-HH} & \textbf{GD-HH} & \textbf{TS-HH} \\
+                    \hline
+                    \textbf{Best} & 6872.66 & 78578.86& 80289.84& 79176.72& 79371.45& 79545.88\\
+                    \hline
+                    \textbf{Average} & 14119.36 & 81332.32& 85753.21& 83586.1& 83450.86& 83558.7\\
+                    \hline
+                    \textbf{Std} & 7339.98 & 3120.806& 5401.072& 4168.894& 3443.634&4103.702\\
+                    \hline
+                \end{tabular}
+                \caption{Comparison of VehicleRouting.} 
+            % \end{center}
+        \end{table}
+        \begin{table}[ht] 
+            %\begin{center}
+                \small 
+                \centering
+                \begin{tabular}{| c | c | c | c | c| c| c|} 
+                    \hline   
+                    &\textbf{GP-HH} & \textbf{GEP-HH} & \textbf{IO-HH} & \textbf{SA-HH} & \textbf{GD-HH} & \textbf{TS-HH} \\
+                    \hline
+                    \textbf{Best} & 9048.26 & 4204139 & 4224061& 4225965& 4209410& 4216264\\
+                    \hline
+                    \textbf{Average} & 43203.79 & 4351227 & 4477695 & 4495591& 4691400& 4621074\\
+                    \hline
+                    \textbf{Std} & 37136.58 & 255450 & 302350.9& 316347.9 & 353686.2 & 398509.4\\
+                    \hline
+                \end{tabular}
+                \caption{Comparison of TSP.} 
+            % \end{center}
+        \end{table}
 
+    }
+    
 \section{Discussion} \label{sec:discussion}
     \par{
 
