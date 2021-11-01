@@ -1,0 +1,28 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Precursor}{4}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Objectives}{4}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Layout}{5}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Problem Statement}{5}{section.2}%
+\contentsline {section}{\numberline {3}Background}{6}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Hyper-Heuristics}{6}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Introduction}{6}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Taxonomy of Hyper-Heuristics}{6}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Selection Perturbative Hyper-Heuristics}{7}{subsubsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.2}Cross-Domain Hyper-Heuristics}{8}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Introduction}{8}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Cross-Domain Heuristics Search Challenge}{8}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}HyFlex}{8}{subsubsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.3}Problem Domains}{9}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Genetic Programming}{10}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Introduction}{10}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}Classification}{10}{subsubsection.3.4.2}%
+\contentsline {section}{\numberline {4}Related Work}{11}{section.4}%
+\contentsline {section}{\numberline {5}Methodology}{12}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Hyper-Parameters}{12}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Genetic Program Algorithm}{14}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Data-set}{19}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Algorithm}{21}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Experimental Setup}{22}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Discussion}{23}{section.6}%
+\contentsline {section}{\numberline {7}Conclusion}{23}{section.7}%
