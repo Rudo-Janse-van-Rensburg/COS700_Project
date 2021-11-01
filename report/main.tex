@@ -372,7 +372,7 @@
                         \end{tabular}
                         \subcaption{Functions}
                     \end{minipage}
-                        \begin{minipage}[c]{0.5\textwidth}
+                    \begin{minipage}[c]{0.5\textwidth}
                         \centering
                         \begin{tabular}{|c|c|c|}
                             \hline
@@ -392,7 +392,7 @@
         \subsubsection*{Genetic Operators}\label{subsubsec:geneticoperators}
             \par{
                 \noindent \textbf{Crossover} - Crossover is a local-search operator that drives convegence by exploiting what has been explored by the search space. It accomplishes this 
-                by selecting a pair of candidate parents from the population, uniformly randomly selecting crossover-points on each parent, then swapping the sub-trees rooted 
+                by selecting (refer to \nameref{subsubsec:selection}) a pair of candidate parents from the population, uniformly randomly selecting crossover-points on each parent, then swapping the sub-trees rooted 
                 at those points on each tree. In this wasy, genetic material is combined from both parents. To ensure that trees maintain there validity strong-typing is 
                 enforced, whereby only nodes in the main tree can be crossed over with one another, and only nodes in the condition sub-trees can be crossoved over with
                 one another.\newline 
@@ -407,9 +407,37 @@
             }
         \subsubsection*{Selection Method} \label{subsubsec:selection}
             \par{
-                
+                A selection method is a means by which to nominated candidates to apply genetic operators to - producing offspring. The selection method is a function of the the fitness (refer to \nameref{subsubsec:objectivefunction}),
+                such that fitter individuals have a greater chance of being nominated. Note that poorer candidates can be nominated, however unlikely, so as to mitigate \textit{Elitism}, which ultimately
+                causes premature convergence by impeding genetic diversity.\newline 
+                \newline 
+                For the purpose of selection, \textbf{Tournament Selection} is used in this experiment. A number of individuals (refer to \nameref{subsubsec:ts}) are uniformly randomly chosen to enter a 
+                tournament. The individual with the best fitness (largest in the case of a maximisation, smallest in the case of minimisation) is the winner of the tournament, and it is used as the candidate parent. 
             }
-        \subsubsection*{Objective Function}
+        \newpage
+        \subsubsection*{Objective Function} \label{subsubsec:objectivefunction}
+            \par{
+                \noindent The objective function is used as the "fitness" of the individual, and it is this that the \nameref{subsubsec:selection} uses to nominate candidates 
+                for partipation in \nameref{subsubsec:geneticoperators}. \newline 
+                \newline 
+                Given that the Genetic Program represent a classifier, it's fitness should assess it's classifying ability. For this purpose, the classifier's \textbf{F1 Score} \cite{f1score} is used.
+                \begin{figure}[h!]
+                    \begin{minipage}[c]{0.5\textwidth}
+                        \begin{align*} 
+                            \nonumber F_{1} =  \frac{tp}{tp + \frac{1}{2}(fp + fn)}
+                        \end{align*}
+                    \end{minipage}
+                    \begin{minipage}[c]{0.5\textwidth}
+                        \begin{align*} 
+                            \nonumber tp &- \text{true positives} \\
+                            \nonumber fp &- \text{false positives} \\
+                            \nonumber fn &- \text{false negatives} \\
+                        \end{align*}
+                    \end{minipage}
+                    \caption{The $F_1$ score}
+                \end{figure} 
+            }
+
     \subsection{Data-set}
     \subsection{Experimental Setup}
         \par{
@@ -417,14 +445,14 @@
                 \centering
                 %\begin{center}
                     \small 
-                    \begin{tabular}{ | c | c | }
+                    \begin{tabular}{ | l | c | }
 
                         \hline
                         \textbf{Parameter} & \textbf{Value} \\
                         \hline  
                         \nameref{subsubsec:mg} & 100 \\
                         \hline 
-                        \nameref{subsubsec:kf} & 10 \\
+                        \nameref{subsubsec:kf} & 0.7 \\
                         \hline 
                         \nameref{subsubsec:mmd} & 10 \\
                         \hline 

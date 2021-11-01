@@ -65,6 +65,12 @@ Tyasnurita Raras, Ozcan Ender, and John Robert.
 \newblock {\em IEEE Congress on Evolutionary Computation 2017}, pages 1--7,
   2017.
 
+\bibitem[She21]{f1score}
+V.~Sheela.
+\newblock What is the f1-score and what is its importance to machine learning?,
+  2021.
+\newblock Accessed: 2021-11-01.
+
 \bibitem[WOGB12]{ILS}
 D.~Walker, G.~Ochoa, M.~Gendreau, and E.~K. Burke.
 \newblock Vehicle routing and adaptive iterated local search within the hyflex
