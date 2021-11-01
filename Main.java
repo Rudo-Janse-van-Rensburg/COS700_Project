@@ -17,15 +17,17 @@ public class Main {
            */
           public static void main(String[] args) throws Exception {
                     int mg = 100,
-                              kf = 10,
-                              mmd = 8,
-                              cmd = 8,
-                              ps = 500,
-                              ts = 2;
-                    double cc = 0.5,
-                              mc = 0.4,
-                              hc = 0.1;
-                    Parameters.setParameters(mg, kf, mmd, cmd, ps, ts, cc, mc, hc);
+                              
+                              mmd = 10,
+                              cmd = 5,
+                              ps = 2000,
+                              ts = 4;
+                    double 
+                              train_percent = 0.7,
+                              cc = 0.5,
+                              mc = 0.475,
+                              hc = 0.025;
+                    Parameters.setParameters(mg, train_percent, mmd, cmd, ps, ts, cc, mc, hc);
                   
                     Evolution evolution = Evolution.getInstance();
                     do {

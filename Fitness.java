@@ -30,27 +30,47 @@ public class Fitness {
            */
           public double evaluate(Program prog) throws Exception {
                     if (prog != null) {
-                              double f1 = 0;
-                              CountDownLatch latch = new CountDownLatch(Parameters.getInstance().getK_folds());
-                              ExecutorService  service = Executors.newFixedThreadPool(Parameters.getInstance().getK_folds());
-                              ArrayList<F1Thread> threads = new ArrayList<>();
-                              for (int k = 0; k < Parameters.getInstance().getK_folds(); k++) {
-                                        F1Thread thread = ThreadFactory.instance().getF1Thread(latch, prog, k);
-                                        threads.add(thread);
-                                        service.execute(thread);
-                              } 
-                              latch.await();
-                              for (F1Thread thread: threads) {
-                                        f1 += thread.getF1();
-                              }
-                              service.shutdown();
-                              f1 /= Parameters.getInstance().getK_folds() * 1.0;
-                               
-                              return f1 >= 0 ? f1: 0;
+                              return f1(prog);
                     } else {
                               throw new Exception("Cannot evaluate null program.");
                     }
           }
- 
 
+          private double f1(Program prog) throws Exception {
+                    double f1 = 0;
+
+                    double[] tp = new double[Data.initialiseData().getNumberClasses()];
+                    double[] fp = new double[Data.initialiseData().getNumberClasses()];
+                    double[] fn = new double[Data.initialiseData().getNumberClasses()];
+                    for (int i = 0; i < Data.initialiseData().getNumberClasses(); i++) {
+                              tp[i] = 0;
+                              fp[i] = 0;
+                              fn[i] = 0;
+                    }
+                    for (double[] instance : Data.initialiseData().getTrainSet()) {
+                              int target = (int) instance[Data.initialiseData().getNumberAttributes()];
+                              int output = (int) Interpreter.getInstance().Interpret(prog, instance);
+                              if (target == output) {
+                                        tp[target] += 1;
+
+                              } else {
+                                        fp[output] += 1;
+                                        fn[target] += 1;
+                              }
+                    }
+                    double precision = 0;
+                    double recall = 0;
+                    for (int i = 0; i < Data.initialiseData().getNumberClasses(); i++) {
+                              precision += tp[i] + fp[i] > 0 ? (tp[i] / (tp[i] + fp[i])) : 0;
+                              recall += tp[i] + fn[i] > 0 ? (tp[i] / (tp[i] + fn[i])) : 0;
+                    }
+                    /*
+                              System.out.println("pecision  :" + Arrays.toString(precision));
+                              System.out.println("recall  :" + Arrays.toString(recall));
+                              return 0; */
+                    precision /= Data.initialiseData().getNumberClasses();
+                    recall /= Data.initialiseData().getNumberClasses();
+                    f1 = (2.0 * (precision * recall) / (precision + recall));
+                    return f1 >= 0 ? f1 : 0;
+          }
 }

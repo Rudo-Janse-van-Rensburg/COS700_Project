@@ -14,7 +14,7 @@ public final class Data {
           private final Random random;
           private final ArrayList<double[]> data_instances;          // going to hold the instances of the  
           private final int number_classes = 4, // mutation, crossover, ruin-create, local-search 
-                    number_attributes = 16;
+                    number_attributes = 15;
           private int number_instances;
 
           private Data() throws Exception {
@@ -28,7 +28,7 @@ public final class Data {
           private synchronized void readData() {
                     try { 
                               for (String line : Files.readAllLines(Paths.get("data.csv"))) {
-                                        double[] instance = new double[number_attributes];
+                                        double[] instance = new double[number_attributes + 1];
                                         int pos = 0;
                                         for (String attribute : line.split(",")) {
                                                   instance[pos++] = Double.parseDouble(attribute);
@@ -47,10 +47,8 @@ public final class Data {
                     Collections.shuffle(data_instances, random);
           }
 
-          public synchronized List<double[]> getKthFold(int fold) throws Exception {
-                    int fold_size = (number_instances / Parameters.getInstance().getK_folds());
-                    int start = fold * fold_size;
-                    return data_instances.subList(start, Math.min(start + fold_size, data_instances.size() - 1));
+          public synchronized List<double[]> getTrainSet() throws Exception { 
+                    return data_instances.subList(0, (int) (Parameters.getInstance().getTrain_percent()*data_instances.size()));
 
           }
 

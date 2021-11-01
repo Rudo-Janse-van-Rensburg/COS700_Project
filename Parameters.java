@@ -11,10 +11,11 @@ public class Parameters {
                     main_max_depth = 10,
                     condition_max_depth = 5,
                     population_size = 200,
-                    tournament_size = 2,
-                    k_folds = 10;
+                    tournament_size = 2;
 
-          private  double crossover_chance = 50,
+          private  double 
+                    train_percent = 0.7,
+                    crossover_chance = 50,
                     mutation_chance = 30,
                     hoist_chance = 10;
  
@@ -22,7 +23,7 @@ public class Parameters {
 
           /**
            * @param mg
-           * @param kf
+           * @param tp
            * @param mmd
            * @param cmd
            * @param ps
@@ -31,9 +32,9 @@ public class Parameters {
            * @param mc
            * @param hc
            */
-          private Parameters( int mg, int kf, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) {
+          private Parameters( int mg, double tp, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) {
                     this.max_generation = mg;
-                    this.k_folds = kf;
+                    this.train_percent = tp;
                     this.main_max_depth = mmd;
                     this.condition_max_depth = cmd;
                     this.population_size = ps;
@@ -45,7 +46,7 @@ public class Parameters {
 
           /**
            * @param mg
-           * @param kf
+           * @param tp
            * @param mmd - main max depth
            * @param cmd - condition max depth
            * @param ps - population size
@@ -56,11 +57,11 @@ public class Parameters {
            * @return Parameters singleton.
            * @throws Exception
            */
-          public static Parameters setParameters(int mg, int kf, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) throws Exception {
+          public static Parameters setParameters(int mg, double tp, int mmd, int cmd, int ps, int ts, double cc, double mc, double hc) throws Exception {
                     if (mmd > 1 && cmd > 1 && ps > 0 && ts > 0 && ps >= ts) {
                               if (singleton != null) {
                                         singleton.max_generation = mg;
-                                        singleton.k_folds = kf;
+                                        singleton.train_percent = tp;
                                         singleton.main_max_depth = mmd;
                                         singleton.condition_max_depth = cmd;
                                         singleton.population_size = ps;
@@ -70,7 +71,7 @@ public class Parameters {
                                         singleton.hoist_chance = hc;
                                         //singleton.edit_chance           = ec; 
                               } else {
-                                        singleton = new Parameters( mg, kf, mmd, cmd, ps, ts, cc, mc, hc/*,ec*/);
+                                        singleton = new Parameters( mg, tp, mmd, cmd, ps, ts, cc, mc, hc/*,ec*/);
                               }
                               return singleton;
                     } else {
@@ -98,12 +99,11 @@ public class Parameters {
                     return max_generation;
           }
 
-          /**
-           * @return number of folds
-           */
-          public int getK_folds() {
-                    return k_folds;
+          public double getTrain_percent() {
+                    return train_percent;
           }
+
+           
 
           /**
            * @return tournament size

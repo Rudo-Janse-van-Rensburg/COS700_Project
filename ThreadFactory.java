@@ -23,6 +23,8 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import travelingSalesmanProblem.TSP;
 
 /**
@@ -43,10 +45,10 @@ public class ThreadFactory {
                     return factory;
           }
 
-          public F1Thread getF1Thread(CountDownLatch latch, Program prog, int fold){
-                    return new  F1Thread(latch,prog, fold);
+          public F1Thread getF1Thread(CountDownLatch latch, Program prog) {
+                    return new F1Thread(latch, prog);
           }
-          
+
           public GeneticOperatorThread getGeneticOperatorThread(CountDownLatch latch, Program[] parents, char operation, int max_depth, long seed) throws Exception {
                     return new GeneticOperatorThread(latch, parents, operation, max_depth, seed);
           }
@@ -82,16 +84,14 @@ public class ThreadFactory {
 
 class F1Thread extends Thread {
 
-          private final int fold;  
           private double f1;
           Program prog;
           private final CountDownLatch latch;
-          public F1Thread(CountDownLatch latch,Program prog,int fold) {
+
+          public F1Thread(CountDownLatch latch, Program prog) {
                     this.prog = prog;
-                    this.fold = fold; 
                     this.latch = latch;
           }
- 
 
           @Override
           public synchronized void run() {
@@ -104,8 +104,8 @@ class F1Thread extends Thread {
                                         fp[i] = 0;
                                         fn[i] = 0;
                               }
-                              for (double[] instance : Data.initialiseData().getKthFold(fold)) {
-                                        int target = (int) instance[Data.initialiseData().getNumberAttributes() - 1];
+                              for (double[] instance : Data.initialiseData().getTrainSet()) {
+                                        int target = (int) instance[Data.initialiseData().getNumberAttributes()];
                                         int output = (int) Interpreter.getInstance().Interpret(prog, instance);
                                         if (target == output) {
                                                   tp[target] += 1;
@@ -116,10 +116,10 @@ class F1Thread extends Thread {
                                         }
                               }
                               double precision = 0;
-                              double recall = 0; 
+                              double recall = 0;
                               for (int i = 0; i < Data.initialiseData().getNumberClasses(); i++) {
                                         precision += tp[i] + fp[i] > 0 ? (tp[i] / (tp[i] + fp[i])) : 0;
-                                        recall  += tp[i] + fn[i] > 0 ? (tp[i] / (tp[i] + fn[i])) : 0;
+                                        recall += tp[i] + fn[i] > 0 ? (tp[i] / (tp[i] + fn[i])) : 0;
                               }
                               /*
                               System.out.println("pecision  :" + Arrays.toString(precision));
@@ -130,15 +130,15 @@ class F1Thread extends Thread {
                               f1 = (2.0 * (precision * recall) / (precision + recall));
                               latch.countDown();
                     } catch (Exception e) {
-                              e.printStackTrace(); 
+                              e.printStackTrace();
                     }
 
           }
 
           public double getF1() {
-                    return f1;
+                    return f1 >= 0 ? f1 : 0;
           }
-          
+
 }
 
 class CompetitionRunnerThread extends Thread {
@@ -315,6 +315,46 @@ class RunnerThread extends Thread {
           @Override
           public void run() {
                     runner.execute();
+                    StringBuilder content = new StringBuilder();
+                    content.append("problem, instance, best_solution_value, elapsed_time, run_time, total_heuristic_call \n");
+                    String problem = "";
+                    switch (this.domain) {
+                              case 0:
+                                        problem = "SAT";
+                                        break;
+                              case 1:
+                                        problem = "BinPacking";
+                                        break;
+                              case 2:
+                                        problem = "PersonnelScheduling";
+                                        break;
+                              case 3:
+                                        problem = "FlowShop";
+                                        break;
+                              case 4:
+                                        problem = "TSP";
+                                        break;
+                              case 5:
+                                        problem = "VRP";
+                                        break;
+                              default:
+                                        System.exit(-1);
+                    }
+                    content
+                              .append(problem).append(" ,")
+                              .append(this.instance).append(" ,")
+                              .append(this.runner.getBestSolutionValue()).append(" ,")
+                              .append(this.runner.getElapsedTime() / 1000.0).append(" ,")
+                              .append(this.runner.getRunTime() / 1000.0).append(" ,")
+                              .append(this.runner.getTotalHeuristicCalls()).append(" \n");
+                    synchronized(this){
+                              try {
+                                        Path pathtofile = Paths.get("./" +problem+"-"+this.instance+".csv");
+                                        Files.write(pathtofile, content.toString().getBytes(), StandardOpenOption.CREATE);
+                              } catch (Exception ex) {
+                                        ex.printStackTrace();
+                              }
+                    }
                     latch.countDown();
           }
 

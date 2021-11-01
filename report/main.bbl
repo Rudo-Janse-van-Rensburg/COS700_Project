@@ -1,0 +1,74 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{WOGB12}
+
+\bibitem[AO14]{astaozcan}
+Shahriar Asta and Ender Ozcan.
+\newblock {\em An Apprenticeship Learning Hyper-Heuristic for Vehicle Routing
+  in HyFlex}.
+\newblock IEEE, 2014.
+
+\bibitem[CDF{\etalchar{+}}12]{hhcds}
+T.~Cichowics, M.~Drozdowski, M.~Frankiewicz, G.~Pawlak, F.~Rytwinski, and
+  J.~Wasilewski.
+\newblock Hyper-heuristics for cross-domain search.
+\newblock {\em Bulletin of the Polish Academy of Sciences}, pages 801--802,
+  2012.
+
+\bibitem[CKS00]{hyperheuristic2000}
+P.~Cowling, G.~Kendall, and E.~Soubeiga.
+\newblock A hyperheuristic approach for scheduling a sales summit.
+\newblock {\em Selected Papers of the Third International Conference on the
+  Practice And Theory of Automated Timetabling{(PATAT 2000)}}, pages 176--190,
+  2000.
+
+\bibitem[EMM{\etalchar{+}}13]{hhsoa}
+Burke E., Gendreau M., Hyde M., Kendall G., Ochoa G., and Özcan E.
+\newblock Hyper-heuristics: A survey of the state of the art.
+\newblock {\em Journal of Operational Research Society 64}, pages 1695--1724,
+  2013.
+
+\bibitem[GM11]{chesc}
+Ochoa G and Hyde M.
+\newblock The cross-domain heuristic search challenge, 2011.
+\newblock Accessed: 2021-10-30.
+
+\bibitem[NGR15]{gehh}
+Sabar N.R., Kendall G., and Qu~R.
+\newblock {A dynamic multi-armed bandit-gene expression programming
+  hyper-heuristic for combinatorial optimization problems}.
+\newblock {\em IEEE Transactions on Cybernetics}, pages 217--228, 2015.
+
+\bibitem[NP18]{hyperheuristictas}
+Rong~Qu Nelishia~Pillay.
+\newblock {\em Hyper-Heuristics: Theory and Applications}.
+\newblock Springer, Gewerbestrasse 11, 6330 Cham, Switzerland, 2018.
+
+\bibitem[OGH{\etalchar{+}}12]{hyflex2012}
+Ochoa, G., Hyde, M., Curtois, T., Vazquez-Rodriguez, J.A., Walker, J.,
+  Gendreau, M., Kendall, G., McCollum, B., Parkes, A.J., Petrovic, S., Burke,
+  and E.K.
+\newblock {HyFlex: A Benchmark Framework for Cross-domain Heuristic Search}.
+\newblock In J.-K. Hao and M.~Middendorf, editors, {\em European Conference on
+  Evolutionary Computation in Combinatorial Optimisation{(EvoCOP~2012)}},
+  volume 7245 of {\em LNCS}, pages 136--147, Heidelberg, 2012. Springer.
+
+\bibitem[PSF10]{sgpc}
+Espejo P.G., Ventura S., and Herrera F.
+\newblock A survey on the application of genetic programming to classification.
+\newblock {\em IEEE Transactions on Systems, Man, and Cynbernetics, Part C
+  (Applications and Reviews)}, pages 121--144, 2010.
+
+\bibitem[RER17]{tdnn}
+Tyasnurita Raras, Ozcan Ender, and John Robert.
+\newblock Learning heuristic selection using a time delay neural network for
+  open vehicle routing.
+\newblock {\em IEEE Congress on Evolutionary Computation 2017}, pages 1--7,
+  2017.
+
+\bibitem[WOGB12]{ILS}
+D.~Walker, G.~Ochoa, M.~Gendreau, and E.~K. Burke.
+\newblock Vehicle routing and adaptive iterated local search within the hyflex
+  hyper-heuristic framework.
+\newblock {\em LION}, pages 265--276, 2012.
+
+\end{thebibliography}

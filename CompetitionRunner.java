@@ -30,11 +30,10 @@ public class CompetitionRunner extends Thread {
                     ExecutorService comp_service = Executors.newFixedThreadPool(CompetitionParameters.instance().domains * CompetitionParameters.instance().instances * CompetitionParameters.instance().numberofruns);
                     try {
                               List<RunnerThread> threads = new ArrayList<>();
-                              for (int problem = 0; problem < CompetitionParameters.instance().domains; problem++) {
-                                        for (int i = 0; i < CompetitionParameters.instance().instances; i++) {
+                              for (int i = 0; i < CompetitionParameters.instance().instances; i++) {
+                                        for (int problem = 0; problem < CompetitionParameters.instance().domains; problem++) {
                                                   for (int run = 0; run < CompetitionParameters.instance().numberofruns; run++) {
                                                             list_run_scores[problem][i] = new ArrayList<>();
-
                                                             RunnerThread thread = ThreadFactory.instance().getRunnerThread(
                                                                       latch,
                                                                       prog,
@@ -168,7 +167,7 @@ class CompetitionParameters {
 	 * instance - the selected instance of the problem domain. This should be between 0-4 inclusive
 	 * rng - select a random seed
            */
-          public final long time = 600000;//600000;  
+          public final long time = 600000;//600000;//600000;  
           public final Random rng;
 
           /* These are parameters were used for the competition, so if they are changed then the results may not be comparable to those of the competition

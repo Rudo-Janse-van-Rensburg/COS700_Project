@@ -11,8 +11,8 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
           public SelectivePeturbativeHyperHeuristic(Program prog, long seed) throws Exception {
                     super(seed);
                     this.prog = prog;
-                    this.attributes = new double[Data.initialiseData().getNumberAttributes() - 1];
-                    for (int i = 0; i < Data.initialiseData().getNumberAttributes()-1; i++) {
+                    this.attributes = new double[Data.initialiseData().getNumberAttributes()];
+                    for (int i = 0; i < Data.initialiseData().getNumberAttributes(); i++) {
                               this.attributes[i] = 0;
                     }
           }
@@ -24,7 +24,7 @@ public class SelectivePeturbativeHyperHeuristic extends HyperHeuristic {
                     }
                     this.attributes[i] = delta;
                     i ++;
-                    for (; i < attributes.length - 1; i++) {
+                    for (; i < Data.initialiseData().getNumberAttributes() - 1; i++) {
                               this.attributes[i] = this.attributes[i + 1];
                     }
                     this.attributes[i] = last_action;
