@@ -434,12 +434,13 @@
                 not to use too few generations are the search may not have converged and consequently result in underfitting. Using a maximum 
                 generation that is to large may result in overfitting.  
             }
-        \subsubsection*{Training Percent} \label{subsubsec:kf}
+        \subsubsection*{Number of Folds} \label{subsubsec:kf}
             \par{
                 \noindent
-                This parameter refers to the portion of the data-set to use when evaluating the quality of invdividuals. 
-                A value that is too large will result in the model overfitting and thus hinder generalisation. A value that is too small will result 
-                in underfitting.
+                This parameter refers to the number of samples the the data-set is divided into. This parameter effects the numbre of training instances in 
+                the training set when evaluating the object value (refer to \ref{subsubsec:objectivefunction})portion of the data-set to use when evaluating the quality of invdividuals. 
+                A value that is too large will result in the model underfitting. A value that is too small will result 
+                in overfitting.
             }
         \subsubsection*{Main Tree Max Depth} \label{subsubsec:mmd}
             \par{
@@ -1019,14 +1020,14 @@
                             \textbf{Parameter} & \textbf{Value} \\
                             \hline  
                             \nameref{subsubsec:mg} & 100 \\ 
-                            \nameref{subsubsec:kf} & 0.7 \\ 
+                            \nameref{subsubsec:kf} & 10 \\ 
                             \nameref{subsubsec:mmd} & 10 \\ 
                             \nameref{subsubsec:cmd} & 5 \\ 
-                            \nameref{subsubsec:ps} & 2000 \\ 
+                            \nameref{subsubsec:ps} & 1000 \\ 
                             \nameref{subsubsec:ts} & 4 \\ 
                             \nameref{subsubsec:car} & 0.5 \\ 
                             \nameref{subsubsec:mar} & 0.475 \\ 
-                            \nameref{subsubsec:har} & 0.5 \\
+                            \nameref{subsubsec:har} & 0.025 \\
                             \hline 
                         \end{tabular}
                         \caption{Parameter values used in the experiment.} 
@@ -1079,9 +1080,9 @@
                 \caption{Summary of GPHH on the various Problem Domains} 
             % \end{center}
         \end{table}
-        \newline
-        The following comparative summarised results were presented by Sabar et al. \cite{gehh}. 
-        \begin{table}[ht] 
+        \newpage
+        \noindent The following comparative summarised results were presented by Sabar et al. \cite{gehh}. 
+        \begin{table}[h!] 
             %\begin{center}
                 \small 
                 \centering
@@ -1098,11 +1099,8 @@
                 \end{tabular}
                 \caption{Comparison of SAT.} 
             % \end{center}
-        \end{table}
-        \newline 
-        It is clear that for Maximum Satisfiability domain, \textbf{GP-HH} performs poorly when compared to the other state of the art
-        algorithms.
-        \begin{table}[ht] 
+        \end{table} 
+        \begin{table}[h!] 
             %\begin{center}
                 \small 
                 \centering
@@ -1119,8 +1117,8 @@
                 \end{tabular}
                 \caption{Comparison of BinPacking.} 
             % \end{center}
-        \end{table}
-        \begin{table}[ht] 
+        \end{table} 
+        \begin{table}[h!] 
             %\begin{center}
                 \small 
                 \centering
@@ -1137,8 +1135,8 @@
                 \end{tabular}
                 \caption{Comparison of FlowShop.} 
             % \end{center}
-        \end{table}
-        \begin{table}[ht] 
+        \end{table}  
+        \begin{table}[h!] 
             %\begin{center}
                 \small 
                 \centering
@@ -1155,8 +1153,9 @@
                 \end{tabular}
                 \caption{Comparison of PersonnelScheduling.} 
             % \end{center}
-        \end{table}
-        \begin{table}[ht] 
+        \end{table} 
+        \newpage
+        \begin{table}[h!] 
             %\begin{center}
                 \small 
                 \centering
@@ -1173,8 +1172,8 @@
                 \end{tabular}
                 \caption{Comparison of VehicleRouting.} 
             % \end{center}
-        \end{table}
-        \begin{table}[ht] 
+        \end{table} 
+        \begin{table}[h!] 
             %\begin{center}
                 \small 
                 \centering
@@ -1191,17 +1190,26 @@
                 \end{tabular}
                 \caption{Comparison of TSP.} 
             % \end{center}
-        \end{table}
-
+        \end{table} 
+        \noindent For the SAT domain \textbf{GP-HH} performs considerably poorly when compared to the other state of the hyper-heuristics; having a 
+        higher object value, average and standard deviation - suggesting that it performs more erratically here. \newline 
+        \newline 
+        For the BinPacking, FlowShop, PersonnelScheduling, Vehicle Routing and TSP domains \textbf{GP-HH} performs favourably when compared to the other state of the art algorithms; having a better best and average object 
+        function score. With the exception of TSP and VehicleRouting, even the standard deviation is also lower, indicating that the the hyper-heuristic
+        performs more consistently than the competitors.
     }
-    
-\section{Discussion} \label{sec:discussion}
-    \par{
-
-    }
+\newpage
 \section{Conclusion} \label{sec:conclusion}
     \par{
-
+        This study aimed to investigate how effectively automating the design of a Production Rule Classifier Genetic Program based Selective 
+        Pertubative Hyper-Heuristic, and how well it could be applied to multiple problem domains.\newline 
+        \newline 
+        With the exception of the Maximum Satisfiability problem domain, the proposed algorithm appeared to compared favourably against other 
+        state of the art Hyper-Heuristics which would suggest that the aim was accomplished. \newline 
+        \newline 
+        Considering that the effectiveness of producing Genetic Program classifiers is well established, the ability of the Genetic Program to 
+        make inferences about the solution space by means of the attributes pertaining to the state of the search should come as no surprise. \newline 
+        \newline  
     }
 \newpage
 % \bibliographystyle{ieeetr}
