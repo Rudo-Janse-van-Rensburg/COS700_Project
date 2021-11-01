@@ -22,7 +22,7 @@
 \contentsline {subsection}{\numberline {5.1}Hyper-Parameters}{12}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Genetic Program Algorithm}{14}{subsection.5.2}%
 \contentsline {subsection}{\numberline {5.3}Data-set}{19}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Algorithm}{21}{subsection.5.4}%
-\contentsline {subsection}{\numberline {5.5}Experimental Setup}{22}{subsection.5.5}%
-\contentsline {section}{\numberline {6}Discussion}{23}{section.6}%
-\contentsline {section}{\numberline {7}Conclusion}{23}{section.7}%
+\contentsline {subsection}{\numberline {5.4}Algorithm}{20}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Experimental Setup}{23}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Discussion}{24}{section.6}%
+\contentsline {section}{\numberline {7}Conclusion}{24}{section.7}%

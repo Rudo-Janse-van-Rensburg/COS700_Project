@@ -674,7 +674,7 @@
                 such that fitter individuals have a greater chance of being nominated. Note that poorer candidates can be nominated, however unlikely, so as to mitigate \textit{Elitism}, which ultimately
                 causes premature convergence by impeding genetic diversity.\newline 
                 \newline 
-                For the purpose of selection, \textbf{Tournament Selection} is used in this experiment. A number of individuals (refer to \nameref{subsubsec:ts}) are uniformly randomly chosen to enter a 
+                For the purpose of selection, \textbf{Tournament Selection} is used in this experiment. A number of individuals (refer to \nameref{subsubsec:ts}) are uniformly randomly and exhaustively chosen to enter a 
                 tournament. The individual with the best fitness (largest in the case of a maximisation, smallest in the case of minimisation) is the winner of the tournament, and it is used as the candidate parent. 
             }
         \newpage
@@ -760,57 +760,214 @@
                      s_{i} = \{ d_{i}, h_{i}, d_{i-1},h_{i-1},...,d_{i-n},h_{i-n} \} 
                 \end{equation} 
                 Where $d_i$ is the change in the objective function from iteration $i-1$ to $i$ and $h_i$ is the heuristic applied to $s_{i-1}$ to get to state $s_i$.
-            }
-    \newpage
+            } 
     \subsection{Algorithm}  
         \par{
             \noindent The algorithm has 2 phases; the training phase and the problem-solving phase.\newline 
             \newline 
-            \textbf{Training} - Part of the first phase involves  creating an initial population by means of the 
-            Ramped-Half-and-Half method, which Algorithm \ref{alg:rampedhalfandhalf} describes.
-            \begin{algorithm}
-                \caption{Ramped Half-and-Half Method} 
-                \label{alg:rampedhalfandhalf}
-                \SetAlgoLined
-                \SetKwInOut{Input}{inputs}
-                \SetKwInOut{Output}{output}
-                %Function Definition%
-                \SetKwProg{CreateInitialPopulation}{CreateInitialPopulation}{}{}
-                \CreateInitialPopulation{$(P,D_{max})$}{
-                    \Input{Population size $P$; an \texttt{Max Depth} $D_{max}$}
-                    \Output{An \texttt{Population} denoted by $G$}
-                    %Function Body% 
-                    $G \gets \emptyset$ \; 
-                    \ForEach 
+        }
+        \subsubsection*{Training Phase}
+            \begin{minipage}{.6\linewidth}
+                \begin{algorithm}[H]
+                    \tiny
+                    \caption{Ramped Half-and-Half Method} 
+                    \label{alg:rampedhalfandhalf}
+                    \SetAlgoLined
+                    \SetKwInOut{Input}{inputs}
+                    \SetKwInOut{Output}{output}
+                    %Function Definition%
+                    \SetKwProg{CreateInitialPopulation}{CreateInitialPopulation}{}{}
+                    \CreateInitialPopulation
                     {
-                        %ForEach Condition%
-                        $d \in \{x \| x \in \mathbb{Z} \wedge 2 \leq x \leq D_{max} \}$
+                        %Function arguments%
+                        $(P,D_{max})$}
+                    {   
+                        %Function Body% 
+                        \Input{\texttt{Population size} $P$;\texttt{Max Depth} $D_{max}$}
+                        \Output{An \texttt{Population} denoted by $G$}
+                        
+                        $G \gets \emptyset$ \; 
+                        \ForEach 
+                        {
+                            %ForEach Condition%
+                            $d \in \{x \| x \in \mathbb{Z} \wedge 2 \leq x \leq D_{max} \}$
+                        }
+                        {
+                            $i \gets 0$ \;
+                            %ForEach Body%
+                            \For
+                            {
+                                %For Condition%
+                                $i <\frac{1}{2}\frac{P}{D_{max} - 2}$
+                            }
+                            {
+                                %For Body%
+                                $G \gets G \cup  Grow(d)$ \;
+                                $G \gets G \cup  Full(d)$ \;
+                                $i \gets i + 2 $\;
+                            } 
+                        } 
+                        %Return value%
+                        \KwRet{$G$}\; 
+                    } 
+                \end{algorithm} 
+                \vspace{1cm}
+            \end{minipage}
+            \begin{minipage}{.4\linewidth}
+                \par{
+                    First an initial population is created by means of the Ramped-Half-and-Half method so as to provide the search with a good 
+                    starting point, by maximising the genetic diversity and thus the dispersion of points in the search space.
+                }
+                \vspace{1cm}
+            \end{minipage}
+            \begin{minipage}{.4\textwidth}
+                \par{
+                    Thereafter, the search is moved by applying Genetic Operators to that initial population, and in that 
+                    way propagating good genetics. The number of individuals in a particular generation produced by each of the \nameref{subsubsec:geneticoperators} 
+                    are determined by the respective application rates and these are user-defined hyper-parameters. The search is terminated once it hits a threshold maximum generation, at 
+                    which point, the best program of the final generation is returned from the search. It is important to note that the data-set is shuffled before the start of each 
+                    new generation, so as to ensure that the programs do memorise noise in the dataset.  
+                }
+            \end{minipage}
+            \begin{minipage}{.5\textwidth}
+                \begin{algorithm}[H]
+                    \tiny
+                    \caption{Evolutionary Process} 
+                    \label{alg:evolution}
+                    \SetKwInOut{Input}{inputs}
+                    \SetKwInOut{Output}{output}
+                    %Function Definition%
+                    \SetKwProg{Evolution}{Evolution}{}{}
+                    \Evolution
+                    {
+                        %Function arguments%
+                        $(T,S,D)$
                     }
                     {
-                        $i \gets 0$ \;
-                        %ForEach Body%
-                        \For
+                        %Function Body%
+                        \Input{\texttt{Max Generation} $T$;\texttt{Population size} $S$;\texttt{Max Depth} $D$}
+                        \Output{\texttt{Optimal program} $P$}
+                        $t \gets 0$ \;
+                        $G \gets CreateInitialPopulation(S,D)$ \;
+                        \While
                         {
-                            %For Condition%
-                            $i <\frac{1}{2}\frac{P}{D_{max} - 2}$
+                            %While Condition%
+                            $t < T$
                         }
                         {
-                            %For Body%
-                            $G \gets G \cup  Grow(d)$ \;
-                            $G \gets G \cup  Full(d)$ \;
-                            $i \gets i + 2 $\;
+                            \texttt{shuffleDataset}$()$ \;
+                            %While Body%
+                            $ G' \gets \emptyset$\;
+                            $ c \gets 0$\;
+                            \For
+                            {
+                                $c < $\texttt{crossoverApplicationRate}
+                            }
+                            {
+                                $p_a \gets $ \texttt{TournamentSelection} $(G)$ \;
+                                $p_b \gets $ \texttt{TournamentSelection} $(G)$ \;
+                                $p'_a , p'_b \gets $ \texttt{Crossover} $(p_a , p_b)$ \;
+                                $ G' \gets G' \cup p'_a \cup p'_b$\;
+                                $ c \gets c + 2$ \;
+                            }
+                            $ m \gets 0$\;
+                            \For
+                            {
+                                $m < $\texttt{mutationApplicationRate}
+                            }
+                            {
+                                $p \gets $ \texttt{TournamentSelection} $(G)$ \;
+                                
+                                $p' \gets $ \texttt{Mutate} $(p)$ \;
+                                $ G' \gets G' \cup p'$\;
+                                $ m \gets m + 1$ \;
+                            }
+                            $ h \gets 0$\;
+                            \For
+                            {
+                                $h < $\texttt{hoistApplicationRate}
+                            }
+                            {
+                                $p \gets $ \texttt{TournamentSelection} $(G)$ \;
+                                
+                                $p' \gets $ \texttt{Hoist} $(p)$ \;
+                                $ G' \gets G' \cup p'$\;
+                                $ h \gets h + 1$ \;
+                            }
+                            $ G \gets G'$ \;
+                            $ t \gets t + 1$ \; 
                         }
-                    
-                    } 
-                    %Return value%
-                    \KwRet{$G$}\;
-                 
-                } 
-            \end{algorithm}
-            \noindent Thereafter, the initial population will be evolved until a predefined maximum generation, which effectively automates the design of
-            our Selection Hyper-Heuristic. 
+                        $ P \gets BestOfGeneration(G)$ \;
+                        \KwRet{$P$}\;
+                    }
+                \end{algorithm}
+                \vspace{0.7cm}
+            \end{minipage} 
             
-        }
+        \newpage
+        \subsubsection*{Problem-Solving Phase}  
+            \par{
+                \begin{algorithm}[H] 
+                    \caption{GP-based Selection Hyper-Heuristic} 
+                    \label{alg:gpsphh}
+                    \SetAlgoLined
+                    \SetKwInOut{Input}{inputs}
+                    \SetKwInOut{Output}{output}
+                    %Function Definition%
+                    \SetKwProg{SolveProblem}{SolveProblem}{}{}
+                    \SolveProblem
+                    {
+                        %Function arguments%
+                        $(\rho,\varsigma,\omega ,\phi,\delta)$}
+                    {   
+                        %Function Body% 
+                        \Input{
+                            \texttt{Problems} $\rho$;
+                            \texttt{Time Limit} $\varsigma$;
+                            \texttt{Max Generation} $\omega$; 
+                            \texttt{Population size} $\phi$;
+                            \texttt{Max Depth} $\delta $
+                        }
+                        \Output{
+                            \texttt{Optimal Solutions} $\chi$
+                        }
+                        \tcc{Acquire an optimal Program $H$} \
+                        $P \gets $ \texttt{Evolution}$(\omega,\phi,\delta )$ \;
+                        \tcc{Start with an empry set of Solutions for $\rho$}\
+                        $\chi  \gets \emptyset$\;
+                        \ForEach 
+                        {
+                            %ForEach Condition%
+                            $\rho_i \in \rho$
+                        }
+                        {
+                            
+                            %ForEach Body%
+                            \texttt{initialiseSolutionInMemory} $(\chi _i)$\;
+                            \texttt{loadProblem}$(\rho_i)$ \;
+                            $O \gets \emptyset$ \;
+                            $C \gets \emptyset$ \;
+                            \tcc{Start time} \
+                            $l \gets 0$ \;
+                            \Do{
+                                %Do condition%
+                                \texttt{currentTime()}$ - l < \varsigma$
+                            }
+                            {
+                                %Do body% 
+                                $O \gets O \cup$ \texttt{getObjectiveValue}$(\rho_i)$\;
+                                $c \gets $ \texttt{getHeuristicCategory}$(P,S,C)$ \; 
+                                $h \gets $ \texttt{getRandomLowLevelHeuristicFromCategory}$(c)$\;
+                                \textbf{Move acceptance: All-Moves}\;
+                                \texttt{applyLowLevelHeuristic}$(h)$\;
+                                $C \gets C \cup c$ \;
+                            }  
+                        } 
+                        %Return value%
+                        \KwRet{$\chi$}\; 
+                    } 
+                \end{algorithm}
+            }
     \newpage
     \subsection{Experimental Setup}
         \subsubsection*{Training}
