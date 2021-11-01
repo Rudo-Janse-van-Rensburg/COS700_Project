@@ -331,7 +331,9 @@
                 a class of the classifier. \newline 
                 \newline 
                 \noindent \textbf{Condition Sub-Tree} \newline 
-                The 
+                The sole terminal of the condition sub-tree is the attribute terminal, which represents the value of an attribute in the instance being classified. 
+                The function set is comprised of 4 categories of operations - relational, arithmetic, bitwise and logical - and each take 2 arguments. Relational functions include 
+                $>,<,\leq,\geq,\neq$. Arithmetic functions include $+,-,\div,\times$. Bitwise functions include $\|, \&$. Logical functions include $OR, AND$.
                 \begin{figure}[h!]
                     \begin{minipage}[c]{0.5\textwidth}
                         \centering
@@ -384,14 +386,29 @@
                         \subcaption{Terminals}
                     \end{minipage}
                     \caption{Summary of Primitives}
-                \end{figure}
-
-                
-
+                \end{figure} 
+            }
+        \newpage
+        \subsubsection*{Genetic Operators}\label{subsubsec:geneticoperators}
+            \par{
+                \noindent \textbf{Crossover} - Crossover is a local-search operator that drives convegence by exploiting what has been explored by the search space. It accomplishes this 
+                by selecting a pair of candidate parents from the population, uniformly randomly selecting crossover-points on each parent, then swapping the sub-trees rooted 
+                at those points on each tree. In this wasy, genetic material is combined from both parents. To ensure that trees maintain there validity strong-typing is 
+                enforced, whereby only nodes in the main tree can be crossed over with one another, and only nodes in the condition sub-trees can be crossoved over with
+                one another.\newline 
+                \newline 
+                \textbf{Mutation} - Mutation is a global-search operator that drives divergence by exploring areas of the search space. It does this by selecting a sole candidate
+                parent from the population, uniformly randomly selecting a mutation-point, then recreating the sub-tree rooted at that point. In this way, new genetic material is 
+                introduced and thereby enhancing genetic diversity of the population.\newline 
+                \newline 
+                \textbf{Hoist} - Hoist is an operator with both explorative and exploitative qualities. It accomplishes this by selecting a parent from the population, 
+                uniformly randomly selecting a hoist-point, then making that point the root of the off-spring. In this way, it exploits the genetics of its parent, while exploring 
+                the neighbourhood thereof. 
+            }
+        \subsubsection*{Selection Method} \label{subsubsec:selection}
+            \par{
                 
             }
-        \subsubsection*{Genetic Operators}\label{subsubsec:geneticoperators}
-        \subsubsection*{Selection Method} \label{subsubsec:selection}
         \subsubsection*{Objective Function}
     \subsection{Data-set}
     \subsection{Experimental Setup}

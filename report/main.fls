@@ -1,8 +1,8 @@
-PWD /media/rudo/Storage/02 - Homework/Computer Science/Honours/COS 700/Project/Report
+PWD /media/rudo/Storage/02 - Homework/Computer Science/Honours/COS 700/Project/SelectivePeturbativeHyperHeuristic/src/COS700_Project/report
 INPUT /usr/local/texlive/2021/texmf.cnf
 INPUT /usr/local/texlive/2021/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2021/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /media/rudo/Storage/02 - Homework/Computer Science/Honours/COS 700/Project/Report/main.tex
+INPUT /media/rudo/Storage/02 - Homework/Computer Science/Honours/COS 700/Project/SelectivePeturbativeHyperHeuristic/src/COS700_Project/report/main.tex
 OUTPUT main.log
 INPUT /usr/local/texlive/2021/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2021/texmf-dist/tex/latex/base/article.cls
