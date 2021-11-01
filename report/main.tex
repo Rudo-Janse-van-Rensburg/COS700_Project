@@ -14,6 +14,10 @@
 \usepackage{tabularx} 
 \usepackage{qtree}
 \usepackage{subcaption}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\usepackage{tikz}
+
 \usepackage[ruled,vlined, linesnumbered]{algorithm2e}
 \SetKwRepeat{Do}{do}{while}
 \newtheorem{definition}{Definition}[section]
@@ -128,7 +132,7 @@
             The second objective of the projects encompasses the development and construction of a novel 
             Genetic Programming solution to Automate the Design of Selective Perturbative Hyper-Heuristics, 
             and which specifically represents the tasks as one of a classification nature. The classification 
-            capacity of Genetic Programming has been thoroughly demonstrated Espejo et al \cite{sgpc}, and it
+            capacity of Genetic Programming has been thoroughly demonstrated Espejo Espejo et al. \cite{sgpc}, and it
             is this capacity that the proposed algorithm will attempt to harness.
         }
     \subsection{Layout}
@@ -396,18 +400,18 @@
         makes use of an Apprenticeship Learning Hyper-Heuristic (ALHH) approach 
         for the Vehicle Routing problem, and compares its performance to that of 
         the winning algorithm of CHeSC 2011, Adaptive Hyper-Heuristic(AdapHH) as well 
-        as 2 newer approaches - the P-Hunter algorithm et al   and an algorithm 
-        based on Iterated Local Search (AdOr-ILS) et al \cite{ILS} . The result of 
+        as 2 newer approaches - the P-Hunter algorithm Ip et al. \cite{phunter}   and an algorithm 
+        based on Iterated Local Search (AdOr-ILS) proposed by Walker et al. \cite{ILS} . The result of 
         this experiment shows that ALHH outperforming all the competing algorithms and 
         conclusively demonstrates the ALHH’s comparative success in generalizing actions of 
         the expert, even in for unknown problem instances.\newline 
         \newline 
-        In another paper et al \cite{tdnn} , a proposed solutions makes use of a Time Delay Neural
+        In another paper Raras et al. \cite{tdnn} , a proposed solutions makes use of a Time Delay Neural
         Network (TDNN) as an apprenticeship learning hyper-heuristic adhering
         to a learning by demonstration approach. The result of the experiment alludes
         empirically to that fact that exposing richer information to the expert has the
         capacity to generate hyper-heuristics with improved generalising capabilities.
-        Another paper by et al \cite{gehh} proposes a dynamic multi-armed bandit-gene expression programming
+        Another paper by Sabar et al. \cite{gehh} proposes a dynamic multi-armed bandit-gene expression programming
         hyper-heuristic for combinatorial optimisation problems(GEP-HH) to automat-
         ically evolve the hyper-heuristic acceptance criteria. The effectiveness of the
         algorithm is demonstrated by evaluating its performance against the top 5 rank-
@@ -696,41 +700,251 @@
                 \end{figure} 
             }
     \subsection{Data-set}
-            
-    \subsection{Experimental Setup}
         \par{
-            \begin{table}[ht]
-                \centering
-                %\begin{center}
-                    \small 
-                    \begin{tabular}{ | l | c | }
-
-                        \hline
-                        \textbf{Parameter} & \textbf{Value} \\
-                        \hline  
-                        \nameref{subsubsec:mg} & 100 \\
-                        \hline 
-                        \nameref{subsubsec:kf} & 0.7 \\
-                        \hline 
-                        \nameref{subsubsec:mmd} & 10 \\
-                        \hline 
-                        \nameref{subsubsec:cmd} & 5 \\
-                        \hline 
-                        \nameref{subsubsec:ps} & 1000 \\
-                        \hline 
-                        \nameref{subsubsec:ts} & 4 \\
-                        \hline 
-                        \nameref{subsubsec:car} & 0.5 \\
-                        \hline 
-                        \nameref{subsubsec:mar} & 0.475 \\
-                        \hline 
-                        \nameref{subsubsec:har} & 0.5 \\
-                        \hline 
-                    \end{tabular}
-                    \caption{Parameter values used in the experiment.} 
-               % \end{center}
-            \end{table} 
+            \noindent The data-set used to train the classifiers is quintessential in allowing the classifiers to make inferrences and learn about the 
+            Heuristic space, and by extension, how effective the Hyper-Heuristic will be.  
         }
+        \subsubsection*{Data-Engineering}
+            \par{
+                The data-set is not wholely original, as it was derived from the data-set used by Raras et al. \cite{tdnn}, whereby a memory of the last 8 changes in objective 
+                function where used to select one of 12 low-level heuristics as specified within HyFlex and described in a paper by Walker et al. \cite{ILS}. However, their proposed algorithm (and the data-set) where specific to the HyFlex Open Vehicle Routing 
+                problem. For the purpose of producing a cross-domain Hyper-Heuristic, the data-set required to be adjusted.\newline 
+                \newline 
+                One glaring problem with using the data-set used by Raras et al. \cite{tdnn} is that not all Problem Domains in the CHeSC 2011 competition have the same number
+                of low-level heuristics, nor are the low-level heuristics necessarily the same. However, each and every problem domain has the same number of 
+                low-level heuristic categories. Thus, in order to make the data-set more generally applicable (to different problem domains), the low-level heuristics need to be 
+                mapped to their respective categories. 
+                \newline
+                \begin{table}[ht]
+                    \centering
+                    %\begin{center}
+                        \small 
+                        \begin{tabular}{ | c | c | } 
+                            \hline
+                            \textbf{Parameter} & \textbf{Category} \\
+                            \hline  
+                            Two-Opt & Mutational \\
+                            \hline 
+                            Or-Opt & Mutational \\
+                            \hline 
+                            Shift & Mutational \\
+                            \hline 
+                            Interchange & Mutational \\
+                            \hline 
+                            Time-based radial ruin & Ruin and Recreate \\
+                            \hline 
+                            Location-based radial ruin & Ruin and Recreate \\
+                            \hline 
+                            Shift & Local Search \\
+                            \hline 
+                            Interchange & Local Search\\
+                            \hline 
+                            Two-opt & Local Search \\
+                            \hline 
+                            GENI & Local Search \\
+                            \hline
+                            Combine & Crossover \\
+                            \hline
+                            Longest Combine & Crossover \\
+                            \hline
+                        \end{tabular}
+                        \caption{The 8 low-level heuristics and their Categories.} 
+                   % \end{center}
+                \end{table}
+                To further enhance the data-set, a memory buffer of the last 8 low-level heuristic selected are engineered, in line with the memory buffer of 
+                the last 8 deltas (change in objective function). \newline 
+                \newline 
+                Finally, we have a dataset in which a state $s_i$ is defined in equation \ref{eq:state}
+                \begin{equation} \label{eq:state}
+                     s_{i} = \{ d_{i}, h_{i}, d_{i-1},h_{i-1},...,d_{i-n},h_{i-n} \} 
+                \end{equation} 
+                Where $d_i$ is the change in the objective function from iteration $i-1$ to $i$ and $h_i$ is the heuristic applied to $s_{i-1}$ to get to state $s_i$.
+            }
+    \newpage
+    \subsection{Algorithm}
+        \par{
+            The algorithm has 2 phases; the training phase and the problem-solving phase.
+            \begin{algorithm}
+                \SetAlgoLined
+                \SetKwInOut{Input}{inputs}
+                \SetKwInOut{Output}{output}
+                %Function Definition%
+                \SetKwProg{CreateInitialPopulation}{CreateInitialPopulation}{}{}
+                \CreateInitialPopulation{$P,D_{max}$}{
+                    \Input{Population size $P$; an \texttt{Max Depth} database $D_{max}$}
+                    \Output{An \texttt{Population} denoted by $G$}
+                    %Function Body%
+                    $G \gets \emptyset$ \;
+                    \ForEach 
+                    {
+                        %Condition%
+                        depth $d_i \in D_{max}$
+                    }
+                    {
+                        %Body%
+                    }
+                    %Return value%
+                    \KwRet{$G$}\;
+                }  
+            \end{algorithm}
+ 
+        }
+    \newpage
+    \subsection{Experimental Setup}
+        \subsubsection*{Training}
+            \par{
+                \begin{figure}[h!]
+                    \begin{center}
+                        \begin{tikzpicture}
+                            \centering
+                            \begin{axis}[
+                                xlabel=Generation,
+                                ylabel=Average Fitness,
+                                width=0.9\textwidth,height=5cm,
+                                legend style={at={(0.0,.91)},anchor=west}
+                            ]% Add values and attributes for the first plot 
+                                \addplot[color=blue,mark=.] coordinates {
+                                    (0,0.1720092351746414 )
+                                    (1,0.22827411458135435 )
+                                    (2,0.2598164508107516 )
+                                    (3,0.2695748560021816 )
+                                    (4,0.2813380513609234 )
+                                    (5,0.30563668282185963 )
+                                    (6,0.3275982788561947 )
+                                    (7,0.33439596636803476 )
+                                    (8,0.3511874210524675 )
+                                    (9,0.3501013453703306 )
+                                    (10,0.3646729305581925 )
+                                    (11,0.38412688457908883 )
+                                    (12,0.3240496684890505 )
+                                    (13,0.3371717651660749 )
+                                    (14,0.3784134202171267 )
+                                    (15,0.4178680234432069 )
+                                    (16,0.4110946823320159 )
+                                    (17,0.44229304922064017 )
+                                    (18,0.4527064143366971 )
+                                    (19,0.410346486447574 )
+                                    (20,0.45526793137752586 )
+                                    (21,0.3984897698564815 )
+                                    (22,0.45859274042686204 )
+                                    (23,0.4550616981965662 )
+                                    (24,0.4684706097241164 )
+                                    (25,0.43199697096366557 )
+                                    (26,0.4675557471530718 )
+                                    (27,0.4769742830535652 )
+                                    (28,0.4708552489100829 )
+                                    (29,0.4443600245599349 )
+                                    (30,0.4528749552127181 )
+                                    (31,0.431982295129391 )
+                                    (32,0.47809286463876055 )
+                                    (33,0.47424643321872717 )
+                                    (34,0.4808699812420769 )
+                                    (35,0.48791072881621295 )
+                                    (36,0.4644563660055484 )
+                                    (37,0.48875317042938127 )
+                                    (38,0.4754087950501023 )
+                                    (39,0.4863014985104761 )
+                                    (40,0.44721391675442995 )
+                                    (41,0.4605080061387104 )
+                                    (42,0.4805316279651172 )
+                                    (43,0.46503345891961617 )
+                                    (44,0.44471870033420474 )
+                                    (45,0.4585329287540254 )
+                                    (46,0.4647678674148425 )
+                                    (47,0.4929385786376247 )
+                                    (48,0.48980777548675863 )
+                                    (49,0.45179775018853 )
+                                    (50,0.47034410061340026 )
+                                    (51,0.4634821628146253 )
+                                    (52,0.4893602666417894 )
+                                    (53,0.48879856654320764 )
+                                    (54,0.4770386129987109 )
+                                    (55,0.4510476389457079 )
+                                    (56,0.4854322077679282 )
+                                    (57,0.47674788486645864 )
+                                    (58,0.48294279212821567 )
+                                    (59,0.4740795420207156 )
+                                    (60,0.46546546315141285 )
+                                    (61,0.4692071530383252 )
+                                    (62,0.48420028639710283 )
+                                    (63,0.49260994731864777 )
+                                    (64,0.4819016411804831 )
+                                    (65,0.49432755563455083 )
+                                    (66,0.48831457920891264 )
+                                    (67,0.49220082474127874 )
+                                    (68,0.47952326320035765 )
+                                    (69,0.4862466024884558 )
+                                    (70,0.47345486459775393 )
+                                    (71,0.4938709459837964 )
+                                    (72,0.45973910721005834 )
+                                    (73,0.4833415778279418 )
+                                    (74,0.48830749224691905 )
+                                    (75,0.48139967750790535 )
+                                    (76,0.4928672476242067 )
+                                    (77,0.48894953753675485 )
+                                    (78,0.477832584576695 )
+                                    (79,0.47393054525311207 )
+                                    (80,0.4611256647471626 )
+                                    (81,0.4877673688421303 )
+                                    (82,0.48668456474301475 )
+                                    (83,0.4978151894055181 )
+                                    (84,0.489637828636316 )
+                                    (85,0.497389539557108 )
+                                    (86,0.47179599282805157 )
+                                    (87,0.46698047035273477 )
+                                    (88,0.4660732331619189 )
+                                    (89,0.49297040452169755 )
+                                    (90,0.4811752251850691 )
+                                    (91,0.4724037548034369 )
+                                    (92,0.4949612856678532 )
+                                    (93,0.5004553340718693 )
+                                    (94,0.45136577553634605 )
+                                    (95,0.480487351538623 )
+                                    (96,0.4918244219391049 )
+                                    (97,0.48511625417198345 )
+                                    (98,0.48597528362491393 )
+                                    (99,0.4892341187324779)
+                                };
+                                \addplot[color=green,mark=-] coordinates {
+                                    (0,0.5) 
+                                    (99,0.5)
+                                };
+                                \legend{F1 scores}
+                            \end{axis}
+                        \end{tikzpicture}
+                    \end{center}
+                    \caption{Graph showing the average score of each generation}
+                \end{figure} 
+                \noindent From the graph, it is clear that the algorithm converged as after about generation 40 the graph plateaus. 
+                
+            } 
+        \subsubsection*{Parameter Values}
+            \par{
+                The parameter values were determined empirically.
+                \begin{table}[h!]
+                    \centering
+                    %\begin{center}
+                        \small 
+                        \begin{tabular}{ | l | c | }
+
+                            \hline
+                            \textbf{Parameter} & \textbf{Value} \\
+                            \hline  
+                            \nameref{subsubsec:mg} & 100 \\ 
+                            \nameref{subsubsec:kf} & 0.7 \\ 
+                            \nameref{subsubsec:mmd} & 10 \\ 
+                            \nameref{subsubsec:cmd} & 5 \\ 
+                            \nameref{subsubsec:ps} & 2000 \\ 
+                            \nameref{subsubsec:ts} & 4 \\ 
+                            \nameref{subsubsec:car} & 0.5 \\ 
+                            \nameref{subsubsec:mar} & 0.475 \\ 
+                            \nameref{subsubsec:har} & 0.5 \\
+                            \hline 
+                        \end{tabular}
+                        \caption{Parameter values used in the experiment.} 
+                % \end{center}
+                \end{table} 
+            }
        
 
 \section{Discussion} \label{sec:discussion}

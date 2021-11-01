@@ -3,44 +3,46 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: alpha.bst
 Database file #1: myBibFile.bib
-You've used 12 entries,
+Warning--can't use both author and editor fields in phunter
+You've used 13 entries,
             2543 wiz_defined-function locations,
-            633 strings with 6799 characters,
-and the built_in function-call counts, 6450 in all, are:
-= -- 634
-> -- 393
+            637 strings with 6930 characters,
+and the built_in function-call counts, 6863 in all, are:
+= -- 669
+> -- 424
 < -- 11
-+ -- 147
-- -- 143
-* -- 472
-:= -- 1038
-add.period$ -- 37
-call.type$ -- 12
-change.case$ -- 102
-chr.to.int$ -- 12
-cite$ -- 12
-duplicate$ -- 238
-empty$ -- 387
-format.name$ -- 153
-if$ -- 1332
++ -- 160
+- -- 155
+* -- 505
+:= -- 1111
+add.period$ -- 40
+call.type$ -- 13
+change.case$ -- 109
+chr.to.int$ -- 13
+cite$ -- 14
+duplicate$ -- 253
+empty$ -- 412
+format.name$ -- 166
+if$ -- 1410
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 12
-newline$ -- 64
-num.names$ -- 38
-pop$ -- 111
+missing$ -- 14
+newline$ -- 69
+num.names$ -- 41
+pop$ -- 121
 preamble$ -- 1
-purify$ -- 116
+purify$ -- 125
 quote$ -- 0
-skip$ -- 233
+skip$ -- 244
 stack$ -- 0
-substring$ -- 336
-swap$ -- 84
+substring$ -- 344
+swap$ -- 86
 text.length$ -- 11
 text.prefix$ -- 1
 top$ -- 0
-type$ -- 88
-warning$ -- 0
-while$ -- 59
-width$ -- 13
-write$ -- 159
+type$ -- 92
+warning$ -- 1
+while$ -- 62
+width$ -- 14
+write$ -- 171
+(There was 1 warning)

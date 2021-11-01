@@ -32,6 +32,11 @@ Ochoa G and Hyde M.
 \newblock The cross-domain heuristic search challenge, 2011.
 \newblock Accessed: 2021-10-30.
 
+\bibitem[ICXC12]{phunter}
+W.~Ip, C.~Chan, F.~Xue, and C.~Cheung.
+\newblock {\em A Hyper-Heuristic inspired by pearl hunting}.
+\newblock Springer, 2012.
+
 \bibitem[NGR15]{gehh}
 Sabar N.R., Kendall G., and Qu~R.
 \newblock {A dynamic multi-armed bandit-gene expression programming
