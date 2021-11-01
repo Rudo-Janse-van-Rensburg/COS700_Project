@@ -162,6 +162,264 @@
         In accordance with the aforementioned question, the main outcomes of the
         project are as follow:
     }
+    \section{Background} \label{sec:background} 
+    \subsection{Hyper-Heuristics}
+        \subsubsection{Introduction}
+            \par{
+                \noindent
+                Computationally hard search problems often necessitate a means of narrowing
+                the scope of the search to avoid traversing an entire search space to find a solution. 
+                For this purpose, Heuristics are used. In principal, heuristics serve this
+                purpose, however not without a few caveats. For one, the effectiveness of the
+                heuristic is reliant on the implementation and expertise of it’s designer, as well
+                as domain knowledge of the problem. Furthermore, these heuristics were inherently 
+                specialised to a particular problem for which they were designed, and
+                could not be applied generally \cite{hyperheuristictas}. To address these, researchers explored
+                means of automating the design of heuristics. Whilst this idea of automated
+                heuristic design can be traced back to the 1960’s, the term ”Hyper-Heuristic”
+                was only coined as recently as the early 2000’s \cite{hyperheuristic2000}. In laymen’s terms,
+                hyper-heuristics are heuristics for heuristics. A higher-level hyper-heuristic explores a search space 
+                of low-level heuristics which in turn describes the solution space \cite{hhcds}. The low-level 
+                heuristics would incorporate the difficulty or quality of a move within the solution space, and 
+                the Hyper-heuristic uses these to guide actions of the High-level heuristics.
+            }
+        \subsubsection{Taxonomy of Hyper-Heuristics}
+            \par{
+                \noindent 
+                Hyper-Heuristics can be classified by 2 primary criteria; the manner in which
+                the hyper-heuristic interacts with the heuristic space and the function of the
+                low-level heuristics constituting the heuristic space.\newline 
+                \newline 
+                Conceptually, Hyper-Heuristics interact with low-level heuristics constituting the
+                heuristic space in one of two ways; selection or generation.\newline 
+                \newline 
+                \cite{hhsoa}For a problem domain, either low-level heuristics are nominated to
+                create or optimise a solution for the problem - and in this way these low-level
+                heuristics are selected - or, new low-level heuristics are created - and this way
+                low-level heuristics are generated.
+                The difference between the two is in part when and where the low-level heuristic
+                is used in the search for a solution and by these attributes can be categorised
+                into 2 classes; constructive and perturbative.\newline 
+                \newline 
+                Typically, constructive heuristics are used to guide the creation of initial solutions
+                to a problem which will act as a basis whereupon optimisation techniques
+                can build - and in this way is involved in the construction of solutions.
+                On the other hand, the function of perturbative heuristics is to improve upon
+                existing initial solutions. To explore the Heuristic Space, changes are made to
+                an initial solution so as to perturb the solution space, which is explored by the
+                Hyper-Heuristic by means of the low-level heuristics.\newline 
+                \newline 
+                From the 2 aforementioned criteria for classifying Hyper-Heuristics, we end
+                up with 4 classes; Selective Constructive, Selective Perturbative, Generative
+                Constructive and Generative Perturbative - with Selective Pertubative Hyper-Heuritics being 
+                the focus of this research.
+            }
+        \subsubsection{Selection Perturbative Hyper-Heuristics}
+            \par{
+                \noindent
+                For a particular problem, there are a number of pre-defined low-level 
+                perturbative heuristics wh that the Hyper-heuristic will have to choose from. 
+                After an initial solution is created, the selective perturbative hyper-heuristic 
+                will iteratively apply a selected low-level heuristic to the solution, producing a new
+                refined solution. This process of iterative refinement is perpetuated so long as
+                there are observable improvements to the solution. The metric by which solutions are 
+                evaluated for improvement are problem specific \newline 
+                \newline 
+                \begin{algorithm}[H]
+                    \SetAlgoLined
+                    \KwResult{an optimal solution to a particular problem domain.}
+                    Create initial solution\;
+                    \Do{solutions have improved}{
+                        Select a low-level perturbative heuristic to apply\;
+                        Apply low-level heuristic to solution\;
+                    } 
+                    \Return The best solution
+                    \caption{How Selective Perturbative Hyper-Heuristics work}
+                    \label{alg:sphh}
+                \end{algorithm} 
+            }
+    \newpage
+    \subsection{Cross-Domain Hyper-Heuristics}
+            \subsubsection{Introduction}
+                \par{
+                    Cross-Domain Hyper-Heuristics aim to extend the capacity for generalisation,
+                    by widening the scope of a hyper-heuristic to multiple domains.\cite{hyperheuristictas}
+                }
+            \subsubsection{Cross-Domain Heuristics Search Challenge}
+                \par{
+                    The Cross-Domain Heuristic Search Challenge (CHeSC 2011)\cite{chesc} was a challenge
+                    that was held in 2011 which fostered new ideas in the area of research pertaining
+                    Cross-Domain Hyper-Heuristics, as well as producing a framework by which
+                    to construct these Cross-Domain Hyper-Heuristics; namingly HyFlex\cite{hyflex2012}.\newline 
+                    \newline 
+                    Given that CHeSC was a competition, it had a set of rules by which competitors
+                    had to abide. At the development phase of the competition, competitors were
+                    informed of 4 problem domains that their proposed solution would be tested
+                    against; namely Maximum Satisfiability, Bin Packing, Permutation Flowshop
+                    and Personnel Scheduling. The competition also involved 2 hidden problem domains, 
+                    namingly Travelling Salesman and the Vehicle Routing Problem. These
+                    hidden problem domains were not divulged to competitors at the development
+                    phase of the competition.\newline 
+                    \newline 
+                    During the testing phase, 3 known domains sampled from the 4 problem domains 
+                    as well as both of the hidden domains were used to evaluate the performance 
+                    of the competitors’ solutions. It was theorised that the solution that
+                    generalised best across domains would have performed better on the unknown
+                    domains \cite{hhcds}.
+                }
+            \subsubsection{HyFlex}
+                \par{
+                    HyFlex is a Java program which acts as a framework wherein several discrete
+                    combinatorial optimisation problems can be solved; namingly Maximum Satisfiability, 
+                    One-Dimensional Bin Packing, Permutation Flow Shop, Personnel
+                    Scheduling, Travelling Salesman and Vehicle Routing.\newline 
+                    \newline 
+                    HyFlex includes 4 problem specific categories of low-level perturbative heuristics
+                    6for the aforementioned problems, which include Mutational heuristics, Ruin-
+                    recreate heuristics, Local search heuristics and Crossover \cite{hyperheuristictas}.
+                    Mutational Heuristics function by performing swapping, changing, adding or
+                    deletion solution components in accordance with the improvements as determined by an 
+                    evaluation function.\newline 
+                    \newline 
+                    Ruin-recreate Heuristics function by removing parts of a solution, then using
+                    problem-specific low-level construction heuristics to build replacements for the
+                    removed parts.\newline 
+                    \newline 
+                    Local search Heuristics function by making minute alterations to randomly se-
+                    lected components of a solution and then accepting the changes that are at least
+                    as good as the original solution.\newline 
+                    \newline 
+                    Crossover function by applying crossover operators to a pair of selected solu-
+                    tions, producing one offspring which retains aspects of both selected solutions.
+                }
+    \subsection{Problem Domains}
+        \par{
+            \noindent  
+            \textit{Maximum Satisfiability} -
+            This is a problem whereby the satisfiability (whether it can evaluate as True)
+            of a given boolean formula needs to be determined by means of assigning any
+            boolean value to variables within the formula.\newline 
+            \newline 
+            \textit{Bin Packing} -
+            This is a problem whereby a certain number of items holding different sizes need
+            to be placed in a finite number of bins having limited capacity.\newline 
+            \newline
+            \textit{Permutation Flowshop} - 
+            This is a problem whereby a number of jobs need to be scheduled and processed
+            on a fixed number of machines with respect to a fixed sequence or order of
+            machines.\newline 
+            \newline
+            \textit{Personnel Scheduling} - 
+            This is a problem whereby a Personnel schedule needs to be constructed given
+            a plethora of constraints.\newline 
+            \newline
+            \textit{Travelling Salesman} - 
+            This is a problem whereby a Hamiltonian circuit needs to be constructed, where
+            cities represent vertexes, and edges are the walks between cities.\newline 
+            \newline
+            \textit{Vehicle Routing Problem} -
+            This a problem whereby the a number of closed routes are scheduled, each taken
+            by a vehicle, to perform a sequence of tasks, such that the vehicles start and
+            end at a depot.
+        }
+    \subsection{Genetic Programming}
+        \subsubsection{Introduction}
+            \par{
+                Genetic Programming is a class of Evolutionary Algorithms which, like
+                other Evolutionary Algorithms, is a multi-point search which relies on the Darwinian
+                principal of Survival of the fittest to iteratively and incrementally evolve
+                a population of unfit programs into progressively fitter programs with respect
+                to a given problem.\newline 
+                \newline
+                Genetic Programming is conceptually very similar to Genetic Algorithms, but
+                there is one significant difference; Genetic Programs explore a search space
+                composed of Programs(i.e. a Program Space), where the objective is to obtain
+                optimal behaviours.\newline 
+                \newline
+                In order to move the search, Genetic Operators are applied to candidates that
+                are selected by means of a selection methods which considers the individual’s
+                fitness function such that fitter individuals have a greater chance of being selected. 
+                In this way, the search is guided towards optimal areas of the Program
+                Space.\newline
+                \newline 
+                \begin{algorithm}[H]
+                    \SetAlgoLined
+                    \KwResult{a program with optimal behaviour with respect to a particular problem domain.}
+                    Create initial population\;
+                    \Repeat{a termination criteria is met}{
+                        Evaluate the fitnesses of the population\;
+                        Obtain parents by means of selection methods\;
+                        Apply Genetic Operators to parents to produce offspring\;
+                        Incorporate off-spring into the population;
+                    }  
+                    \Return The best program from the population 
+                    \caption{Overview of the Genetic Program algorithm}
+                    \label{alg:gp}
+                \end{algorithm} 
+            }
+        
+        \subsubsection{Classification}
+            \par{
+                \noindent
+                The process of automating the design of a Hyper-Heuristic will in someway need
+                to incorporate the capacity to identify which low-level heuristic to apply given a
+                particular solution. With the addition of one layer abstraction, where solutions
+                in the solution space are labelled with arbitrary classes, and associate each class
+                with predefined low-level heuristic, then the problem becomes one of classification; 
+                a function that Genetic Programs have been shown to perform well in
+                when compared to a variety of other techniques \cite{sgpc}.\newline 
+                \newline 
+                There are various representations that can be used to build classifiers with Genetic 
+                programs; namingly Arithmetic, Logical, Decision and Production Rule.\newline 
+                \newline 
+                Arithmetic Trees are trees that are built with Arithmetic operators as their
+                function set, and attributes of the data-set as their terminal set.\newline 
+                \newline 
+                Logical Trees are trees that are built with Logical operators as their function
+                set, and attributes of the data-set as their terminal set.\newline 
+                \newline 
+                Decision Trees are trees where nodes represent attributes of the data-set, and
+                edges represent value ranges for the attribute that the node from which they
+                stem represents.\newline 
+                \newline 
+                Production Rule Trees are trees that are built with condition logic, comprising 
+                of nodes that represent a logical ”If” operation. These take as arguments a
+                condition, an action to take should the condition hold true and finally an action
+                to take should the condition not hold. It is this kind of classifier that will be used. 
+            }
+\section{Related Work}  \label{sec:relwork}
+    \par{
+        This section will place emphasis on 2 different proposed algorithms 
+        which both incorporate classifiers in their algorithm design.\newline 
+        \newline 
+        In a paper by S. Asta and E. Özcan \cite{astaozcan}, a proposed solution 
+        makes use of an Apprenticeship Learning Hyper-Heuristic (ALHH) approach 
+        for the Vehicle Routing problem, and compares its performance to that of 
+        the winning algorithm of CHeSC 2011, Adaptive Hyper-Heuristic(AdapHH) as well 
+        as 2 newer approaches - the P-Hunter algorithm et al   and an algorithm 
+        based on Iterated Local Search (AdOr-ILS) et al \cite{ILS} . The result of 
+        this experiment shows that ALHH outperforming all the competing algorithms and 
+        conclusively demonstrates the ALHH’s comparative success in generalizing actions of 
+        the expert, even in for unknown problem instances.\newline 
+        \newline 
+        In another paper et al \cite{tdnn} , a proposed solutions makes use of a Time Delay Neural
+        Network (TDNN) as an apprenticeship learning hyper-heuristic adhering
+        to a learning by demonstration approach. The result of the experiment alludes
+        empirically to that fact that exposing richer information to the expert has the
+        capacity to generate hyper-heuristics with improved generalising capabilities.
+        Another paper by et al \cite{gehh} proposes a dynamic multi-armed bandit-gene expression programming
+        hyper-heuristic for combinatorial optimisation problems(GEP-HH) to automat-
+        ically evolve the hyper-heuristic acceptance criteria. The effectiveness of the
+        algorithm is demonstrated by evaluating its performance against the top 5 rank-
+        ing hyper-heuristics from CHeSC on the problem domains in HyFlex where it
+        ranks 4 out of 6; a promising result.\newline 
+        \newline 
+        Whilst Gene expression programming is a variant of Genetic Programming, the
+        approach taken in this paper is removed from the approach of using a classifier to
+        select low-level heuristics as observed in the previous 2 papers. This presents a
+        gap in research, whereby a Genetic Programming algorithm is used to automate
+        the design of Selective Perturbative Hyper-Heuristics for of a classifier.
+    }
 \section{Methodology} \label{sec:methodology}
     \subsection{Hyper-Parameters}
         \subsubsection*{Maximum Generation} \label{subsubsec:mg}
@@ -437,8 +695,8 @@
                     \caption{The $F_1$ score}
                 \end{figure} 
             }
-
     \subsection{Data-set}
+            
     \subsection{Experimental Setup}
         \par{
             \begin{table}[ht]
@@ -474,264 +732,7 @@
             \end{table} 
         }
        
-\section{Background} \label{sec:background} 
-    \subsection{Hyper-Heuristics}
-        \subsubsection{Introduction}
-            \par{
-                \noindent
-                Computationally hard search problems often necessitate a means of narrowing
-                the scope of the search to avoid traversing an entire search space to find a solution. 
-                For this purpose, Heuristics are used. In principal, heuristics serve this
-                purpose, however not without a few caveats. For one, the effectiveness of the
-                heuristic is reliant on the implementation and expertise of it’s designer, as well
-                as domain knowledge of the problem. Furthermore, these heuristics were inherently 
-                specialised to a particular problem for which they were designed, and
-                could not be applied generally \cite{hyperheuristictas}. To address these, researchers explored
-                means of automating the design of heuristics. Whilst this idea of automated
-                heuristic design can be traced back to the 1960’s, the term ”Hyper-Heuristic”
-                was only coined as recently as the early 2000’s \cite{hyperheuristic2000}. In laymen’s terms,
-                hyper-heuristics are heuristics for heuristics. A higher-level hyper-heuristic explores a search space 
-                of low-level heuristics which in turn describes the solution space \cite{hhcds}. The low-level 
-                heuristics would incorporate the difficulty or quality of a move within the solution space, and 
-                the Hyper-heuristic uses these to guide actions of the High-level heuristics.
-            }
-        \subsubsection{Taxonomy of Hyper-Heuristics}
-            \par{
-                \noindent 
-                Hyper-Heuristics can be classified by 2 primary criteria; the manner in which
-                the hyper-heuristic interacts with the heuristic space and the function of the
-                low-level heuristics constituting the heuristic space.\newline 
-                \newline 
-                Conceptually, Hyper-Heuristics interact with low-level heuristics constituting the
-                heuristic space in one of two ways; selection or generation.\newline 
-                \newline 
-                \cite{hhsoa}For a problem domain, either low-level heuristics are nominated to
-                create or optimise a solution for the problem - and in this way these low-level
-                heuristics are selected - or, new low-level heuristics are created - and this way
-                low-level heuristics are generated.
-                The difference between the two is in part when and where the low-level heuristic
-                is used in the search for a solution and by these attributes can be categorised
-                into 2 classes; constructive and perturbative.\newline 
-                \newline 
-                Typically, constructive heuristics are used to guide the creation of initial solutions
-                to a problem which will act as a basis whereupon optimisation techniques
-                can build - and in this way is involved in the construction of solutions.
-                On the other hand, the function of perturbative heuristics is to improve upon
-                existing initial solutions. To explore the Heuristic Space, changes are made to
-                an initial solution so as to perturb the solution space, which is explored by the
-                Hyper-Heuristic by means of the low-level heuristics.\newline 
-                \newline 
-                From the 2 aforementioned criteria for classifying Hyper-Heuristics, we end
-                up with 4 classes; Selective Constructive, Selective Perturbative, Generative
-                Constructive and Generative Perturbative - with Selective Pertubative Hyper-Heuritics being 
-                the focus of this research.
-            }
-        \subsubsection{Selection Perturbative Hyper-Heuristics}
-            \par{
-                \noindent
-                For a particular problem, there are a number of pre-defined low-level 
-                perturbative heuristics wh that the Hyper-heuristic will have to choose from. 
-                After an initial solution is created, the selective perturbative hyper-heuristic 
-                will iteratively apply a selected low-level heuristic to the solution, producing a new
-                refined solution. This process of iterative refinement is perpetuated so long as
-                there are observable improvements to the solution. The metric by which solutions are 
-                evaluated for improvement are problem specific \newline 
-                \newline 
-                \begin{algorithm}[H]
-                    \SetAlgoLined
-                    \KwResult{an optimal solution to a particular problem domain.}
-                    Create initial solution\;
-                    \Do{solutions have improved}{
-                        Select a low-level perturbative heuristic to apply\;
-                        Apply low-level heuristic to solution\;
-                    } 
-                    \Return The best solution
-                    \caption{How Selective Perturbative Hyper-Heuristics work}
-                    \label{alg:sphh}
-                \end{algorithm} 
-            }
-    \newpage
-    \subsection{Cross-Domain Hyper-Heuristics}
-            \subsubsection{Introduction}
-                \par{
-                    Cross-Domain Hyper-Heuristics aim to extend the capacity for generalisation,
-                    by widening the scope of a hyper-heuristic to multiple domains.\cite{hyperheuristictas}
-                }
-            \subsubsection{Cross-Domain Heuristics Search Challenge}
-                \par{
-                    The Cross-Domain Heuristic Search Challenge (CHeSC 2011)\cite{chesc} was a challenge
-                    that was held in 2011 which fostered new ideas in the area of research pertaining
-                    Cross-Domain Hyper-Heuristics, as well as producing a framework by which
-                    to construct these Cross-Domain Hyper-Heuristics; namingly HyFlex\cite{hyflex2012}.\newline 
-                    \newline 
-                    Given that CHeSC was a competition, it had a set of rules by which competitors
-                    had to abide. At the development phase of the competition, competitors were
-                    informed of 4 problem domains that their proposed solution would be tested
-                    against; namely Maximum Satisfiability, Bin Packing, Permutation Flowshop
-                    and Personnel Scheduling. The competition also involved 2 hidden problem domains, 
-                    namingly Travelling Salesman and the Vehicle Routing Problem. These
-                    hidden problem domains were not divulged to competitors at the development
-                    phase of the competition.\newline 
-                    \newline 
-                    During the testing phase, 3 known domains sampled from the 4 problem domains 
-                    as well as both of the hidden domains were used to evaluate the performance 
-                    of the competitors’ solutions. It was theorised that the solution that
-                    generalised best across domains would have performed better on the unknown
-                    domains \cite{hhcds}.
-                }
-            \subsubsection{HyFlex}
-                \par{
-                    HyFlex is a Java program which acts as a framework wherein several discrete
-                    combinatorial optimisation problems can be solved; namingly Maximum Satisfiability, 
-                    One-Dimensional Bin Packing, Permutation Flow Shop, Personnel
-                    Scheduling, Travelling Salesman and Vehicle Routing.\newline 
-                    \newline 
-                    HyFlex includes 4 problem specific categories of low-level perturbative heuristics
-                    6for the aforementioned problems, which include Mutational heuristics, Ruin-
-                    recreate heuristics, Local search heuristics and Crossover \cite{hyperheuristictas}.
-                    Mutational Heuristics function by performing swapping, changing, adding or
-                    deletion solution components in accordance with the improvements as determined by an 
-                    evaluation function.\newline 
-                    \newline 
-                    Ruin-recreate Heuristics function by removing parts of a solution, then using
-                    problem-specific low-level construction heuristics to build replacements for the
-                    removed parts.\newline 
-                    \newline 
-                    Local search Heuristics function by making minute alterations to randomly se-
-                    lected components of a solution and then accepting the changes that are at least
-                    as good as the original solution.\newline 
-                    \newline 
-                    Crossover function by applying crossover operators to a pair of selected solu-
-                    tions, producing one offspring which retains aspects of both selected solutions.
-                }
-        \subsection{Problem Domains}
-            \par{
-                \noindent  
-                \textit{Maximum Satisfiability} -
-                This is a problem whereby the satisfiability (whether it can evaluate as True)
-                of a given boolean formula needs to be determined by means of assigning any
-                boolean value to variables within the formula.\newline 
-                \newline 
-                \textit{Bin Packing} -
-                This is a problem whereby a certain number of items holding different sizes need
-                to be placed in a finite number of bins having limited capacity.\newline 
-                \newline
-                \textit{Permutation Flowshop} - 
-                This is a problem whereby a number of jobs need to be scheduled and processed
-                on a fixed number of machines with respect to a fixed sequence or order of
-                machines.\newline 
-                \newline
-                \textit{Personnel Scheduling} - 
-                This is a problem whereby a Personnel schedule needs to be constructed given
-                a plethora of constraints.\newline 
-                \newline
-                \textit{Travelling Salesman} - 
-                This is a problem whereby a Hamiltonian circuit needs to be constructed, where
-                cities represent vertexes, and edges are the walks between cities.\newline 
-                \newline
-                \textit{Vehicle Routing Problem} -
-                This a problem whereby the a number of closed routes are scheduled, each taken
-                by a vehicle, to perform a sequence of tasks, such that the vehicles start and
-                end at a depot.
-            }
-            \subsection{Genetic Programming}
-                \subsubsection{Introduction}
-                    \par{
-                        Genetic Programming is a class of Evolutionary Algorithms which, like
-                        other Evolutionary Algorithms, is a multi-point search which relies on the Darwinian
-                        principal of Survival of the fittest to iteratively and incrementally evolve
-                        a population of unfit programs into progressively fitter programs with respect
-                        to a given problem.\newline 
-                        \newline
-                        Genetic Programming is conceptually very similar to Genetic Algorithms, but
-                        there is one significant difference; Genetic Programs explore a search space
-                        composed of Programs(i.e. a Program Space), where the objective is to obtain
-                        optimal behaviours.\newline 
-                        \newline
-                        In order to move the search, Genetic Operators are applied to candidates that
-                        are selected by means of a selection methods which considers the individual’s
-                        fitness function such that fitter individuals have a greater chance of being selected. 
-                        In this way, the search is guided towards optimal areas of the Program
-                        Space.\newline
-                        \newline 
-                        \begin{algorithm}[H]
-                            \SetAlgoLined
-                            \KwResult{a program with optimal behaviour with respect to a particular problem domain.}
-                            Create initial population\;
-                            \Repeat{a termination criteria is met}{
-                                Evaluate the fitnesses of the population\;
-                                Obtain parents by means of selection methods\;
-                                Apply Genetic Operators to parents to produce offspring\;
-                                Incorporate off-spring into the population;
-                            }  
-                            \Return The best program from the population 
-                            \caption{Overview of the Genetic Program algorithm}
-                            \label{alg:gp}
-                        \end{algorithm} 
-                    }
-                
-                \subsubsection{Classification}
-                    \par{
-                        \noindent
-                        The process of automating the design of a Hyper-Heuristic will in someway need
-                        to incorporate the capacity to identify which low-level heuristic to apply given a
-                        particular solution. With the addition of one layer abstraction, where solutions
-                        in the solution space are labelled with arbitrary classes, and associate each class
-                        with predefined low-level heuristic, then the problem becomes one of classification; 
-                        a function that Genetic Programs have been shown to perform well in
-                        when compared to a variety of other techniques \cite{sgpc}.\newline 
-                        \newline 
-                        There are various representations that can be used to build classifiers with Genetic 
-                        programs; namingly Arithmetic, Logical, Decision and Production Rule.\newline 
-                        \newline 
-                        Arithmetic Trees are trees that are built with Arithmetic operators as their
-                        function set, and attributes of the data-set as their terminal set.\newline 
-                        \newline 
-                        Logical Trees are trees that are built with Logical operators as their function
-                        set, and attributes of the data-set as their terminal set.\newline 
-                        \newline 
-                        Decision Trees are trees where nodes represent attributes of the data-set, and
-                        edges represent value ranges for the attribute that the node from which they
-                        stem represents.\newline 
-                        \newline 
-                        Production Rule Trees are trees that are built with condition logic, comprising 
-                        of nodes that represent a logical ”If” operation. These take as arguments a
-                        condition, an action to take should the condition hold true and finally an action
-                        to take should the condition not hold. It is this kind of classifier that will be used. 
-                    }
-\section{Related Work}  \label{sec:relwork}
-    \par{
-        This section will place emphasis on 2 different proposed algorithms 
-        which both incorporate classifiers in their algorithm design.\newline 
-        \newline 
-        In a paper by S. Asta and E. Özcan \cite{astaozcan}, a proposed solution 
-        makes use of an Apprenticeship Learning Hyper-Heuristic (ALHH) approach 
-        for the Vehicle Routing problem, and compares its performance to that of 
-        the winning algorithm of CHeSC 2011, Adaptive Hyper-Heuristic(AdapHH) as well 
-        as 2 newer approaches - the P-Hunter algorithm et al   and an algorithm 
-        based on Iterated Local Search (AdOr-ILS) et al \cite{ILS} . The result of 
-        this experiment shows that ALHH outperforming all the competing algorithms and 
-        conclusively demonstrates the ALHH’s comparative success in generalizing actions of 
-        the expert, even in for unknown problem instances.\newline 
-        \newline 
-        In another paper et al \cite{tdnn} , a proposed solutions makes use of a Time Delay Neural
-        Network (TDNN) as an apprenticeship learning hyper-heuristic adhering
-        to a learning by demonstration approach. The result of the experiment alludes
-        empirically to that fact that exposing richer information to the expert has the
-        capacity to generate hyper-heuristics with improved generalising capabilities.
-        Another paper by et al \cite{gehh} proposes a dynamic multi-armed bandit-gene expression programming
-        hyper-heuristic for combinatorial optimisation problems(GEP-HH) to automat-
-        ically evolve the hyper-heuristic acceptance criteria. The effectiveness of the
-        algorithm is demonstrated by evaluating its performance against the top 5 rank-
-        ing hyper-heuristics from CHeSC on the problem domains in HyFlex where it
-        ranks 4 out of 6; a promising result.\newline 
-        \newline 
-        Whilst Gene expression programming is a variant of Genetic Programming, the
-        approach taken in this paper is removed from the approach of using a classifier to
-        select low-level heuristics as observed in the previous 2 papers. This presents a
-        gap in research, whereby a Genetic Programming algorithm is used to automate
-        the design of Selective Perturbative Hyper-Heuristics for of a classifier.
-    }
+
 \section{Discussion} \label{sec:discussion}
     \par{
 
